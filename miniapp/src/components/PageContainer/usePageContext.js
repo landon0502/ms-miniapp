@@ -1,0 +1,71 @@
+import { computed, nextTick } from 'vue'
+import { getPageId, PAGE_CTX_KEY } from './context'
+import { useDefineInvoke, usePageStore } from '@/composables'
+import { sleep } from '@/uni_modules/lime-shared/sleep'
+import { isFunction } from 'lodash'
+
+export default function usePageContext(options = {}) {
+	const { setStoreItem, getStoreItem, removeStoreItem, getStore } = usePageStore(PAGE_CTX_KEY)
+
+	const isLoad = computed(() => getStore()?.isLoad)
+	const invoke = useDefineInvoke(isLoad)
+	const pageId = getPageId()
+	/**
+	 * 显示/隐藏 骨架屏
+	 * @returns
+	 */
+	const skeletons = {
+		/**
+		 * 显示骨架屏
+		 * @param {Object} config
+		 * @returns {void}
+		 */
+		show: (config = options.skeletons) => {
+			if (getStoreItem(pageId)) {
+				setStoreItem('showSkeletons', false)
+				setStoreItem('skeletons', null)
+				removeStoreItem(pageId)
+			}
+			invoke(() => {
+				setStoreItem(pageId, true)
+				setStoreItem('skeletons', config)
+				setStoreItem('showSkeletons', true)
+			})
+		},
+		/**
+		 * 隐藏骨架屏
+		 * @returns {void}
+		 */
+		hide: async (options) => {
+			await nextTick()
+			await sleep(100)
+			invoke(async () => {
+				const { delay = 0 } = options ?? {}
+				delay > 0 && (await sleep(delay))
+				if (!getStoreItem(pageId)) {
+					return
+				}
+				setStoreItem('showSkeletons', false)
+				setStoreItem('skeletons', null)
+				removeStoreItem(pageId)
+			})
+		}
+	}
+
+	return {
+		skeletons,
+		pageContext: computed(() => getStore()),
+		getPageModalCtx: () => getStore()?.modal,
+		updatePageLayoutResize() {
+			return getStore().updatePageLayoutResize()
+		},
+		showToast(options = {}) {
+			isFunction(getStore()?.showToast)
+				? getStore().showToast(options)
+				: uni.showToast({
+						title: options.message,
+						icon: 'none'
+					})
+		}
+	}
+}

@@ -1,0 +1,3 @@
+INSERT INTO `promotions` (`id`, `product_id`, `name`, `label`, `type`, `end_time`, `quantity`, `sku_name`, `promotion_condition`, `image`) VALUES (35, 3, '12123123', '1', '赠品', NULL, 0, '', 0, '');
+INSERT INTO `promotions` (`id`, `product_id`, `name`, `label`, `type`, `end_time`, `quantity`, `sku_name`, `promotion_condition`, `image`) VALUES (36, 3, '1213', '2', '赠品', NULL, 0, '', 0, '');
+INSERT INTO `promotions` (`id`, `product_id`, `name`, `label`, `type`, `end_time`, `quantity`, `sku_name`, `promotion_condition`, `image`) VALUES (55, 5, '123', '123123', '赠品', '2026-03-26 00:00:00', 10, '12313', 10, '/uploads/1774189482135-cc102622-a042-474f-9eae-88b185f27f3b.png');

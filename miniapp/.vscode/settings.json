@@ -1,0 +1,18 @@
+{
+	"eslint.useESLintClass": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"prettier.configPath": "./prettier.config.mjs",
+	"[vue]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"files.associations": {
+		"*.nvue": "vue",
+		"*.uvue": "vue",
+		"*.wxml": "html",
+		"*.wxss": "css",
+		"*.wxs": "javascript",
+		"*.uts": "typescript"
+	},
+	"typescript.validate.enable": false
+}

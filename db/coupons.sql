@@ -1,0 +1,2 @@
+INSERT INTO `coupons` (`id`, `name`, `label`, `start_time`, `end_time`, `product_ids`, `discount_amount`, `min_spend`) VALUES (1, '测试优惠券11', '满100减50', '2026-03-15 00:00:00', '2026-03-30 23:59:59', '[3,5]', 502.00, 100.00);
+INSERT INTO `coupons` (`id`, `name`, `label`, `start_time`, `end_time`, `product_ids`, `discount_amount`, `min_spend`) VALUES (2, '测试券', '满100减20', '2026-03-15 08:00:00', '2026-03-26 08:00:00', '[3,5]', 20.00, 100.00);

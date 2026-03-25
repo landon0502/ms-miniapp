@@ -1,0 +1,68 @@
+/**
+ * 页面映射配置
+ * 用于生成 pages.json
+ */
+export const pageMap = [
+	{
+		path: 'pages/order/list/index',
+		style: {
+			navigationBarTitleText: '我的订单',
+			navigationStyle: 'custom'
+		}
+	},
+	// 首页
+	{
+		path: 'pages/index/index',
+		style: {
+			navigationBarTitleText: '首页',
+			navigationStyle: 'custom'
+		}
+	},
+	{
+		path: 'pages/order/detail/index',
+		style: {
+			navigationBarTitleText: '订单明细',
+			navigationStyle: 'custom'
+		}
+	},
+	{
+		path: 'pages/goods/detail/index',
+		style: {
+			navigationBarTitleText: '商品详情',
+			navigationStyle: 'custom'
+		}
+	},
+	{
+		path: 'pages/order/duty-free-detail/index',
+		style: {
+			navigationBarTitleText: '离岛免税订单详情',
+			navigationStyle: 'custom'
+		}
+	}
+]
+
+// 全局配置
+export const globalConfig = {
+	easycom: {
+		custom: {
+			'^(?!z-paging-refresh|z-paging-load-more)z-paging(.*)':
+				'z-paging/components/z-paging$1/z-paging$1.vue'
+		}
+	},
+	globalStyle: {
+		navigationBarTextStyle: 'black',
+		navigationBarTitleText: 'uni-app',
+		navigationBarBackgroundColor: '#F8F8F8',
+		backgroundColor: '#F8F8F8',
+		bounce: 'none'
+	},
+	// tabBar: {
+	// 	custom: true,
+	// 	height: '0px',
+	// 	list: []
+	// },
+	condition: {
+		current: 0,
+		list: []
+	}
+}
