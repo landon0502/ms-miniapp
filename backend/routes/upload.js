@@ -22,7 +22,21 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+// 文件类型验证
+const fileFilter = (req, file, cb) => {
+  // 允许的图片格式
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const upload = multer({ 
+  storage, 
+  fileFilter 
+});
 
 /**
  * @swagger

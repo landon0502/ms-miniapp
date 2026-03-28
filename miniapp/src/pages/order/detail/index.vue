@@ -154,6 +154,7 @@
 									v-for="(item, index) in orderInfo?.items || []"
 									:key="index"
 									:data="item"
+									@click="handleClickGoods"
 								>
 								</GoodsItem>
 							</view>
@@ -300,7 +301,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { useRouter } from '@/composables'
 
 // 使用 useRouter
-const { params } = useRouter()
+const { params, router } = useRouter()
 
 // 使用 useServices
 const { orderDetailControl } = useServices()
@@ -329,6 +330,11 @@ useScrollPaging(pagingRef, {
 		await orderDetailControl.run({ id: params.value.id })
 	}
 })
+
+// 点击商品项
+const handleClickGoods = (goods) => {
+	router.to({ url: '/pages/goods/detail/index', params: { product_id: goods.product_id } })
+}
 </script>
 
 <style scoped lang="scss">

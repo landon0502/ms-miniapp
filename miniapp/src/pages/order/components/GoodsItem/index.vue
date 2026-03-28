@@ -1,5 +1,5 @@
 <template>
-    <view class="flex flex-row gap-12px pos-relative">
+    <view class="flex flex-row gap-12px pos-relative" @click="handleClick">
         <view>
             <uv-image :src="goods.sku.images[0]" :width="80" :height="80" />
         </view>
@@ -25,4 +25,10 @@ const props = defineProps({
     default: () => ({})
   }
 })
+
+const emit = defineEmits(['click'])
+
+const handleClick = () => {
+  emit('click', props.goods)
+}
 </script>

@@ -353,6 +353,15 @@ export async function initDatabase() {
     
     // 检查并添加新增字段
     try {
+      // 活动开始时间
+      const [startTimeResult] = await connection.execute(
+        'SHOW COLUMNS FROM promotions WHERE Field = ?',
+        ['start_time']
+      );
+      if (startTimeResult.length === 0) {
+        await connection.execute('ALTER TABLE promotions ADD COLUMN start_time DATETIME COMMENT "活动开始时间"');
+      }
+      
       // 活动结束时间
       const [endTimeResult] = await connection.execute(
         'SHOW COLUMNS FROM promotions WHERE Field = ?',
@@ -413,12 +422,47 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE promotions MODIFY COLUMN promotion_condition INT DEFAULT 0 COMMENT '满赠条件'`);
     await connection.execute(`ALTER TABLE promotions MODIFY COLUMN image VARCHAR(255) DEFAULT '' COMMENT '赠品图片'`);
     
+    // 创建折扣表
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS discounts (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        product_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        end_time DATETIME,
+        value DECIMAL(3,1) NOT NULL,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+      )
+    `);
+    
+    // 检查并添加start_time字段
+    try {
+      const [startTimeResult] = await connection.execute(
+        'SHOW COLUMNS FROM discounts WHERE Field = ?',
+        ['start_time']
+      );
+      if (startTimeResult.length === 0) {
+        await connection.execute('ALTER TABLE discounts ADD COLUMN start_time DATETIME COMMENT "活动开始时间"');
+      }
+    } catch (error) {
+      console.error('添加折扣表start_time字段失败:', error);
+    }
+    
+    // 添加折扣表字段注释
+    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN id INT AUTO_INCREMENT COMMENT '折扣ID'`);
+    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN product_id INT NOT NULL COMMENT '商品ID'`);
+    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN name VARCHAR(255) NOT NULL COMMENT '折扣内容'`);
+    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN start_time DATETIME COMMENT '活动开始时间'`);
+    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN end_time DATETIME COMMENT '活动结束时间'`);
+    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN value DECIMAL(3,1) NOT NULL COMMENT '折扣值（1-10之间）'`);
+    
     // 创建优惠券表
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS coupons (
         id INT PRIMARY KEY AUTO_INCREMENT,
         name VARCHAR(255) NOT NULL,
         label VARCHAR(100) NOT NULL,
+        discount_amount DECIMAL(10,2) NOT NULL,
+        min_spend DECIMAL(10,2) NOT NULL,
         start_time TIMESTAMP NOT NULL,
         end_time TIMESTAMP NOT NULL
       )
@@ -435,6 +479,32 @@ export async function initDatabase() {
       }
     } catch (error) {
       console.error('添加product_ids字段失败:', error);
+    }
+    
+    // 检查并添加discount_amount字段
+    try {
+      const [result] = await connection.execute(
+        'SHOW COLUMNS FROM coupons WHERE Field = ?',
+        ['discount_amount']
+      );
+      if (result.length === 0) {
+        await connection.execute('ALTER TABLE coupons ADD COLUMN discount_amount DECIMAL(10,2) NOT NULL COMMENT "优惠金额"');
+      }
+    } catch (error) {
+      console.error('添加discount_amount字段失败:', error);
+    }
+    
+    // 检查并添加min_spend字段
+    try {
+      const [result] = await connection.execute(
+        'SHOW COLUMNS FROM coupons WHERE Field = ?',
+        ['min_spend']
+      );
+      if (result.length === 0) {
+        await connection.execute('ALTER TABLE coupons ADD COLUMN min_spend DECIMAL(10,2) NOT NULL COMMENT "使用条件（满多少）"');
+      }
+    } catch (error) {
+      console.error('添加min_spend字段失败:', error);
     }
     
     // 删除product_id字段

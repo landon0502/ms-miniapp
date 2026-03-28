@@ -358,3 +358,12 @@ export function getTreeDepth(tree, childKey = 'children', start = 1) {
 	dfs(tree, start)
 	return max
 }
+/**
+ * 补全上传资源路径
+ */
+export function fullUploadFilePath(url) {
+	if (!url || validURL(url)) {
+		return url
+	}
+	return import.meta.env.VITE_API_BASE_URL + url
+}

@@ -180,6 +180,8 @@
             <el-upload
               class="avatar-uploader"
               :action="'/api/upload'"
+              name="file"
+              accept="image/*"
               :show-file-list="true"
               :on-success="handleImageUploadSuccess"
               :on-error="handleImageUploadError"
@@ -214,7 +216,7 @@
                       type="danger"
                       link
                       size="small"
-                      @click="handleDeleteSku(sku.id)"
+                      @click="handleDeleteSku(sku.id, index)"
                     >
                       <el-icon><Delete /></el-icon>
                     </el-button>
@@ -253,6 +255,8 @@
                       <el-upload
                         class="sku-image-uploader"
                         :action="'/api/upload'"
+                        name="file"
+                        accept="image/*"
                         :show-file-list="true"
                         :on-success="
                           (response, file, fileList) =>
@@ -283,7 +287,7 @@
           </el-form-item>
         </div>
         <div class="form-row">
-          <el-form-item label="商品促销" class="form-item-full">
+          <el-form-item label="赠品" class="form-item-full">
             <div v-if="form.promotions && form.promotions.length > 0">
               <div
                 v-for="(promotion, index) in form.promotions"
@@ -330,15 +334,16 @@
                         placeholder="请输入活动标签"
                       />
                     </el-form-item>
-                    <el-form-item label="活动类型" class="form-item-col">
-                      <el-select
-                        v-model="promotion.type"
-                        placeholder="请选择活动类型"
-                      >
-                        <el-option label="赠品" value="赠品" />
-                        <el-option label="折扣" value="折扣" />
-                      </el-select>
+
+                    <el-form-item label="活动开始时间" class="form-item-col">
+                      <el-date-picker
+                        v-model="promotion.start_time"
+                        type="datetime"
+                        placeholder="选择活动开始时间"
+                        style="width: 100%"
+                      />
                     </el-form-item>
+
                     <el-form-item label="活动结束时间" class="form-item-col">
                       <el-date-picker
                         v-model="promotion.end_time"
@@ -349,11 +354,13 @@
                     </el-form-item>
                   </div>
                   <!-- 赠品类型特有字段 -->
-                  <div v-if="promotion.type === '赠品'" class="form-row">
+                  <div class="form-row">
                     <el-form-item label="赠品图片" class="form-item-col">
                       <el-upload
                         class="sku-image-uploader"
                         :action="'/api/upload'"
+                        name="file"
+                        accept="image/*"
                         :show-file-list="true"
                         :on-success="
                           (response, file, fileList) =>
@@ -398,7 +405,84 @@
             </div>
             <el-button type="primary" link @click="handleAddPromotion">
               <el-icon><Plus /></el-icon>
-              <span>添加促销</span>
+              <span>添加赠品</span>
+            </el-button>
+          </el-form-item>
+        </div>
+        
+        <!-- 商品折扣配置 -->
+        <div class="form-row">
+          <el-form-item label="商品折扣" class="form-item-full">
+            <div v-if="form.discounts && form.discounts.length > 0">
+              <div
+                v-for="(discount, index) in form.discounts"
+                :key="discount.id"
+                class="promotion-item"
+              >
+                <div class="promotion-header">
+                  <span class="promotion-index">折扣 {{ index + 1 }}</span>
+                  <div class="promotion-actions">
+                    <el-button
+                      type="primary"
+                      link
+                      size="small"
+                      @click="handleEditDiscount(discount, index)"
+                    >
+                      <el-icon><Edit /></el-icon>
+                    </el-button>
+                    <el-button
+                      type="danger"
+                      link
+                      size="small"
+                      @click="handleDeleteDiscount(discount.id)"
+                    >
+                      <el-icon><Delete /></el-icon>
+                    </el-button>
+                  </div>
+                </div>
+                <el-form
+                  :model="discount"
+                  label-width="100px"
+                  class="promotion-form"
+                  label-position="top"
+                >
+                  <div class="form-row">
+                    <el-form-item label="折扣内容" class="form-item-col">
+                      <el-input
+                        v-model="discount.name"
+                        placeholder="请输入折扣内容"
+                      />
+                    </el-form-item>
+                    <el-form-item label="活动开始时间" class="form-item-col">
+                      <el-date-picker
+                        v-model="discount.start_time"
+                        type="datetime"
+                        placeholder="选择活动开始时间"
+                        style="width: 100%"
+                      />
+                    </el-form-item>
+                    <el-form-item label="活动结束时间" class="form-item-col">
+                      <el-date-picker
+                        v-model="discount.end_time"
+                        type="datetime"
+                        placeholder="选择活动结束时间"
+                        style="width: 100%"
+                      />
+                    </el-form-item>
+                    <el-form-item label="折扣值" class="form-item-col">
+                      <el-input
+                        v-model.number="discount.value"
+                        type="number"
+                        placeholder="请输入折扣值（1-10之间）"
+                      />
+                    </el-form-item>
+                  </div>
+                </el-form>
+              </div>
+            </div>
+            <el-button type="primary" link @click="handleAddDiscount">
+              <el-icon><Plus /></el-icon>
+              <span>添加折扣</span>
             </el-button>
           </el-form-item>
         </div>
@@ -453,6 +537,8 @@
           <el-upload
             class="sku-image-uploader"
             :action="'/api/upload'"
+            name="file"
+            accept="image/*"
             :show-file-list="true"
             :on-success="handleSkuDialogImageUploadSuccess"
             :on-error="handleImageUploadError"
@@ -495,15 +581,16 @@
               placeholder="请输入活动标签"
             />
           </el-form-item>
-          <el-form-item label="活动类型" class="form-item-col">
-            <el-select
-              v-model="promotionForm.type"
-              placeholder="请选择活动类型"
-            >
-              <el-option label="赠品" value="赠品" />
-              <el-option label="折扣" value="折扣" />
-            </el-select>
+
+          <el-form-item label="活动开始时间" class="form-item-col">
+            <el-date-picker
+              v-model="promotionForm.start_time"
+              type="datetime"
+              placeholder="选择活动开始时间"
+              style="width: 100%"
+            />
           </el-form-item>
+
           <el-form-item label="活动结束时间" class="form-item-col">
             <el-date-picker
               v-model="promotionForm.end_time"
@@ -514,11 +601,13 @@
           </el-form-item>
         </div>
         <!-- 赠品类型特有字段 -->
-        <div v-if="promotionForm.type === '赠品'" class="form-row">
+        <div class="form-row">
           <el-form-item label="赠品图片" class="form-item-col">
             <el-upload
               class="sku-image-uploader"
               :action="'/api/upload'"
+              name="file"
+              accept="image/*"
               :show-file-list="true"
               :on-success="handlePromotionDialogImageUploadSuccess"
               :on-error="handleImageUploadError"
@@ -555,6 +644,54 @@
         <span class="dialog-footer">
           <el-button @click="promotionDialogVisible = false">取消</el-button>
           <el-button type="primary" @click="handleSavePromotion">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    
+    <!-- 折扣编辑对话框 -->
+    <el-dialog v-model="discountDialogVisible" :title="discountDialogTitle" width="600px">
+      <el-form
+        :model="discountForm"
+        label-width="120px"
+        ref="discountFormRef"
+        label-position="top"
+      >
+        <div class="form-row">
+          <el-form-item label="折扣内容" class="form-item-col">
+            <el-input
+              v-model="discountForm.name"
+              placeholder="请输入折扣内容"
+            />
+          </el-form-item>
+          <el-form-item label="活动开始时间" class="form-item-col">
+            <el-date-picker
+              v-model="discountForm.start_time"
+              type="datetime"
+              placeholder="选择活动开始时间"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item label="活动结束时间" class="form-item-col">
+            <el-date-picker
+              v-model="discountForm.end_time"
+              type="datetime"
+              placeholder="选择活动结束时间"
+              style="width: 100%"
+            />
+          </el-form-item>
+          <el-form-item label="折扣值" class="form-item-col">
+            <el-input
+              v-model.number="discountForm.value"
+              type="number"
+              placeholder="请输入折扣值（1-10之间）"
+            />
+          </el-form-item>
+        </div>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="discountDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleSaveDiscount">确定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -617,6 +754,7 @@ export default {
       imageList: [],
       skus: [],
       promotions: [],
+      discounts: [],
     });
     const formRef = ref(null);
     const quillEditor = ref(null);
@@ -865,6 +1003,7 @@ export default {
         imageList: [],
         skus: [],
         promotions: [],
+        discounts: [],
       };
       dialogVisible.value = true;
     };
@@ -903,7 +1042,10 @@ export default {
             promotions: (productDetail.promotions || []).map((promotion) => ({
               ...promotion,
               label: promotion.label || "",
-              type: promotion.type || "赠品",
+              type: "赠品",
+              start_time: promotion.start_time
+                ? new Date(promotion.start_time)
+                : null,
               end_time: promotion.end_time
                 ? new Date(promotion.end_time)
                 : null,
@@ -915,6 +1057,16 @@ export default {
                 ? [{ url: getImageUrl(promotion.image) }]
                 : [],
             })),
+            discounts: productDetail.discounts ? [{
+              ...productDetail.discounts,
+              start_time: productDetail.discounts.start_time
+                ? new Date(productDetail.discounts.start_time)
+                : null,
+              end_time: productDetail.discounts.end_time
+                ? new Date(productDetail.discounts.end_time)
+                : null,
+              value: productDetail.discounts.value || 1,
+            }] : [],
           };
           dialogVisible.value = true;
         } else {
@@ -1056,6 +1208,7 @@ export default {
             name: submitData.name,
             label: submitData.label,
             type: submitData.type,
+            start_time: submitData.start_time,
             end_time: submitData.end_time,
             quantity: submitData.quantity,
             sku_name: submitData.sku_name,
@@ -1111,6 +1264,7 @@ export default {
         name: "",
         label: "",
         type: "赠品",
+        start_time: null,
         end_time: null,
         quantity: 0,
         sku_name: "",
@@ -1128,6 +1282,7 @@ export default {
       name: "",
       label: "",
       type: "赠品",
+      start_time: null,
       end_time: null,
       quantity: 0,
       sku_name: "",
@@ -1137,13 +1292,28 @@ export default {
     });
     const promotionFormRef = ref(null);
     const currentPromotionIndex = ref(-1);
+    
+    // 折扣编辑相关变量
+    const discountDialogVisible = ref(false);
+    const discountDialogTitle = ref("");
+    const discountForm = ref({
+      id: "",
+      name: "",
+      start_time: null,
+      end_time: null,
+      value: 1,
+    });
+    const discountFormRef = ref(null);
+    const currentDiscountIndex = ref(-1);
 
     // 编辑促销
     const handleEditPromotion = (promotion, index) => {
-      promotionDialogTitle.value = "编辑促销";
+      promotionDialogTitle.value = "编辑赠品";
       // 填充促销数据到表单
       promotionForm.value = {
         ...promotion,
+        type: "赠品",
+        start_time: promotion.start_time ? new Date(promotion.start_time) : null,
         end_time: promotion.end_time ? new Date(promotion.end_time) : null,
         quantity: promotion.quantity || 0,
         sku_name: promotion.sku_name || "",
@@ -1160,10 +1330,10 @@ export default {
       if (promotionId) {
         try {
           await deletePromotion(promotionId);
-          ElMessage.success("删除促销成功");
+          ElMessage.success("删除赠品成功");
           fetchGoodsList();
         } catch (error) {
-          ElMessage.error("删除促销失败");
+          ElMessage.error("删除赠品失败");
           console.error("Error deleting promotion:", error);
         }
       } else {
@@ -1172,6 +1342,55 @@ export default {
           (promotion) => promotion.id !== promotionId
         );
       }
+    };
+    
+    // 添加折扣
+    const handleAddDiscount = () => {
+      form.value.discounts.push({
+        id: "",
+        name: "",
+        start_time: null,
+        end_time: null,
+        value: 1,
+      });
+    };
+    
+    // 编辑折扣
+    const handleEditDiscount = (discount, index) => {
+      discountDialogTitle.value = "编辑折扣";
+      // 填充折扣数据到表单
+      discountForm.value = {
+        ...discount,
+        start_time: discount.start_time ? new Date(discount.start_time) : null,
+        end_time: discount.end_time ? new Date(discount.end_time) : null,
+        value: discount.value || 1,
+      };
+      currentDiscountIndex.value = index;
+      discountDialogVisible.value = true;
+    };
+    
+    // 删除折扣
+    const handleDeleteDiscount = (discountId) => {
+      // 删除表单中的折扣
+      form.value.discounts = form.value.discounts.filter(
+        (discount) => discount.id !== discountId
+      );
+    };
+    
+    // 保存折扣
+    const handleSaveDiscount = () => {
+      // 保存到表单中
+      if (currentDiscountIndex.value >= 0) {
+        // 编辑现有折扣
+        form.value.discounts[currentDiscountIndex.value] = {
+          ...discountForm.value,
+        };
+      } else {
+        // 添加新折扣
+        form.value.discounts.push(discountForm.value);
+      }
+      ElMessage.success("折扣已保存");
+      discountDialogVisible.value = false;
     };
 
     // 编辑规格
@@ -1191,11 +1410,16 @@ export default {
     };
 
     // 删除规格
-    const handleDeleteSku = async (skuId) => {
+    const handleDeleteSku = async (skuId, index) => {
       try {
-        await deleteProductSku(skuId);
-        ElMessage.success("删除规格成功");
-        fetchGoodsList();
+        if(skuId){
+          await deleteProductSku(skuId);
+          ElMessage.success("删除规格成功");
+          fetchGoodsList();
+        }else{
+          form.value.skus.splice(index, 1)
+        }
+        
       } catch (error) {
         ElMessage.error("删除规格失败");
         console.error("Error deleting sku:", error);
@@ -1224,6 +1448,10 @@ export default {
           })),
           promotions: form.value.promotions.map((promotion) => ({
             ...promotion,
+            type: "赠品",
+            start_time: promotion.start_time
+              ? dayjs(promotion.start_time).format("YYYY-MM-DD HH:mm:ss")
+              : null,
             end_time: promotion.end_time
               ? dayjs(promotion.end_time).format("YYYY-MM-DD HH:mm:ss")
               : null,
@@ -1231,6 +1459,16 @@ export default {
             sku_name: promotion.sku_name || "",
             condition: Number(promotion.condition) || 0,
             image: promotion.image || "",
+          })),
+          discounts: form.value.discounts.map((discount) => ({
+            ...discount,
+            start_time: discount.start_time
+              ? dayjs(discount.start_time).format("YYYY-MM-DD HH:mm:ss")
+              : null,
+            end_time: discount.end_time
+              ? dayjs(discount.end_time).format("YYYY-MM-DD HH:mm:ss")
+              : null,
+            value: Number(discount.value) || 1,
           })),
         };
         if (form.value.id) {
@@ -1321,6 +1559,10 @@ export default {
       promotionDialogTitle,
       promotionForm,
       promotionFormRef,
+      discountDialogVisible,
+      discountDialogTitle,
+      discountForm,
+      discountFormRef,
       getImageUrl,
       getLabelType,
       handleAddGoods,
@@ -1334,6 +1576,10 @@ export default {
       handleEditPromotion,
       handleDeletePromotion,
       handleSavePromotion,
+      handleAddDiscount,
+      handleEditDiscount,
+      handleDeleteDiscount,
+      handleSaveDiscount,
       handleImageUploadSuccess,
       handleSkuImageUploadSuccess,
       handleSkuDialogImageUploadSuccess,

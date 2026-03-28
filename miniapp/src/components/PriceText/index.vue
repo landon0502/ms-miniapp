@@ -5,7 +5,7 @@
 		</view>
 		<text :style="prefixTextStyle">￥</text>
 		<text :style="integerTextStyle" v-if="!props.encrypt">{{ price[0] }}</text>
-		<text :style="decimalsTextStyle" v-if="!props.encrypt"> .{{ price[1] }} </text>
+		<text :style="decimalsTextStyle" v-if="!props.encrypt">.{{ price[1] }}</text>
 		<text :style="integerTextStyle" class="align-bottom" v-if="props.encrypt">***</text>
 		<text :style="decimalsTextStyle" class="align-bottom" v-if="props.encrypt">.**</text>
 		<view class="inline-block" v-if="$slots.suffix">
@@ -17,7 +17,7 @@
 import { computed } from 'vue'
 import { isString, isNumber } from 'lodash'
 import { addUnit, addStyle } from '@/uni_modules/uv-ui-tools/libs/function/index.js'
-
+import Decimal from 'decimal.js'
 const props = defineProps({
 	value: [String, Number],
 	prefixStyle: {
@@ -54,11 +54,12 @@ const splitValueByDot = (value) => {
 		return []
 	}
 	let [intNum, floatNum] = (price + '').split('.')
-	return [intNum, floatNum]
+	return [intNum, floatNum].filter(Boolean)
 }
 
 const price = computed(() => {
-	let v = uni.$uv.priceFormat(props.value, 2)
+	let n = props.value || 0
+	let v = new Decimal(n).toFixed(2).toString()
 	return splitValueByDot(v)
 })
 
@@ -105,7 +106,7 @@ const decimalsTextStyle = computed(() => {
 				color,
 				fontWeight: props.fontBold || defaultCommonTextStyle.fontWeight
 			},
-			props.prefixStyle
+			props.decimalsStyle
 		)
 	)
 })

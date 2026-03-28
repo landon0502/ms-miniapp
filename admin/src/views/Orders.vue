@@ -207,6 +207,7 @@
                 v-model="form.consignee_idcard"
                 placeholder="请输入收货人身份证号"
                 style="width: 100%"
+                maxlength="18"
               />
             </el-form-item>
           </el-col>

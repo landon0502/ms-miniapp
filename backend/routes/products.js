@@ -117,6 +117,15 @@ router.get('/', async (req, res) => {
         console.error(`获取商品 ${product.id} 的促销失败:`, error);
         product.promotions = [];
       }
+      
+      try {
+        const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ?', [product.id]);
+        product.discounts = discounts;
+        console.log(`商品 ${product.id} 的折扣:`, discounts);
+      } catch (error) {
+        console.error(`获取商品 ${product.id} 的折扣失败:`, error);
+        product.discounts = [];
+      }
     }
     
     res.json({
@@ -194,13 +203,14 @@ router.get('/:id', async (req, res) => {
       } catch (error) {
         sku.images = [];
       }
-      // 添加绑定的秒杀活动
-      sku.activities = flashSales.filter(sale => sale.sku_id === sku.id);
+      // 添加绑定的秒杀活动（只返回一个活动对象）
+      const skuActivities = flashSales.filter(sale => sale.sku_id === sku.id);
+      sku.activities = skuActivities.length > 0 ? skuActivities[0] : null;
       return sku;
     });
     
     // 获取有效期内的促销数据
-    const [promotions] = await pool.execute('SELECT * FROM promotions WHERE product_id = ? AND (end_time IS NULL OR end_time >= NOW())', [req.params.id]);
+    const [promotions] = await pool.execute('SELECT * FROM promotions WHERE product_id = ? AND (end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())', [req.params.id]);
     
     // 提取促销活动标签并去重
     const promotionLabels = [...new Set(promotions.map(promotion => promotion.label).filter(label => label))];
@@ -218,6 +228,24 @@ router.get('/:id', async (req, res) => {
       return coupon;
     });
     
+    // 获取有效期内的折扣数据
+    const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ? AND (end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())', [req.params.id]);
+    
+    // 生成标签
+    const tags = [];
+    // 添加折扣标签
+    if (discounts.length > 0) {
+      tags.push(discounts[0].name);
+    }
+    // 添加优惠券标签
+    if (coupons.length > 0) {
+      tags.push(...coupons.map(item=>item.label));
+    }
+    // 添加赠品标签
+    if (promotions.length > 0) {
+      tags.push('赠品');
+    }
+    
     res.json({
       success: true,
       code: 200,
@@ -227,7 +255,9 @@ router.get('/:id', async (req, res) => {
         skus: parsedSkus, 
         promotions, 
         promotion_labels: promotionLabels,
-        coupons: parsedCoupons
+        discounts: discounts.length > 0 ? discounts[0] : null,
+        coupons: parsedCoupons,
+        tags
       }
     });
   } catch (error) {
@@ -381,8 +411,9 @@ router.delete('/:id', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
+    console.log('接收到的请求数据:', req.body);
     const pool = getPool();
-    const { name, description, detail_description, price, original_price, stock, category, theme, image, measurement_type, skus, promotions } = req.body;
+    const { name, description, detail_description, price, original_price, stock, category, theme, image, measurement_type, skus, promotions, discounts } = req.body;
     
     // 开始事务
     const connection = await pool.getConnection();
@@ -413,11 +444,23 @@ router.post('/', async (req, res) => {
       // 处理促销
       if (promotions && Array.isArray(promotions)) {
         for (const promotion of promotions) {
-          const { name, label, type, end_time, quantity, sku_name, condition, image } = promotion;
+          const { name, label, type, start_time, end_time, quantity, sku_name, condition, image } = promotion;
           
           await connection.execute(
-            'INSERT INTO promotions (product_id, name, label, type, end_time, quantity, sku_name, promotion_condition, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [productId, name, label, type, end_time, quantity, sku_name, condition, image]
+            'INSERT INTO promotions (product_id, name, label, type, start_time, end_time, quantity, sku_name, promotion_condition, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [productId, name, label, type, start_time, end_time, quantity, sku_name, condition, image]
+          );
+        }
+      }
+      
+      // 处理折扣
+      if (discounts && Array.isArray(discounts)) {
+        for (const discount of discounts) {
+          const { name, start_time, end_time, value } = discount;
+          
+          await connection.execute(
+            'INSERT INTO discounts (product_id, name, start_time, end_time, value) VALUES (?, ?, ?, ?, ?)',
+            [productId, name, start_time, end_time, value]
           );
         }
       }
@@ -769,7 +812,7 @@ router.delete('/skus/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const pool = getPool();
-    const { name, description, detail_description, price, original_price, stock, category, theme, image, measurement_type, skus, promotions } = req.body;
+    const { name, description, detail_description, price, original_price, stock, category, theme, image, measurement_type, skus, promotions, discounts } = req.body;
     
     // 开始事务
     const connection = await pool.getConnection();
@@ -876,11 +919,27 @@ router.put('/:id', async (req, res) => {
         
         // 添加新的促销
         for (const promotion of promotions) {
-          const { name, label, type, end_time, quantity, sku_name, condition, image } = promotion;
+          const { name, label, type, start_time, end_time, quantity, sku_name, condition, image } = promotion;
           
           await connection.execute(
-            'INSERT INTO promotions (product_id, name, label, type, end_time, quantity, sku_name, promotion_condition, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [req.params.id, name, label, type, end_time, quantity, sku_name, condition, image]
+            'INSERT INTO promotions (product_id, name, label, type, start_time, end_time, quantity, sku_name, promotion_condition, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [req.params.id, name, label, type, start_time, end_time, quantity, sku_name, condition, image]
+          );
+        }
+      }
+      
+      // 处理折扣
+      if (discounts && Array.isArray(discounts)) {
+        // 删除旧的折扣
+        await connection.execute('DELETE FROM discounts WHERE product_id = ?', [req.params.id]);
+        
+        // 添加新的折扣
+        for (const discount of discounts) {
+          const { name, start_time, end_time, value } = discount;
+          
+          await connection.execute(
+            'INSERT INTO discounts (product_id, name, start_time, end_time, value) VALUES (?, ?, ?, ?, ?)',
+            [req.params.id, name, start_time, end_time, value]
           );
         }
       }
@@ -906,6 +965,10 @@ router.put('/:id', async (req, res) => {
       // 获取更新后的促销信息
       const [promotionsRows] = await pool.execute('SELECT * FROM promotions WHERE product_id = ?', [req.params.id]);
       updatedProduct.promotions = promotionsRows;
+      
+      // 获取更新后的折扣信息
+      const [discountsRows] = await pool.execute('SELECT * FROM discounts WHERE product_id = ?', [req.params.id]);
+      updatedProduct.discounts = discountsRows;
       
       res.json({
         success: true,

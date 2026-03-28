@@ -51,7 +51,7 @@
 				</view>
 			</view>
 			<view class="flex flex-col gap-24px py-24px">
-				<GoodsItem v-for="goods in order.items" :key="goods.id" :goods="goods" />
+				<GoodsItem v-for="goods in order.items" :key="goods.id" :goods="goods" @click="handleClickGoods" />
 			</view>
 		</view>
 		<view class="flex justify-between items-center pt-4">
@@ -144,5 +144,10 @@ const getOrderButtons = (status) => {
 	buttons.push({ text: '查看订单', action: goToDetail })
 
 	return buttons
+}
+
+// 点击商品项
+const handleClickGoods = (goods) => {
+	router.to({ url: '/pages/goods/detail/index', params: { product_id: goods.product_id } })
 }
 </script>

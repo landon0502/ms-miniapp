@@ -1,6 +1,6 @@
 <template>
 	<view
-		class="card bg-[var(--uv-white-color)] rounded-8px flex flex-col gap-24rpx py-24rpx"
+		class="card bg-[var(--uv-white-color)] rounded-12px flex flex-col gap-24rpx py-24rpx"
 		:style="props.customStyle"
 		@click.stop="onClick"
 	>

@@ -319,8 +319,8 @@ router.put('/:id', async (req, res) => {
     const formattedEndTime = new Date(end_time).toISOString().slice(0, 19).replace('T', ' ');
     
     const [result] = await pool.execute(
-      'UPDATE coupons SET product_id = ?, product_ids = ?, name = ?, label = ?, discount_amount = ?, min_spend = ?, start_time = ?, end_time = ? WHERE id = ?',
-      [null, productIdsJson, name, label, discount_amount, min_spend, formattedStartTime, formattedEndTime, req.params.id]
+      'UPDATE coupons SET product_ids = ?, name = ?, label = ?, discount_amount = ?, min_spend = ?, start_time = ?, end_time = ? WHERE id = ?',
+      [productIdsJson, name, label, discount_amount, min_spend, formattedStartTime, formattedEndTime, req.params.id]
     );
     
     if (result.affectedRows === 0) {

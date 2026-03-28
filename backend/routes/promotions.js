@@ -178,11 +178,11 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const pool = getPool();
-    const { product_id, name, label, type } = req.body;
+    const { product_id, name, label, type, start_time, end_time, quantity, sku_name, condition, image } = req.body;
     
     const [result] = await pool.execute(
-      'INSERT INTO promotions (product_id, name, label, type) VALUES (?, ?, ?, ?)',
-      [product_id, name, label, type]
+      'INSERT INTO promotions (product_id, name, label, type, start_time, end_time, quantity, sku_name, promotion_condition, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [product_id, name, label, type, start_time, end_time, quantity, sku_name, condition, image]
     );
     
     res.json({
@@ -260,11 +260,11 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const pool = getPool();
-    const { name, label, type } = req.body;
+    const { name, label, type, start_time, end_time, quantity, sku_name, condition, image } = req.body;
     
     const [result] = await pool.execute(
-      'UPDATE promotions SET name = ?, label = ?, type = ? WHERE id = ?',
-      [name, label, type, req.params.id]
+      'UPDATE promotions SET name = ?, label = ?, type = ?, start_time = ?, end_time = ?, quantity = ?, sku_name = ?, promotion_condition = ?, image = ? WHERE id = ?',
+      [name, label, type, start_time, end_time, quantity, sku_name, condition, image, req.params.id]
     );
     
     if (result.affectedRows === 0) {

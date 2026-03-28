@@ -1,8 +1,36 @@
 {  "pages": [
     {
-      "path": "wap/order-detail-list/index",
+      "path": "pages/order/list/index",
+      "style": {
+        "navigationBarTitleText": "我的订单",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/order/detail/index",
       "style": {
         "navigationBarTitleText": "订单明细",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/goods/detail/index",
+      "style": {
+        "navigationBarTitleText": "商品详情",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/order/duty-free-detail/index",
+      "style": {
+        "navigationBarTitleText": "离岛免税订单详情",
         "navigationStyle": "custom"
       }
     }

@@ -1,4 +1,5 @@
 <template>
+	<page-meta page-style="overflow:hidden" />
 	<PageContainer
 		:navBarProps="{
 			title: '我的订单',
@@ -110,7 +111,6 @@ const loadOrderList = async () => {
 		skeletons.hide()
 	}
 }
-
 
 const cancelOrder = (id) => {
 	uni.showToast({ title: '取消订单', icon: 'none' })
