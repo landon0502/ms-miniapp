@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 创建axios实例
 const request = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ,
+  baseURL: location.protocol + '//' + import.meta.env.VITE_API_BASE_URL ,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -17,7 +17,7 @@ export const getImageUrl = (url) => {
     return url;
   }
   // 如果是相对路径，拼接基础URL
-  return import.meta.env.VITE_API_BASE_URL + url;
+  return location.protocol + '//' + import.meta.env.VITE_API_BASE_URL + url;
 };
 
 // 请求拦截器

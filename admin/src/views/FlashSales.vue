@@ -20,11 +20,19 @@
         <el-table-column prop="end_time" label="结束时间" width="180" />
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
-            <el-button type="primary" link @click="handleEditFlashSale(scope.row)">
+            <el-button
+              type="primary"
+              link
+              @click="handleEditFlashSale(scope.row)"
+            >
               <el-icon><Edit /></el-icon>
               <span>编辑</span>
             </el-button>
-            <el-button type="danger" link @click="handleDeleteFlashSale(scope.row.id)">
+            <el-button
+              type="danger"
+              link
+              @click="handleDeleteFlashSale(scope.row.id)"
+            >
               <el-icon><Delete /></el-icon>
               <span>删除</span>
             </el-button>
@@ -45,14 +53,20 @@
     </el-card>
 
     <!-- 添加/编辑活动对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="500px"
-    >
-      <el-form :model="form" label-width="120px" :rules="rules" ref="formRef" label-position="top">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
+      <el-form
+        :model="form"
+        label-width="120px"
+        :rules="rules"
+        ref="formRef"
+        label-position="top"
+      >
         <el-form-item label="商品" prop="product_id">
-          <el-select v-model="form.product_id" placeholder="选择商品" @change="handleProductChange">
+          <el-select
+            v-model="form.product_id"
+            placeholder="选择商品"
+            @change="handleProductChange"
+          >
             <el-option
               v-for="product in products"
               :key="product.id"
@@ -72,7 +86,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="活动价格" prop="activity_price">
-          <el-input v-model.number="form.activity_price" placeholder="请输入活动价格" />
+          <el-input
+            v-model.number="form.activity_price"
+            placeholder="请输入活动价格"
+          />
         </el-form-item>
         <el-form-item label="开始时间" prop="start_time">
           <el-date-picker
@@ -102,214 +119,229 @@
 </template>
 
 <script>
-import { ref, onMounted, reactive } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, Edit, Delete } from '@element-plus/icons-vue'
-import { getFlashSales, createFlashSale, updateFlashSale, deleteFlashSale } from '../api/flash-sales'
-import { getProducts, getProductDetail } from '../api/products'
-import dayjs from 'dayjs'
+import { ref, onMounted, reactive } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Plus, Search, Edit, Delete } from "@element-plus/icons-vue";
+import {
+  getFlashSales,
+  createFlashSale,
+  updateFlashSale,
+  deleteFlashSale,
+} from "../api/flash-sales";
+import { getProducts, getProductDetail } from "../api/products";
+import dayjs from "dayjs";
 
 export default {
-  name: 'FlashSales',
+  name: "FlashSales",
   components: {
     Plus,
     Search,
     Edit,
-    Delete
+    Delete,
   },
   setup() {
-    const currentPage = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const flashSalesList = ref([])
-    const products = ref([])
-    const skus = ref([])
-    const dialogVisible = ref(false)
-    const dialogTitle = ref('添加活动')
+    const currentPage = ref(1);
+    const pageSize = ref(10);
+    const total = ref(0);
+    const flashSalesList = ref([]);
+    const products = ref([]);
+    const skus = ref([]);
+    const dialogVisible = ref(false);
+    const dialogTitle = ref("添加活动");
     const form = reactive({
       id: null,
-      product_id: '',
-      sku_id: '',
-      activity_price: '',
-      start_time: '',
-      end_time: ''
-    })
-    const formRef = ref(null)
+      product_id: "",
+      sku_id: "",
+      activity_price: "",
+      start_time: "",
+      end_time: "",
+    });
+    const formRef = ref(null);
     const rules = {
       product_id: [
-        { required: true, message: '请选择商品', trigger: 'change' }
+        { required: true, message: "请选择商品", trigger: "change" },
       ],
       sku_id: [
-        { required: true, message: '请选择商品规格', trigger: 'change' }
+        { required: true, message: "请选择商品规格", trigger: "change" },
       ],
       activity_price: [
-        { required: true, message: '请输入活动价格', trigger: 'blur' },
-        { type: 'number', min: 0, message: '活动价格必须大于等于0', trigger: 'blur' }
+        { required: true, message: "请输入活动价格", trigger: "blur" },
+        {
+          trigger: "blur",
+          validator: (rule, value, callback) => {
+            if (Number(value) <= 0) {
+              return callback("活动价格必须大于0");
+            }
+            return callback();
+          },
+        },
       ],
       start_time: [
-        { required: true, message: '请选择开始时间', trigger: 'change' }
+        { required: true, message: "请选择开始时间", trigger: "change" },
       ],
       end_time: [
-        { required: true, message: '请选择结束时间', trigger: 'change' }
-      ]
-    }
+        { required: true, message: "请选择结束时间", trigger: "change" },
+      ],
+    };
 
     onMounted(() => {
-      fetchFlashSalesList()
-      fetchProducts()
-    })
+      fetchFlashSalesList();
+      fetchProducts();
+    });
 
     // 获取秒杀活动列表
     const fetchFlashSalesList = async () => {
       try {
         const response = await getFlashSales({
           page: currentPage.value,
-          pageSize: pageSize.value
-        })
+          pageSize: pageSize.value,
+        });
         if (response.data.success) {
           // 格式化时间
-          flashSalesList.value = response.data.data.list.map(item => ({
+          flashSalesList.value = response.data.data.list.map((item) => ({
             ...item,
-            start_time: dayjs(item.start_time).format('YYYY-MM-DD HH:mm:ss'),
-            end_time: dayjs(item.end_time).format('YYYY-MM-DD HH:mm:ss')
-          }))
-          total.value = response.data.data.total
+            start_time: dayjs(item.start_time).format("YYYY-MM-DD HH:mm:ss"),
+            end_time: dayjs(item.end_time).format("YYYY-MM-DD HH:mm:ss"),
+          }));
+          total.value = response.data.data.total;
         } else {
-          ElMessage.error(response.data.message || '获取活动列表失败')
+          ElMessage.error(response.data.message || "获取活动列表失败");
         }
       } catch (error) {
-        ElMessage.error('获取活动列表失败')
-        console.error('Error fetching flash sales:', error)
+        ElMessage.error("获取活动列表失败");
+        console.error("Error fetching flash sales:", error);
       }
-    }
+    };
 
     // 获取商品列表
     const fetchProducts = async () => {
       try {
         const response = await getProducts({
-          pageSize: 999
-        })
+          pageSize: 999,
+        });
         if (response.data.success) {
-          products.value = response.data.data.list
+          products.value = response.data.data.list;
         } else {
-          ElMessage.error(response.data.message || '获取商品列表失败')
+          ElMessage.error(response.data.message || "获取商品列表失败");
         }
       } catch (error) {
-        ElMessage.error('获取商品列表失败')
-        console.error('Error fetching products:', error)
+        ElMessage.error("获取商品列表失败");
+        console.error("Error fetching products:", error);
       }
-    }
+    };
 
     // 获取商品规格
     const fetchSkus = async (productId) => {
       try {
-        const response = await getProductDetail(productId)
+        const response = await getProductDetail(productId);
         if (response.data.success) {
-          skus.value = response.data.data.skus || []
+          skus.value = response.data.data.skus || [];
         } else {
-          ElMessage.error(response.data.message || '获取商品规格失败')
+          ElMessage.error(response.data.message || "获取商品规格失败");
         }
       } catch (error) {
-        ElMessage.error('获取商品规格失败')
-        console.error('Error fetching skus:', error)
+        ElMessage.error("获取商品规格失败");
+        console.error("Error fetching skus:", error);
       }
-    }
+    };
 
     // 处理商品选择变化
     const handleProductChange = (productId) => {
-      form.sku_id = ''
+      form.sku_id = "";
       if (productId) {
-        fetchSkus(productId)
+        fetchSkus(productId);
       } else {
-        skus.value = []
+        skus.value = [];
       }
-    }
+    };
 
     // 添加活动
     const handleAddFlashSale = () => {
-      dialogTitle.value = '添加活动'
+      dialogTitle.value = "添加活动";
       Object.assign(form, {
         id: null,
-        product_id: '',
-        sku_id: '',
-        activity_price: '',
-        start_time: '',
-        end_time: ''
-      })
-      skus.value = []
-      dialogVisible.value = true
-    }
+        product_id: "",
+        sku_id: "",
+        activity_price: "",
+        start_time: "",
+        end_time: "",
+      });
+      skus.value = [];
+      dialogVisible.value = true;
+    };
 
     // 编辑活动
     const handleEditFlashSale = (flashSale) => {
-      dialogTitle.value = '编辑活动'
-      Object.assign(form, flashSale)
+      dialogTitle.value = "编辑活动";
+      Object.assign(form, flashSale);
       // 转换时间格式
-      form.start_time = new Date(flashSale.start_time)
-      form.end_time = new Date(flashSale.end_time)
+      form.start_time = new Date(flashSale.start_time);
+      form.end_time = new Date(flashSale.end_time);
       // 获取商品规格
-      fetchSkus(flashSale.product_id)
-      dialogVisible.value = true
-    }
+      fetchSkus(flashSale.product_id);
+      dialogVisible.value = true;
+    };
 
     // 删除活动
     const handleDeleteFlashSale = (id) => {
-      ElMessageBox.confirm('确定要删除该活动吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        try {
-          await deleteFlashSale(id)
-          ElMessage.success('删除成功')
-          fetchFlashSalesList()
-        } catch (error) {
-          ElMessage.error('删除失败')
-          console.error('Error deleting flash sale:', error)
-        }
-      }).catch(() => {
-        // 取消删除
+      ElMessageBox.confirm("确定要删除该活动吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       })
-    }
+        .then(async () => {
+          try {
+            await deleteFlashSale(id);
+            ElMessage.success("删除成功");
+            fetchFlashSalesList();
+          } catch (error) {
+            ElMessage.error("删除失败");
+            console.error("Error deleting flash sale:", error);
+          }
+        })
+        .catch(() => {
+          // 取消删除
+        });
+    };
 
     // 提交表单
     const handleSubmit = async () => {
       try {
-        await formRef.value.validate()
+        await formRef.value.validate();
         // 格式化时间
         const formData = {
           ...form,
-          start_time: dayjs(form.start_time).format('YYYY-MM-DD HH:mm:ss'),
-          end_time: dayjs(form.end_time).format('YYYY-MM-DD HH:mm:ss')
-        }
+          start_time: dayjs(form.start_time).format("YYYY-MM-DD HH:mm:ss"),
+          end_time: dayjs(form.end_time).format("YYYY-MM-DD HH:mm:ss"),
+        };
         if (form.id) {
           // 编辑活动
-          await updateFlashSale(form.id, formData)
-          ElMessage.success('编辑成功')
+          await updateFlashSale(form.id, formData);
+          ElMessage.success("编辑成功");
         } else {
           // 添加活动
-          await createFlashSale(formData)
-          ElMessage.success('添加成功')
+          await createFlashSale(formData);
+          ElMessage.success("添加成功");
         }
-        dialogVisible.value = false
-        fetchFlashSalesList()
+        dialogVisible.value = false;
+        fetchFlashSalesList();
       } catch (error) {
-        if (error.name === 'Error') {
-          ElMessage.error('操作失败')
-          console.error('Error submitting form:', error)
+        if (error.name === "Error") {
+          ElMessage.error("操作失败");
+          console.error("Error submitting form:", error);
         }
       }
-    }
+    };
 
     const handleSizeChange = (size) => {
-      pageSize.value = size
-      fetchFlashSalesList()
-    }
+      pageSize.value = size;
+      fetchFlashSalesList();
+    };
 
     const handleCurrentChange = (current) => {
-      currentPage.value = current
-      fetchFlashSalesList()
-    }
+      currentPage.value = current;
+      fetchFlashSalesList();
+    };
 
     return {
       currentPage,
@@ -329,10 +361,10 @@ export default {
       handleSubmit,
       handleProductChange,
       handleSizeChange,
-      handleCurrentChange
-    }
-  }
-}
+      handleCurrentChange,
+    };
+  },
+};
 </script>
 
 <style scoped>

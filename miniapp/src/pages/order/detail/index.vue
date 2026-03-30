@@ -1,7 +1,7 @@
 <template>
 	<PageContainer
 		:navBarProps="{
-			title: '已提货',
+			title: '订单详情',
 			leftIcon: 'arrow-left'
 		}"
 		fixedContentHeight
@@ -10,18 +10,8 @@
 	>
 		<ScrollPaging ref="pagingRef" refreshonly>
 			<view class="flex flex-col gap-24rpx p-24rpx">
-				<!-- 加载状态 -->
-				<view v-if="loading" class="flex justify-center items-center py-48rpx">
-					<text>加载中...</text>
-				</view>
-
-				<!-- 错误状态 -->
-				<view v-else-if="error" class="flex justify-center items-center py-48rpx">
-					<text class="text-red-500">{{ error }}</text>
-				</view>
-
 				<!-- 订单内容 -->
-				<template v-else>
+				<template v-if="orderInfo">
 					<!-- 订单状态 -->
 					<Card :showHeader="false" :customContentStyle="{ padding: '12rpx 24rpx' }">
 						<template #content>
@@ -31,7 +21,7 @@
 										<uv-icon :name="articleIcon" :size="14" />
 										<text class="font-size-15px text-#333333">已提货</text>
 									</view>
-									<uv-icon name="arrow-right" :size="14" color="#8E8E8E" />
+									<uv-icon name="arrow-right" :size="14" :color="'#8E8E8E'" />
 								</view>
 								<view class="p-l-22px mt-12px">
 									<text class="font-size-12px text-#999999">已提货</text>
@@ -68,13 +58,13 @@
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="steamerIcon" :size="14" />
 										<text class="font-size-14px text-#9E9E9E">{{
-											orderInfo?.router_info?.offline_flight || '加载中...'
+											orderInfo?.route_info?.offline_flight || '加载中...'
 										}}</text>
 									</view>
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="timeIcon" :size="14" />
 										<text class="font-size-14px text-#9E9E9E">{{
-											formatDate(orderInfo?.router_info?.departure_time)
+											formatDate(orderInfo?.route_info?.departure_time)
 										}}</text>
 									</view>
 								</view>
@@ -149,14 +139,13 @@
 					<Card title="离岛免税商品列表" :titleBold="false" showHeadLine>
 						<template #content>
 							<view class="flex flex-col gap-12px">
-								<GoodsItem
-									class="goods-item"
+								<view
 									v-for="(item, index) in orderInfo?.items || []"
 									:key="index"
-									:data="item"
-									@click="handleClickGoods"
+									@click="handleClickGoods(item)"
 								>
-								</GoodsItem>
+									<GoodsItem class="goods-item" :data="item" :image="item.image" />
+								</view>
 							</view>
 						</template>
 					</Card>
@@ -236,15 +225,7 @@
 							</view>
 
 							<view class="min-w-140rpx flex justify-end">
-								<text class="price-value total-price font-size-15px">
-									¥{{
-										(orderInfo?.total_original_price || 0) -
-										(orderInfo?.discount || 0) -
-										(orderInfo?.points_deduction || 0) +
-										(orderInfo?.mail_tax || 0) -
-										(orderInfo?.mail_tax_discount || 0)
-									}}
-								</text>
+								<text class="price-value total-price font-size-15px"> ¥{{ paytotal }} </text>
 							</view>
 						</view>
 					</view>
@@ -254,13 +235,11 @@
 
 		<!-- 底部操作 -->
 		<template #footer>
+			<uv-line/>
 			<view class="footer-buttons flex flex-row items-center justify-between px-24px py-12px">
-				<uv-button
-					type="default"
-					class="footer-btn"
-					:text="'更多'"
-					:custom-text-style="{ color: '#A7A7A7' }"
-				></uv-button>
+				<view @click="handleClickOrderDetail">
+					<text class="text-12px text-#999">订单明细</text>
+				</view>
 				<uv-button
 					class="footer-btn"
 					:custom-style="{
@@ -282,7 +261,7 @@
 
 <script setup>
 import PageContainer from '@/components/PageContainer'
-import { shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 import Card from '@/components/Card'
 import articleIcon from '@/assets/images/article-icon.png'
 import locationIcon from '@/assets/images/location.png'
@@ -291,7 +270,7 @@ import phoneIcon from '@/assets/images/phone-icon.png'
 import idcardIcon from '@/assets/images/id-card-o.png'
 import steamerIcon from '@/assets/images/steamer-icon.png'
 import timeIcon from '@/assets/images/time-icon.png'
-import GoodsItem from './components/GoodsItem.vue'
+import GoodsItem from './components/GoodsItem'
 import ScrollPaging from '@/components/ScrollPaging'
 import useScrollPaging from '@/components/ScrollPaging/useScrollPaging'
 import useServices from '../useServices'
@@ -299,6 +278,7 @@ import dayjs from 'dayjs'
 // 微信小程序的 onLoad 生命周期
 import { onLoad } from '@dcloudio/uni-app'
 import { useRouter } from '@/composables'
+import Decimal from 'decimal.js'
 
 // 使用 useRouter
 const { params, router } = useRouter()
@@ -317,6 +297,16 @@ const formatDate = (dateString) => {
 
 const pagingRef = shallowRef(null)
 
+const paytotal = computed(() => {
+	if (!orderInfo.value) return 0
+	return new Decimal(orderInfo.value.total_original_price)
+		.minus(orderInfo.value.discount)
+		.minus(orderInfo.value.points_deduction)
+		.plus(orderInfo.value.mail_tax)
+		.minus(orderInfo.value.mail_tax_discount)
+		.toFixed(2)
+})
+
 // 微信小程序的 onLoad 生命周期
 onLoad((options) => {
 	// options 中包含路由参数
@@ -334,6 +324,15 @@ useScrollPaging(pagingRef, {
 // 点击商品项
 const handleClickGoods = (goods) => {
 	router.to({ url: '/pages/goods/detail/index', params: { product_id: goods.product_id } })
+}
+
+const handleClickOrderDetail = () => {
+	router.to({
+		url: '/pages/order/order-detail-list/index',
+		params: {
+			id: params.value.id
+		}
+	})
 }
 </script>
 

@@ -27,17 +27,17 @@ export const deleteProduct = (id) => {
 
 // 创建商品规格
 export const createProductSku = (productId, data) => {
-  return request.post(`/api/products/${productId}/sku`, data);
+  return request.post(`/api/products/${productId}/skus`, data);
 };
 
 // 更新商品规格
-export const updateProductSku = (skuId, data) => {
-  return request.put(`/api/products/sku/${skuId}`, data);
+export const updateProductSku = (productId, skuId, data) => {
+  return request.put(`/api/products/${productId}/skus/${skuId}`, data);
 };
 
 // 删除商品规格
 export const deleteProductSku = (skuId) => {
-  return request.delete(`/api/products/sku/${skuId}`);
+  return request.delete(`/api/products/skus/${skuId}`);
 };
 
 // 上传图片

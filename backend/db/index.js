@@ -73,7 +73,7 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE products MODIFY COLUMN name VARCHAR(255) NOT NULL COMMENT '商品名称'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN description TEXT COMMENT '商品描述'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN detail_description TEXT COMMENT '商品详细描述（富文本）'`);
-    await connection.execute(`ALTER TABLE products MODIFY COLUMN price DECIMAL(10,2) NOT NULL COMMENT '商品价格'`);
+    await connection.execute(`ALTER TABLE products MODIFY COLUMN price DECIMAL(10,2) COMMENT '商品价格'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN original_price DECIMAL(10,2) COMMENT '商品原价'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN stock INT NOT NULL COMMENT '商品库存'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN category VARCHAR(100) COMMENT '商品分类'`);

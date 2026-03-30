@@ -13,14 +13,29 @@
 		<ScrollPaging ref="pagingRef" refreshonly>
 			<!-- 商品内容 -->
 			<template v-if="productInfo && !loading">
-				<view class="main-image-section pos-relative">
-					<swiper class="h-[600rpx] w-full" circular>
+				<view class="h-[750rpx] w-full main-image-section pos-relative">
+					<swiper
+						class="h-[750rpx] w-full"
+						circular
+						:current="currentImageIndex"
+						@change="currentImageIndex = $event.detail.current"
+					>
 						<swiper-item v-for="(img, index) in imageList" :key="index">
-							<uv-image :src="img" mode="aspectFill" width="750rpx" height="600rpx" />
+							<uv-image
+								:src="fullUploadFilePath(img)"
+								mode="aspectFill"
+								width="750rpx"
+								height="750rpx"
+								lazyLoad
+							/>
 						</swiper-item>
 					</swiper>
 					<view
 						class="w-110rpx pos-absolute z-2 right-24rpx top-200rpx bg-#343233 border-2rpx border-#343233 border-solid rounded-6px overflow-hidden"
+						v-if="!isEmpty(productInfo?.promotions)"
+						@click="()=>{
+							promotionRef.open(productInfo, currentSku)
+						}"
 					>
 						<view class="w-full rounded-6px overflow-hidden bg-#fff">
 							<view v-for="(item, index) in productInfo?.promotions" class="w-110rpx h-110rpx">
@@ -28,17 +43,20 @@
 									:src="fullUploadFilePath(item.image)"
 									:width="'110rpx'"
 									:height="'110rpx'"
+									lazyLoad
 								/>
 								<uv-line v-if="productInfo?.promotions?.length > index + 1" />
 							</view>
 						</view>
-						<view
-							class="w-full flex flex-row items-center justify-center py-6rpx"
-							@click="promotionRef.open(productInfo, currentSku)"
-						>
+						<view class="w-full flex flex-row items-center justify-center py-6rpx">
 							<text class="text-10px text-#fff">赠品规则</text>
-							<uv-icon name="arrow-right" :size="8" color="#fff" />
+							<uv-icon name="arrow-right" :size="8" :color="'#FFFFFF'" />
 						</view>
+					</view>
+					<view
+						class="pos-absolute bottom-24rpx left-50% translate-x-[-50%] text-12px text-#fff text-center line-height-[24rpx] rounded-full bg-#33333380 px-12rpx py-4rpx z-2"
+					>
+						{{ currentImageIndex + 1 }}/{{ imageList.length }}
 					</view>
 				</view>
 
@@ -63,11 +81,12 @@
 									@click="currentIndex = index"
 								>
 									<uv-image
-										:src="sku.images[0] || ''"
+										:src="fullUploadFilePath(sku.images[0] || '')"
 										mode="aspectFill"
 										class="w-full h-full"
 										width="100%"
 										height="100%"
+										lazyLoad
 									/>
 								</view>
 							</view>
@@ -76,7 +95,7 @@
 				</view>
 				<view
 					class="box-border px-32rpx w-full h-120rpx bg-gradient-to-r from-[#B8151B] via-#DD3B38 to-[#B8151B] flex flex-row items-center justify-between"
-					v-if="currentSku.activities"
+					v-if="currentSku?.activities"
 				>
 					<view>
 						<text class="text-12px text-#fff">活动价</text>
@@ -166,7 +185,7 @@
 									class="flex flex-row items-start justify-between"
 									v-if="!isEmpty(productInfo?.tags)"
 								>
-									<view class="flex flex-row items-center gap-12rpx flex-1">
+									<view class="flex flex-row items-center gap-12rpx flex-1 flex-wrap">
 										<uv-tags
 											v-for="label in productInfo?.tags"
 											:key="label"
@@ -179,7 +198,7 @@
 									</view>
 									<view
 										class="flex items-center justify-between gap-6rpx px-4px py-2px rounded-full h-32rpx"
-										v-if="!isEmpty(productInfo.coupons)"
+										v-if="!isEmpty(productInfo?.coupons)"
 										@click="promotionRef.open(productInfo, currentSku)"
 										:style="{
 											background: productInfo?.theme === 'black' ? '#000' : '#fff'
@@ -222,7 +241,10 @@
 					</Card>
 
 					<!-- 促销 -->
-					<Card :showHeader="false">
+					<Card
+						:showHeader="false"
+						v-if="!isEmpty(productInfo?.discounts) || !isEmpty(productInfo?.promotions)"
+					>
 						<template #content>
 							<view class="flex flex-row gap-32rpx">
 								<text class="text-13px font-500">促销</text>
@@ -289,43 +311,45 @@
 		</ScrollPaging>
 		<template #footer>
 			<uv-line />
-			<view class="flex items-center px-12rpx py-12rpx h-44px">
+			<view class="w-full h-54px">
 				<template v-if="productInfo && !loading">
-					<view class="flex gap-[12rpx] mr-[24rpx]">
-						<view class="flex flex-col items-center gap-[4rpx] w-60rpx flex-shrink-0">
-							<uv-icon :name="homeIcon" :size="18" />
-							<text class="text-[20rpx] text-[#333]">首页</text>
-						</view>
-						<view class="flex flex-col items-center gap-[4rpx] w-60rpx flex-shrink-0">
-							<uv-icon :name="aixinIcon" :size="18" />
-							<text class="text-[20rpx] text-[#333]">收藏</text>
-						</view>
-						<view class="flex flex-col items-center gap-[4rpx] w-60rpx flex-shrink-0">
-							<uv-icon :name="gouwudaiIcon" :size="18" />
-							<text class="text-[20rpx] text-[#333]">购物袋</text>
-						</view>
-					</view>
-					<view
-						class="flex flex-row items-center flex-shrink-0 gap-12rpx flex-1 justify-center"
-						v-if="productInfo && !loading"
-					>
-						<view
-							class="flex-1 h-[70rpx] leading-[70rpx] text-center text-12px rounded-full border-2rpx border-solid border-#EEEEEE bg-#EEEEEE"
-							:style="{
-								backgroundColor: productInfo?.theme === 'black' ? '#fff' : '#EEEEEE',
-								borderColor: productInfo?.theme === 'black' ? '#000' : '#EEEEEE'
-							}"
-						>
-							加入购物袋
+					<view class="w-full flex items-center px-12rpx py-12rpx h-54px box-border">
+						<view class="flex gap-[12rpx] mr-[24rpx]">
+							<view class="flex flex-col items-center gap-[4rpx] w-70rpx flex-shrink-0">
+								<uv-icon :name="homeIcon" :size="18" />
+								<text class="text-[20rpx] text-[#333] line-clamp-1">首页</text>
+							</view>
+							<view class="flex flex-col items-center gap-[4rpx] w-70rpx flex-shrink-0">
+								<uv-icon :name="aixinIcon" :size="18" />
+								<text class="text-[20rpx] text-[#333] line-clamp-1">收藏</text>
+							</view>
+							<view class="flex flex-col items-center gap-[4rpx] w-70rpx flex-shrink-0">
+								<uv-icon :name="gouwudaiIcon" :size="18" />
+								<text class="text-[20rpx] text-[#333] line-clamp-1">购物袋</text>
+							</view>
 						</view>
 						<view
-							class="flex-1 h-[70rpx] leading-[70rpx] text-center text-12px rounded-full border-2rpx border-solid border-#B6161C bg-#B6161C text-#fff"
-							:style="{
-								backgroundColor: productInfo?.theme === 'black' ? '#000' : '#B6161C',
-								borderColor: productInfo?.theme === 'black' ? '#000' : '#B6161C'
-							}"
+							class="flex flex-row items-center flex-shrink-0 gap-12rpx flex-1 justify-center"
+							v-if="productInfo && !loading"
 						>
-							立即购买
+							<view
+								class="flex-1 h-[70rpx] leading-[70rpx] text-center text-12px rounded-full border-2rpx border-solid border-#EEEEEE bg-#EEEEEE"
+								:style="{
+									backgroundColor: productInfo?.theme === 'black' ? '#fff' : '#EEEEEE',
+									borderColor: productInfo?.theme === 'black' ? '#000' : '#EEEEEE'
+								}"
+							>
+								加入购物袋
+							</view>
+							<view
+								class="flex-1 h-[70rpx] leading-[70rpx] text-center text-12px rounded-full border-2rpx border-solid border-#B6161C bg-#B6161C text-#fff"
+								:style="{
+									backgroundColor: productInfo?.theme === 'black' ? '#000' : '#B6161C',
+									borderColor: productInfo?.theme === 'black' ? '#000' : '#B6161C'
+								}"
+							>
+								立即购买
+							</view>
 						</view>
 					</view>
 				</template>
@@ -376,6 +400,7 @@ const { goodsDetailControl } = useServices()
 
 // 从 goodsDetailControl 中解构出属性，确保响应式
 const { data: productInfo, loading, error } = goodsDetailControl
+const currentImageIndex = ref(0)
 
 const skuList = computed(() => productInfo.value?.skus || [])
 const currentSku = useMergeModelValue(() => skuList.value[currentIndex.value])
@@ -394,7 +419,7 @@ const discountPrice = computed(() => {
 // 支付倒计时
 const payCountDownTime = computed(() => {
 	const { day, hour, minute, second } = formatMs(remaining.value * 1000)
-	return [day * 24 + hour, minute, second].join(':')
+	return [day * 24 + Number(hour), minute, second].map((n) => (Number(n) < 10 ? '0' + Number(n) : Number(n))).join(':')
 })
 
 const { load } = useScrollPaging(pagingRef, {

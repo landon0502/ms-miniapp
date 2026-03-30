@@ -2,6 +2,7 @@
 import express from 'express';
 import { getPool } from '../db/index.js';
 import dayjs from 'dayjs';
+import Decimal from 'decimal.js';
 
 const router = express.Router();
 
@@ -732,6 +733,8 @@ router.get('/:id', async (req, res) => {
         
         // 添加商品信息
         items.push({
+          product_id: item.product_id,
+          sku_id: item.sku_id,
           product_name: product?.name || '',
           quantity: item.quantity,
           original_price: originalPrice,
@@ -745,9 +748,9 @@ router.get('/:id', async (req, res) => {
     }
     
     // 计算折扣优惠
-    let discount = totalOriginalPrice - totalActualPrice;
-    // 确保 discount 是数字，且不为负数
-    discount = isNaN(discount) ? 0 : Math.max(0, discount);
+    const discount = new Decimal(totalOriginalPrice).minus(new Decimal(totalActualPrice))
+      .abs() // 确保结果为正数
+      .toFixed(2); // 保留两位小数
     
     // 处理收货人信息脱敏
     const maskPhone = (phone) => {

@@ -126,13 +126,6 @@
           <el-form-item label="商品名称" prop="name" class="form-item-col">
             <el-input v-model="form.name" placeholder="请输入商品名称" />
           </el-form-item>
-          <el-form-item label="商品价格" prop="price" class="form-item-col">
-            <el-input
-              v-model.number="form.price"
-              type="number"
-              placeholder="请输入商品价格"
-            />
-          </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item label="商品库存" prop="stock" class="form-item-col">
@@ -177,20 +170,7 @@
         </div>
         <div class="form-row">
           <el-form-item label="商品图片" class="form-item-col">
-            <el-upload
-              class="avatar-uploader"
-              :action="'/api/upload'"
-              name="file"
-              accept="image/*"
-              :show-file-list="true"
-              :on-success="handleImageUploadSuccess"
-              :on-error="handleImageUploadError"
-              :limit="1"
-              :file-list="form.imageList"
-              list-type="picture-card"
-            >
-              <el-icon><Plus /></el-icon>
-            </el-upload>
+            <UploadImage v-model="form.image" :limit="1" />
           </el-form-item>
         </div>
         <div class="form-row">
@@ -252,38 +232,22 @@
                   </div>
                   <div class="form-row">
                     <el-form-item label="规格图片" class="form-item-full">
-                      <el-upload
-                        class="sku-image-uploader"
-                        :action="'/api/upload'"
-                        name="file"
-                        accept="image/*"
-                        :show-file-list="true"
-                        :on-success="
-                          (response, file, fileList) =>
-                            handleSkuImageUploadSuccess(
-                              response,
-                              file,
-                              fileList,
-                              index
-                            )
-                        "
-                        :on-error="handleImageUploadError"
+                      <UploadImage
+                        v-model="sku.imageList"
                         :multiple="true"
                         :limit="5"
-                        :file-list="sku.imageList || []"
-                        list-type="picture-card"
-                      >
-                        <el-icon><Plus /></el-icon>
-                      </el-upload>
+                      />
                     </el-form-item>
                   </div>
                 </el-form>
               </div>
             </div>
-            <el-button type="primary" link @click="handleAddSku">
-              <el-icon><Plus /></el-icon>
-              <span>添加规格</span>
-            </el-button>
+            <div>
+              <el-button type="primary" link @click="handleAddSku">
+                <el-icon><Plus /></el-icon>
+                <span>添加规格</span>
+              </el-button>
+            </div>
           </el-form-item>
         </div>
         <div class="form-row">
@@ -309,7 +273,7 @@
                       type="danger"
                       link
                       size="small"
-                      @click="handleDeletePromotion(promotion.id)"
+                      @click="handleDeletePromotion(promotion.id, index)"
                     >
                       <el-icon><Delete /></el-icon>
                     </el-button>
@@ -340,7 +304,6 @@
                         v-model="promotion.start_time"
                         type="datetime"
                         placeholder="选择活动开始时间"
-                        style="width: 100%"
                       />
                     </el-form-item>
 
@@ -349,35 +312,13 @@
                         v-model="promotion.end_time"
                         type="datetime"
                         placeholder="选择活动结束时间"
-                        style="width: 100%"
                       />
                     </el-form-item>
                   </div>
                   <!-- 赠品类型特有字段 -->
                   <div class="form-row">
                     <el-form-item label="赠品图片" class="form-item-col">
-                      <el-upload
-                        class="sku-image-uploader"
-                        :action="'/api/upload'"
-                        name="file"
-                        accept="image/*"
-                        :show-file-list="true"
-                        :on-success="
-                          (response, file, fileList) =>
-                            handlePromotionImageUploadSuccess(
-                              response,
-                              file,
-                              fileList,
-                              index
-                            )
-                        "
-                        :on-error="handleImageUploadError"
-                        :limit="1"
-                        :file-list="promotion.imageList || []"
-                        list-type="picture-card"
-                      >
-                        <el-icon><Plus /></el-icon>
-                      </el-upload>
+                      <UploadImage v-model="promotion.image" :limit="1" />
                     </el-form-item>
                     <el-form-item label="赠品数量" class="form-item-col">
                       <el-input
@@ -409,7 +350,7 @@
             </el-button>
           </el-form-item>
         </div>
-        
+
         <!-- 商品折扣配置 -->
         <div class="form-row">
           <el-form-item label="商品折扣" class="form-item-full">
@@ -534,21 +475,11 @@
           />
         </el-form-item>
         <el-form-item label="规格图片">
-          <el-upload
-            class="sku-image-uploader"
-            :action="'/api/upload'"
-            name="file"
-            accept="image/*"
-            :show-file-list="true"
-            :on-success="handleSkuDialogImageUploadSuccess"
-            :on-error="handleImageUploadError"
+          <UploadImage
+            v-model="skuForm.imageList"
             :multiple="true"
             :limit="5"
-            :file-list="skuForm.imageList"
-            list-type="picture-card"
-          >
-            <el-icon><Plus /></el-icon>
-          </el-upload>
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -560,7 +491,11 @@
     </el-dialog>
 
     <!-- 促销编辑对话框 -->
-    <el-dialog v-model="promotionDialogVisible" :title="promotionDialogTitle" width="800px">
+    <el-dialog
+      v-model="promotionDialogVisible"
+      :title="promotionDialogTitle"
+      width="800px"
+    >
       <el-form
         :model="promotionForm"
         label-width="120px"
@@ -603,20 +538,7 @@
         <!-- 赠品类型特有字段 -->
         <div class="form-row">
           <el-form-item label="赠品图片" class="form-item-col">
-            <el-upload
-              class="sku-image-uploader"
-              :action="'/api/upload'"
-              name="file"
-              accept="image/*"
-              :show-file-list="true"
-              :on-success="handlePromotionDialogImageUploadSuccess"
-              :on-error="handleImageUploadError"
-              :limit="1"
-              :file-list="promotionForm.imageList"
-              list-type="picture-card"
-            >
-              <el-icon><Plus /></el-icon>
-            </el-upload>
+            <UploadImage v-model="promotionForm.image" :limit="1" />
           </el-form-item>
           <el-form-item label="赠品数量" class="form-item-col">
             <el-input
@@ -643,13 +565,19 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="promotionDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSavePromotion">确定</el-button>
+          <el-button type="primary" @click="handleSavePromotion"
+            >确定</el-button
+          >
         </span>
       </template>
     </el-dialog>
-    
+
     <!-- 折扣编辑对话框 -->
-    <el-dialog v-model="discountDialogVisible" :title="discountDialogTitle" width="600px">
+    <el-dialog
+      v-model="discountDialogVisible"
+      :title="discountDialogTitle"
+      width="600px"
+    >
       <el-form
         :model="discountForm"
         label-width="120px"
@@ -705,6 +633,7 @@ import { Plus, Search, Edit, Delete } from "@element-plus/icons-vue";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import dayjs from "dayjs";
+import UploadImage from "../components/UploadImage.vue";
 import {
   getProducts,
   getProductDetail,
@@ -730,6 +659,7 @@ export default {
     Search,
     Edit,
     Delete,
+    UploadImage,
   },
   setup() {
     const searchQuery = ref("");
@@ -742,8 +672,6 @@ export default {
     const form = ref({
       id: "",
       name: "",
-      price: 0,
-      original_price: 0,
       stock: 0,
       category: "",
       description: "",
@@ -777,20 +705,6 @@ export default {
 
     const rules = {
       name: [{ required: true, message: "请输入商品名称", trigger: "blur" }],
-      price: [
-        { required: true, message: "请输入商品价格", trigger: "blur" },
-        {
-          validator: (rule, value, callback) => {
-            const numValue = Number(value);
-            if (isNaN(numValue) || numValue < 0) {
-              callback(new Error("价格必须大于等于0"));
-            } else {
-              callback();
-            }
-          },
-          trigger: "blur",
-        },
-      ],
       stock: [
         { required: true, message: "请输入商品库存", trigger: "blur" },
         {
@@ -888,11 +802,14 @@ export default {
 
                       try {
                         const response = await fetch(
-                          import.meta.env.VITE_API_BASE_URL + "/api/upload",
+                          location.protocol +
+                            "//" +
+                            import.meta.env.VITE_API_BASE_URL +
+                            "/api/upload",
                           {
                             method: "POST",
                             body: formData,
-                          }
+                          },
                         );
 
                         if (response.ok) {
@@ -904,7 +821,7 @@ export default {
                             quillInstance.insertEmbed(
                               range.index,
                               "image",
-                              fullUrl
+                              fullUrl,
                             );
                           } else {
                             ElMessage.error("图片上传失败: " + result.message);
@@ -950,7 +867,7 @@ export default {
             initQuillEditor();
           }, 100);
         }
-      }
+      },
     );
 
     // 监听 detail_description 变化，同步到富文本编辑器
@@ -960,7 +877,7 @@ export default {
         if (quillInstance && newValue !== quillInstance.root.innerHTML) {
           quillInstance.root.innerHTML = newValue || "";
         }
-      }
+      },
     );
 
     const fetchGoodsList = async () => {
@@ -991,8 +908,6 @@ export default {
       form.value = {
         id: "",
         name: "",
-        price: 0,
-        original_price: 0,
         stock: 0,
         category: "",
         description: "",
@@ -1018,8 +933,6 @@ export default {
           form.value = {
             id: productDetail.id,
             name: productDetail.name,
-            price: productDetail.price,
-            original_price: productDetail.original_price,
             stock: productDetail.stock,
             category: productDetail.category,
             description: productDetail.description,
@@ -1027,17 +940,13 @@ export default {
             theme: productDetail.theme || "red",
             measurement_type: productDetail.measurement_type || "spec",
             image: productDetail.image || "",
-            imageList: productDetail.image
-              ? [{ url: getImageUrl(productDetail.image) }]
-              : [],
+            imageList: [getImageUrl(productDetail.image)].filter(Boolean),
             skus: (productDetail.skus || []).map((sku) => ({
               id: sku.id,
               sku_name: sku.sku_name,
               price: sku.price,
               stock: sku.stock,
-              imageList: (sku.images || []).map((img) => ({
-                url: getImageUrl(img),
-              })),
+              imageList: sku.images || [],
             })),
             promotions: (productDetail.promotions || []).map((promotion) => ({
               ...promotion,
@@ -1051,99 +960,40 @@ export default {
                 : null,
               quantity: promotion.quantity || 0,
               sku_name: promotion.sku_name || "",
-              condition: promotion.condition || promotion.promotion_condition || 0,
+              condition:
+                promotion.condition || promotion.promotion_condition || 0,
               image: promotion.image || "",
               imageList: promotion.image
                 ? [{ url: getImageUrl(promotion.image) }]
                 : [],
             })),
-            discounts: productDetail.discounts ? [{
-              ...productDetail.discounts,
-              start_time: productDetail.discounts.start_time
-                ? new Date(productDetail.discounts.start_time)
-                : null,
-              end_time: productDetail.discounts.end_time
-                ? new Date(productDetail.discounts.end_time)
-                : null,
-              value: productDetail.discounts.value || 1,
-            }] : [],
+            discounts: productDetail.discounts
+              ? [
+                  {
+                    ...productDetail.discounts,
+                    start_time: productDetail.discounts.start_time
+                      ? new Date(productDetail.discounts.start_time)
+                      : null,
+                    end_time: productDetail.discounts.end_time
+                      ? new Date(productDetail.discounts.end_time)
+                      : null,
+                    value: productDetail.discounts.value || 1,
+                  },
+                ]
+              : [],
           };
           dialogVisible.value = true;
         } else {
           ElMessage.error("获取商品详情失败: " + response.data.message);
           console.error(
             "Error fetching product detail:",
-            response.data.message
+            response.data.message,
           );
         }
       } catch (error) {
         ElMessage.error("获取商品详情失败");
         console.error("Error fetching product detail:", error);
       }
-    };
-
-    // 处理商品图片上传成功
-    const handleImageUploadSuccess = (response, file, fileList) => {
-      form.value.image = response.url;
-      form.value.imageList = fileList;
-      ElMessage.success("图片上传成功");
-    };
-
-    // 处理规格图片上传成功
-    const handleSkuImageUploadSuccess = (response, file, fileList, index) => {
-      if (!form.value.skus[index]) {
-        form.value.skus[index] = {};
-      }
-      form.value.skus[index].imageList = fileList;
-      // 确保images数组中存储的是实际的服务器URL，而不是blob URL
-      form.value.skus[index].images = fileList.map((item) =>
-        item.response ? item.response.url : item.url
-      );
-      ElMessage.success("图片上传成功");
-    };
-
-    // 处理赠品图片上传成功
-    const handlePromotionImageUploadSuccess = (
-      response,
-      file,
-      fileList,
-      index
-    ) => {
-      if (!form.value.promotions[index]) {
-        form.value.promotions[index] = {};
-      }
-      form.value.promotions[index].imageList = fileList;
-      // 确保image存储的是实际的服务器URL，而不是blob URL
-      form.value.promotions[index].image = fileList.map((item) =>
-        item.response ? item.response.url : item.url
-      )[0];
-      ElMessage.success("图片上传成功");
-    };
-
-    // 处理图片上传失败
-    const handleImageUploadError = (error) => {
-      ElMessage.error("图片上传失败");
-      console.error("Error uploading image:", error);
-    };
-
-    // 处理规格对话框图片上传成功
-    const handleSkuDialogImageUploadSuccess = (response, file, fileList) => {
-      skuForm.value.imageList = fileList;
-      // 确保images数组中存储的是实际的服务器URL，而不是blob URL
-      skuForm.value.images = fileList.map((item) =>
-        item.response ? item.response.url : item.url
-      );
-      ElMessage.success("图片上传成功");
-    };
-
-    // 处理促销对话框图片上传成功
-    const handlePromotionDialogImageUploadSuccess = (response, file, fileList) => {
-      promotionForm.value.imageList = fileList;
-      // 确保image存储的是实际的服务器URL，而不是blob URL
-      promotionForm.value.image = fileList.map((item) =>
-        item.response ? item.response.url : item.url
-      )[0];
-      ElMessage.success("图片上传成功");
     };
 
     // 保存规格
@@ -1156,14 +1006,31 @@ export default {
           ...skuForm.value,
           price: Number(skuForm.value.price),
           stock: Number(skuForm.value.stock),
-          images: skuForm.value.imageList
-            .map((item) => item.url)
-            .filter((url) => url !== null && url !== undefined && url !== ""),
+          images: (skuForm.value.imageList || [])
+            .map((url) => {
+              // 将完整URL转换为相对路径
+              if (
+                typeof url === "string" &&
+                (url.startsWith("http://") || url.startsWith("https://"))
+              ) {
+                const baseUrl =
+                  location.protocol + "//" + import.meta.env.VITE_API_BASE_URL;
+                if (url.startsWith(baseUrl)) {
+                  url = url.replace(baseUrl, "");
+                }
+              }
+              return url;
+            })
+            .filter((url) => typeof url === "string" && url !== ""),
         };
 
         if (skuForm.value.id) {
           // 编辑规格
-          await updateProductSku(skuForm.value.id, submitData);
+          await updateProductSku(
+            skuForm.value.product_id,
+            skuForm.value.id,
+            submitData,
+          );
           ElMessage.success("编辑规格成功");
           skuDialogVisible.value = false;
           fetchGoodsList();
@@ -1171,10 +1038,16 @@ export default {
           // 添加规格到表单中，而不是直接提交
           if (currentSkuIndex.value >= 0) {
             // 编辑现有规格
-            form.value.skus[currentSkuIndex.value] = submitData;
+            form.value.skus[currentSkuIndex.value] = {
+              ...submitData,
+              imageList: skuForm.value.imageList,
+            };
           } else {
             // 添加新规格
-            form.value.skus.push(submitData);
+            form.value.skus.push({
+              ...submitData,
+              imageList: skuForm.value.imageList,
+            });
           }
           ElMessage.success("规格已添加到表单");
           skuDialogVisible.value = false;
@@ -1200,7 +1073,8 @@ export default {
         // 保存到表单中
         if (currentPromotionIndex.value >= 0) {
           // 编辑现有促销，保留原始的 id 和 product_id 字段
-          const originalPromotion = form.value.promotions[currentPromotionIndex.value];
+          const originalPromotion =
+            form.value.promotions[currentPromotionIndex.value];
           // 确保所有字段都被正确保存
           form.value.promotions[currentPromotionIndex.value] = {
             id: originalPromotion.id,
@@ -1214,7 +1088,7 @@ export default {
             sku_name: submitData.sku_name,
             condition: submitData.condition,
             image: submitData.image,
-            imageList: submitData.imageList
+            imageList: submitData.imageList,
           };
         } else {
           // 添加新促销
@@ -1292,7 +1166,7 @@ export default {
     });
     const promotionFormRef = ref(null);
     const currentPromotionIndex = ref(-1);
-    
+
     // 折扣编辑相关变量
     const discountDialogVisible = ref(false);
     const discountDialogTitle = ref("");
@@ -1313,23 +1187,30 @@ export default {
       promotionForm.value = {
         ...promotion,
         type: "赠品",
-        start_time: promotion.start_time ? new Date(promotion.start_time) : null,
+        start_time: promotion.start_time
+          ? new Date(promotion.start_time)
+          : null,
         end_time: promotion.end_time ? new Date(promotion.end_time) : null,
         quantity: promotion.quantity || 0,
         sku_name: promotion.sku_name || "",
         condition: promotion.condition || promotion.promotion_condition || 0,
         image: promotion.image || "",
-        imageList: promotion.imageList || (promotion.image ? [{ url: getImageUrl(promotion.image) }] : []),
+        imageList:
+          promotion.imageList ||
+          (promotion.image ? [{ url: getImageUrl(promotion.image) }] : []),
       };
       currentPromotionIndex.value = index;
       promotionDialogVisible.value = true;
     };
 
     // 删除促销
-    const handleDeletePromotion = async (promotionId) => {
+    const handleDeletePromotion = async (promotionId, index) => {
       if (promotionId) {
         try {
-          await deletePromotion(promotionId);
+          if(promotionId){
+            await deletePromotion(promotionId);
+          }
+          form.value.promotions.splice(index, 1);
           ElMessage.success("删除赠品成功");
           fetchGoodsList();
         } catch (error) {
@@ -1339,11 +1220,11 @@ export default {
       } else {
         // 删除表单中的促销
         form.value.promotions = form.value.promotions.filter(
-          (promotion) => promotion.id !== promotionId
+          (promotion) => promotion.id !== promotionId,
         );
       }
     };
-    
+
     // 添加折扣
     const handleAddDiscount = () => {
       form.value.discounts.push({
@@ -1354,7 +1235,7 @@ export default {
         value: 1,
       });
     };
-    
+
     // 编辑折扣
     const handleEditDiscount = (discount, index) => {
       discountDialogTitle.value = "编辑折扣";
@@ -1368,15 +1249,15 @@ export default {
       currentDiscountIndex.value = index;
       discountDialogVisible.value = true;
     };
-    
+
     // 删除折扣
     const handleDeleteDiscount = (discountId) => {
       // 删除表单中的折扣
       form.value.discounts = form.value.discounts.filter(
-        (discount) => discount.id !== discountId
+        (discount) => discount.id !== discountId,
       );
     };
-    
+
     // 保存折扣
     const handleSaveDiscount = () => {
       // 保存到表单中
@@ -1401,7 +1282,7 @@ export default {
         sku_name: sku.sku_name,
         price: sku.price,
         stock: sku.stock,
-        imageList: (sku.images || []).map((img) => ({ url: getImageUrl(img) })),
+        imageList: (sku.images || []).map((img) => getImageUrl(img)),
         images: sku.images || [],
         product_id: product.id,
       };
@@ -1412,14 +1293,12 @@ export default {
     // 删除规格
     const handleDeleteSku = async (skuId, index) => {
       try {
-        if(skuId){
+        if (skuId) {
           await deleteProductSku(skuId);
           ElMessage.success("删除规格成功");
           fetchGoodsList();
-        }else{
-          form.value.skus.splice(index, 1)
-        }
-        
+        } 
+        form.value.skus.splice(index, 1);
       } catch (error) {
         ElMessage.error("删除规格失败");
         console.error("Error deleting sku:", error);
@@ -1433,18 +1312,30 @@ export default {
         // 准备提交的数据
         const submitData = {
           ...form.value,
-          price: Number(form.value.price),
           stock: Number(form.value.stock),
           measurement_type: form.value.measurement_type || "spec",
           skus: form.value.skus.map((sku) => ({
             ...sku,
             price: Number(sku.price),
             stock: Number(sku.stock),
-            images: sku.imageList
-              ? sku.imageList.map((item) =>
-                  item.response ? item.response.url : item.url
-                )
-              : [],
+            images: (sku.imageList || [])
+              .map((url) => {
+                // 将完整URL转换为相对路径
+                if (
+                  typeof url === "string" &&
+                  (url.startsWith("http://") || url.startsWith("https://"))
+                ) {
+                  const baseUrl =
+                    location.protocol +
+                    "//" +
+                    import.meta.env.VITE_API_BASE_URL;
+                  if (url.startsWith(baseUrl)) {
+                    url = url.replace(baseUrl, "");
+                  }
+                }
+                return url;
+              })
+              .filter((url) => typeof url === "string" && url !== ""),
           })),
           promotions: form.value.promotions.map((promotion) => ({
             ...promotion,
@@ -1483,10 +1374,8 @@ export default {
         dialogVisible.value = false;
         fetchGoodsList();
       } catch (error) {
-        if (error.name === "Error") {
-          ElMessage.error("操作失败");
-          console.error("Error saving goods:", error);
-        }
+        console.error("Error saving goods:", error);
+        ElMessage.error("操作失败: " + (error.message || "未知错误"));
       }
     };
 
@@ -1580,15 +1469,9 @@ export default {
       handleEditDiscount,
       handleDeleteDiscount,
       handleSaveDiscount,
-      handleImageUploadSuccess,
-      handleSkuImageUploadSuccess,
-      handleSkuDialogImageUploadSuccess,
-      handlePromotionDialogImageUploadSuccess,
-      handleImageUploadError,
       handleSaveSku,
       handleSizeChange,
       handleCurrentChange,
-      handlePromotionImageUploadSuccess,
     };
   },
 };

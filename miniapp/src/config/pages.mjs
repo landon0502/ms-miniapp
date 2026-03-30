@@ -10,14 +10,6 @@ export const pageMap = [
 			navigationStyle: 'custom'
 		}
 	},
-	// 首页
-	{
-		path: 'pages/index/index',
-		style: {
-			navigationBarTitleText: '首页',
-			navigationStyle: 'custom'
-		}
-	},
 	{
 		path: 'pages/order/detail/index',
 		style: {
@@ -36,6 +28,20 @@ export const pageMap = [
 		path: 'pages/order/duty-free-detail/index',
 		style: {
 			navigationBarTitleText: '离岛免税订单详情',
+			navigationStyle: 'custom'
+		}
+	},
+	{
+		path: 'pages/webview/index',
+		style: {
+			navigationBarTitleText: '网页',
+			navigationStyle: 'custom'
+		}
+	},
+	{
+		path: 'pages/order/order-detail-list/index',
+		style: {
+			navigationBarTitleText: '订单明细',
 			navigationStyle: 'custom'
 		}
 	}

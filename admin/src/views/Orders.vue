@@ -145,7 +145,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="是否为口岸自提" prop="is_port_pickup">
-              <el-radio-group v-model="form.is_port_pickup">
+              <el-radio-group v-model="form.is_port_pickup" diabled>
                 <el-radio :label="0">否</el-radio>
                 <el-radio :label="1">是</el-radio>
               </el-radio-group>

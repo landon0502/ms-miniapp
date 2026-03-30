@@ -1,7 +1,7 @@
 <template>
 	<view class="bg-white rounded-3 px-4 py-2">
 		<view class="flex gap-4px items-center mb-4">
-			<text class="text-lg font-size-14px text-gray-800">订单号：{{ order.order_no }}</text>
+			<text class="text-13px text-gray-800">订单号：{{ order.order_no }}</text>
 			<uv-icon
 				:name="copyLineIcon"
 				:size="14"
@@ -19,13 +19,13 @@
 		</view>
 		<view>
 			<view>
-				<text class="font-size-12px text-#7E7E7E">{{ order.shipping_store }}</text>
+				<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{ order.shipping_store }}</text>
 				<view class="flex justify-between items-center">
 					<view class="flex items-center gap-5px">
 						<view class="flex items-center">
 							<uv-icon :name="requireIcon" :size="8" />
-							<text class="font-size-12px text-#7E7E7E">子订单号：</text>
-							<text class="font-size-12px text-#7E7E7E">{{ order.sub_order_no }}</text>
+							<text class="font-size-12px text-#7E7E7E whitespace-nowrap">子订单号：</text>
+							<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{ order.sub_order_no }}</text>
 						</view>
 						<uv-icon
 							:name="copyLineIcon"
@@ -42,7 +42,8 @@
 							"
 						/>
 						<view
-							class="border-1px border-solid border-#D5B69D flex-center px-2px py-1px rounded-2px height-24rpx font-size-10px text-#D5B69D"
+							class="border-1px border-solid border-#D5B69D flex-center px-2px py-1px rounded-2px height-24rpx font-size-10px text-#D5B69D whitespace-nowrap"
+							v-if="order.is_port_pickup === 1"
 						>
 							口岸自提
 						</view>
@@ -51,7 +52,7 @@
 				</view>
 			</view>
 			<view class="flex flex-col gap-24px py-24px">
-				<GoodsItem v-for="goods in order.items" :key="goods.id" :goods="goods" @click="handleClickGoods" />
+				<GoodsItem v-for="goods in order.items" :key="goods.id" :goods="goods" @goods-tap="handleClickGoods" :image="goods.product.image" />
 			</view>
 		</view>
 		<view class="flex justify-between items-center pt-4">
@@ -86,7 +87,11 @@ const emit = defineEmits(['cancelOrder', 'payOrder', 'confirmReceive', 'applyAft
 
 
 const goToDetail = (id) => {
-	router.to({ url: '/pages/order/duty-free-detail/index', params: { id } })
+	if(Number(props.order.total_price) >= 3000) {
+		router.to({ url: '/pages/order/duty-free-detail/index', params: { id } })
+	} else {
+		router.to({ url: '/pages/order/detail/index', params: { id } })
+	}
 }
 
 const cancelOrder = (id) => {

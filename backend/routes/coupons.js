@@ -215,8 +215,8 @@ router.post('/', async (req, res) => {
     const formattedEndTime = new Date(end_time).toISOString().slice(0, 19).replace('T', ' ');
     
     const [result] = await pool.execute(
-      'INSERT INTO coupons (product_id, product_ids, name, label, discount_amount, min_spend, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [null, productIdsJson, name, label, discount_amount, min_spend, formattedStartTime, formattedEndTime]
+      'INSERT INTO coupons (product_ids, name, label, discount_amount, min_spend, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [productIdsJson, name, label, discount_amount, min_spend, formattedStartTime, formattedEndTime]
     );
     
     res.json({

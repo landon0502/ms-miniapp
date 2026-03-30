@@ -16,12 +16,14 @@
 				:item-style="{ height: '44px' }"
 				:inactive-style="{
 					'white-space': 'nowrap',
-					color: 'var(--uv-text-color)'
+					color: 'var(--uv-text-color)',
+					fontSize: '13px'
 				}"
 				:active-style="{
 					'white-space': 'nowrap',
 					color: '#C59566',
-					fontWeight: '400'
+					fontWeight: '400',
+					fontSize: '13px'
 				}"
 				:line-height="3"
 				:line-color="'#C59566'"

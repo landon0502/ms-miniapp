@@ -97,7 +97,15 @@ router.get('/', async (req, res) => {
         // 解析规格的images字段
         product.skus = skus.map(sku => {
           try {
-            sku.images = sku.images ? JSON.parse(sku.images) : [];
+            // 优先使用images字段，如果不存在则使用image字段
+            if (sku.images) {
+              sku.images = JSON.parse(sku.images);
+            } else if (sku.image) {
+              // 兼容旧数据格式
+              sku.images = [sku.image];
+            } else {
+              sku.images = [];
+            }
           } catch (error) {
             sku.images = [];
           }
@@ -199,7 +207,15 @@ router.get('/:id', async (req, res) => {
     // 解析规格的images字段并添加绑定的活动
     const parsedSkus = skus.map(sku => {
       try {
-        sku.images = sku.images ? JSON.parse(sku.images) : [];
+        // 优先使用images字段，如果不存在则使用image字段
+        if (sku.images) {
+          sku.images = JSON.parse(sku.images);
+        } else if (sku.image) {
+          // 兼容旧数据格式
+          sku.images = [sku.image];
+        } else {
+          sku.images = [];
+        }
       } catch (error) {
         sku.images = [];
       }
@@ -209,8 +225,8 @@ router.get('/:id', async (req, res) => {
       return sku;
     });
     
-    // 获取有效期内的促销数据
-    const [promotions] = await pool.execute('SELECT * FROM promotions WHERE product_id = ? AND (end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())', [req.params.id]);
+    // 获取所有促销数据（包括过期的）
+    const [promotions] = await pool.execute('SELECT * FROM promotions WHERE product_id = ?', [req.params.id]);
     
     // 提取促销活动标签并去重
     const promotionLabels = [...new Set(promotions.map(promotion => promotion.label).filter(label => label))];
@@ -422,8 +438,8 @@ router.post('/', async (req, res) => {
     try {
       // 插入商品
       const [result] = await connection.execute(
-        'INSERT INTO products (name, description, detail_description, price, original_price, stock, category, image, theme, measurement_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [name, description, detail_description, price, original_price, stock, category, image, theme || 'red', measurement_type || 'spec']
+        'INSERT INTO products (name, description, detail_description, stock, category, image, theme, measurement_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, description, detail_description, stock, category, image, theme || 'red', measurement_type || 'spec']
       );
       
       const productId = result.insertId;
@@ -472,7 +488,7 @@ router.post('/', async (req, res) => {
         success: true,
         code: 200,
         message: '创建商品成功',
-        data: { id: productId, name, description, detail_description, price, original_price, stock, category, image, theme: theme || 'red' }
+        data: { id: productId, name, description, detail_description, stock, category, image, theme: theme || 'red' }
       });
     } catch (error) {
       // 回滚事务
