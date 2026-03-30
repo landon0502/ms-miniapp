@@ -10,7 +10,7 @@
 	>
 		<template #nav-center>
 			<view class="flex justify-center items-center">
-				<text class="text-white text-center">离岛免税订单详情</text>
+				<text class="text-white text-center">订单明细</text>
 			</view>
 		</template>
 		<view class="font-sans ">
