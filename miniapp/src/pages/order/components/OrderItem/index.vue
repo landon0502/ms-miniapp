@@ -19,13 +19,17 @@
 		</view>
 		<view>
 			<view>
-				<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{ order.shipping_store }}</text>
+				<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{
+					order.shipping_store
+				}}</text>
 				<view class="flex justify-between items-center">
 					<view class="flex items-center gap-5px">
 						<view class="flex items-center">
 							<uv-icon :name="requireIcon" :size="8" />
 							<text class="font-size-12px text-#7E7E7E whitespace-nowrap">子订单号：</text>
-							<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{ order.sub_order_no }}</text>
+							<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{
+								order.sub_order_no
+							}}</text>
 						</view>
 						<uv-icon
 							:name="copyLineIcon"
@@ -52,7 +56,13 @@
 				</view>
 			</view>
 			<view class="flex flex-col gap-24px py-24px">
-				<GoodsItem v-for="goods in order.items" :key="goods.id" :goods="goods" @goods-tap="handleClickGoods" :image="goods.product.image" />
+				<GoodsItem
+					v-for="goods in order.items"
+					:key="goods.id"
+					:goods="goods"
+					@goods-tap="handleClickGoods"
+					:image="goods.product.image"
+				/>
 			</view>
 		</view>
 		<view class="flex justify-between items-center pt-4">
@@ -85,9 +95,8 @@ const props = defineProps({
 
 const emit = defineEmits(['cancelOrder', 'payOrder', 'confirmReceive', 'applyAfterSale'])
 
-
 const goToDetail = (id) => {
-	if(Number(props.order.total_price) >= 3000) {
+	if (props.order.order_templ === 1) {
 		router.to({ url: '/pages/order/duty-free-detail/index', params: { id } })
 	} else {
 		router.to({ url: '/pages/order/detail/index', params: { id } })
@@ -115,7 +124,7 @@ const statusMap = {
 	pending: '待支付',
 	paid: '已支付',
 	shipped: '已发货',
-	completed: '已完成',
+	completed: '已提货',
 	cancelled: '已取消',
 	refund: '售后中'
 }
@@ -128,7 +137,8 @@ const getStatusText = (status) => {
 // 获取订单按钮配置
 const getOrderButtons = (status) => {
 	const buttons = []
-
+	// 所有状态都添加查看订单按钮
+	buttons.push({ text: '查看订单', action: goToDetail })
 	// 根据状态添加对应按钮
 	switch (status) {
 		case 'pending':
@@ -138,15 +148,13 @@ const getOrderButtons = (status) => {
 			)
 			break
 		case 'shipped':
-			buttons.push({ text: '确认收货', action: confirmReceive })
+			buttons.push({ text: '申请开票', action: confirmReceive })
+			buttons.push({ text: '查看物流', action: () => {} })
 			break
 		case 'completed':
 			buttons.push({ text: '申请售后', action: applyAfterSale })
 			break
 	}
-
-	// 所有状态都添加查看订单按钮
-	buttons.push({ text: '查看订单', action: goToDetail })
 
 	return buttons
 }

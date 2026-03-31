@@ -14,7 +14,8 @@ export async function initDatabase() {
     const connection = await mysql.createConnection({
       host: config.host,
       user: config.user,
-      password: config.password
+      password: config.password,
+      port: config.port
     });
     
     console.log('数据库连接成功');
@@ -22,6 +23,20 @@ export async function initDatabase() {
     // 创建数据库（如果不存在）
     await connection.query('CREATE DATABASE IF NOT EXISTS duty_free_shopping');
     await connection.query('USE duty_free_shopping');
+    
+    // 创建用户表
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        nickname VARCHAR(100),
+        avatar VARCHAR(255),
+        role ENUM('user', 'admin') DEFAULT 'user',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
     
     // 创建商品表
     await connection.execute(`
@@ -67,6 +82,16 @@ export async function initDatabase() {
     } catch (error) {
       console.error('添加measurement_type列失败:', error);
     }
+    
+    // 添加用户表字段注释
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN id INT AUTO_INCREMENT COMMENT '用户ID'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NOT NULL COMMENT '密码'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN nickname VARCHAR(100) COMMENT '昵称'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN avatar VARCHAR(255) COMMENT '头像'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin') DEFAULT 'user' COMMENT '角色'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'`);
     
     // 添加商品表字段注释
     await connection.execute(`ALTER TABLE products MODIFY COLUMN id INT AUTO_INCREMENT COMMENT '商品ID'`);
@@ -243,6 +268,12 @@ export async function initDatabase() {
       if (result20.length === 0) {
         await connection.execute('ALTER TABLE orders ADD COLUMN value_added_service DECIMAL(10,2) DEFAULT 0 COMMENT "增值服务"');
       }
+      
+      // 添加订单模版配置字段
+      const [result21] = await connection.execute('SHOW COLUMNS FROM orders WHERE Field = ?', ['order_templ']);
+      if (result21.length === 0) {
+        await connection.execute('ALTER TABLE orders ADD COLUMN order_templ INT DEFAULT 1 COMMENT "订单模版配置（1或2）"');
+      }
     } catch (error) {
       console.error('添加订单表新字段失败:', error);
     }
@@ -270,6 +301,7 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN passenger_price DECIMAL(10,2) DEFAULT 0 COMMENT '旅客票价'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN vehicle_price DECIMAL(10,2) DEFAULT 0 COMMENT '车辆票价'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN value_added_service DECIMAL(10,2) DEFAULT 0 COMMENT '增值服务'`);
+    await connection.execute(`ALTER TABLE orders MODIFY COLUMN order_templ INT DEFAULT 1 COMMENT '订单模版配置（1或2）'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN status VARCHAR(20) NOT NULL COMMENT '订单状态'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN departure_time TIMESTAMP COMMENT '离岛时间'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN order_time TIMESTAMP COMMENT '下单时间'`);

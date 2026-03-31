@@ -6,7 +6,7 @@ export const pageMap = [
 	{
 		path: 'wap/order-detail-list/index',
 		style: {
-			navigationBarTitleText: '订单明细',
+			navigationBarTitleText: '琼州海峡轮渡管家',
 			navigationStyle: 'custom'
 		}
 	}

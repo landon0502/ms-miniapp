@@ -3,13 +3,17 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { initDatabase } from './db/index.js';
+import { initDatabase, getPool } from './db/index.js';
 import productsRouter from './routes/products.js';
 import ordersRouter from './routes/orders.js';
+import miniappOrdersRouter from './routes/miniapp-orders.js';
+import miniappProductsRouter from './routes/miniapp-products.js';
 import uploadRouter from './routes/upload.js';
 import flashSalesRouter from './routes/flash-sales.js';
 import promotionsRouter from './routes/promotions.js';
 import couponsRouter from './routes/coupons.js';
+import authRouter from './routes/auth.js';
+import authMiddleware from './middleware/auth.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
@@ -54,18 +58,35 @@ if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
 // 静态文件服务
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// 注册路由
-app.use('/api/products', productsRouter);
-app.use('/api/orders', ordersRouter);
-app.use('/api/upload', uploadRouter);
-app.use('/api/flash-sales', flashSalesRouter);
-app.use('/api/promotions', promotionsRouter);
-app.use('/api/coupons', couponsRouter);
+// 注册 miniapp 专用路由（不需要验证token）
+app.use('/api/miniapp/orders', miniappOrdersRouter);
+app.use('/api/miniapp/products', miniappProductsRouter);
+
+// 注册认证路由（不需要验证token）
+app.use('/api/auth', authRouter);
+
+// 注册需要保护的路由
+app.use('/api/products', authMiddleware, productsRouter);
+app.use('/api/orders', authMiddleware, ordersRouter);
+app.use('/api/upload', authMiddleware, uploadRouter);
+app.use('/api/flash-sales', authMiddleware, flashSalesRouter);
+app.use('/api/promotions', authMiddleware, promotionsRouter);
+app.use('/api/coupons', authMiddleware, couponsRouter);
 
 // 初始化数据库并启动服务器
 async function startServer() {
   try {
     await initDatabase();
+    
+    // 检查数据库连接池是否创建成功
+    const pool = getPool();
+    if (!pool) {
+      throw new Error('数据库连接池创建失败');
+    }
+    
+    // 测试数据库连接
+    const [rows] = await pool.execute('SELECT 1');
+    console.log('数据库连接测试成功:', rows);
     
     // 启动主服务器
     app.listen(port, () => {

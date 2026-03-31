@@ -99,6 +99,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '../store/modules/user'
 import { ElMessage } from 'element-plus'
 import { User, Lock, ChatDotRound, Message, Document } from '@element-plus/icons-vue'
+import { login } from '../api/auth'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -129,23 +130,28 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-        const token = 'mock-token-' + Date.now()
-        const userInfo = {
+        const response = await login({
           username: loginForm.value.username,
-          role: 'admin'
-        }
-        userStore.setToken(token)
-        userStore.setUserInfo(userInfo)
-        ElMessage.success({
-          message: '登录成功，欢迎回来！',
-          duration: 2000
+          password: loginForm.value.password
         })
-        setTimeout(() => {
-          router.push('/dashboard')
-        }, 500)
+        
+        if (response.success) {
+          const { token, user } = response.data
+          userStore.setToken(token)
+          userStore.setUserInfo(user)
+          ElMessage.success({
+            message: '登录成功，欢迎回来！',
+            duration: 2000
+          })
+          setTimeout(() => {
+            router.push('/dashboard')
+          }, 500)
+        } else {
+          ElMessage.error(response.message || '登录失败，请重试')
+        }
       } catch (error) {
-        ElMessage.error('登录失败，请重试')
+        console.error('登录失败:', error)
+        ElMessage.error('登录失败，请检查网络连接或账号密码')
       } finally {
         loading.value = false
       }

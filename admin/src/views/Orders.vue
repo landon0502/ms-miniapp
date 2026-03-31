@@ -12,6 +12,11 @@
       <el-table-column prop="id" label="订单ID" width="80" />
       <el-table-column prop="order_no" label="订单号" width="180" />
       <el-table-column prop="sub_order_no" label="子订单号" width="180" />
+      <el-table-column prop="order_templ" label="订单模板" width="100">
+        <template #default="{ row }">
+          {{ row.order_templ || 1 }}
+        </template>
+      </el-table-column>
       <el-table-column prop="shipping_store" label="发货门店" width="180" />
       <el-table-column prop="user_id" label="用户ID" width="80" />
       <el-table-column label="商品信息" min-width="200">
@@ -145,9 +150,17 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="是否为口岸自提" prop="is_port_pickup">
-              <el-radio-group v-model="form.is_port_pickup" diabled>
+              <el-radio-group v-model="form.is_port_pickup">
                 <el-radio :label="0">否</el-radio>
                 <el-radio :label="1">是</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="订单模板" prop="order_templ">
+              <el-radio-group v-model="form.order_templ">
+                <el-radio :label="1">模板1</el-radio>
+                <el-radio :label="2">模板2</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -459,6 +472,7 @@ const form = ref({
   mail_tax: 0,
   mail_tax_discount: 0,
   is_port_pickup: 0,
+  order_templ: 1,
   offline_flight: "HA2140",
   consignee_name: "",
   consignee_phone: "",
@@ -554,6 +568,7 @@ const handleAddOrder = () => {
     mail_tax: 0,
     mail_tax_discount: 0,
     is_port_pickup: 0,
+    order_templ: 1,
     offline_flight: "HA2140",
     consignee_name: "",
     consignee_phone: "",
@@ -589,6 +604,7 @@ const handleEditOrder = (row) => {
     mail_tax: row.mail_tax || 0,
     mail_tax_discount: row.mail_tax_discount || 0,
     is_port_pickup: row.is_port_pickup || 0,
+    order_templ: row.order_templ || 1,
     offline_flight: row.offline_flight || "HA2140",
     consignee_name: row.consignee_name || "",
     consignee_phone: row.consignee_phone || "",
@@ -712,6 +728,7 @@ const handleSubmit = async () => {
             mail_tax: form.value.mail_tax,
             mail_tax_discount: form.value.mail_tax_discount,
             is_port_pickup: form.value.is_port_pickup,
+            order_templ: form.value.order_templ,
             offline_flight: form.value.offline_flight,
             consignee_name: form.value.consignee_name,
             consignee_phone: form.value.consignee_phone,
@@ -747,6 +764,7 @@ const handleSubmit = async () => {
             mail_tax: form.value.mail_tax,
             mail_tax_discount: form.value.mail_tax_discount,
             is_port_pickup: form.value.is_port_pickup,
+            order_templ: form.value.order_templ,
             offline_flight: form.value.offline_flight,
             consignee_name: form.value.consignee_name,
             consignee_phone: form.value.consignee_phone,

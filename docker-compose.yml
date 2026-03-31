@@ -23,6 +23,9 @@ services:
       - MYSQL_USER=root
       - MYSQL_PASSWORD=00000000
       - MYSQL_DATABASE=duty_free_shopping
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=00000000
     volumes:
       - ./backend:/app
     working_dir: /app
@@ -33,8 +36,14 @@ services:
     ports:
       - "3306:3306"
     restart: always
+    # environment:
+    #   - MYSQL_HOST=8.134.59.165
+    #   - MYSQL_ROOT_PASSWORD=00000000
+    #   - MYSQL_DATABASE=duty_free_shopping
+    #   - MYSQL_USER=root
+    #   - MYSQL_PASSWORD=00000000
     environment:
-      - MYSQL_HOST=8.134.59.165
+      - MYSQL_HOST=localhost
       - MYSQL_ROOT_PASSWORD=00000000
       - MYSQL_DATABASE=duty_free_shopping
       - MYSQL_USER=root
@@ -42,5 +51,17 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
+    environment:
+      - REDIS_PASSWORD=00000000
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass 00000000
+
 volumes:
   mysql_data:
+  redis_data:

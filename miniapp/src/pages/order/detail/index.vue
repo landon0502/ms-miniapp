@@ -136,7 +136,7 @@
 							</view>
 						</template>
 					</Card>
-					<Card title="离岛免税商品列表" :titleBold="false" showHeadLine>
+					<Card title="离岛自提商品列表" :titleBold="false" showHeadLine>
 						<template #content>
 							<view class="flex flex-col gap-12px">
 								<view

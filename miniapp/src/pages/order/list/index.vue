@@ -2,14 +2,58 @@
 	<page-meta page-style="overflow:hidden" />
 	<PageContainer
 		:navBarProps="{
-			title: '我的订单',
-			leftIcon: 'arrow-left'
+			title: '',
+			leftIcon: '',
+			avoidMenuButton: true,
+			autoBack: false
 		}"
 		:content-style="{ padding: 0 }"
 		topExtraSticky
 		fixedContentHeight
 		:use-skeletons="true"
 	>
+		<template #nav-left>
+			<view
+				class="justify-start flex-shrink-0 ml-[-11px] box-border px-24rpx flex flex-row items-center gap-12px"
+				:style="{ width: addUnit(screen.windowWidth - screen.menuBtnRect.width, 'px') }"
+			>
+				<view>
+					<uv-icon name="arrow-left" :size="20" />
+				</view>
+				<view class="w-full flex-1 overflow-hidden" :style="{height: addUnit(screen.menuBtnRect.height || 44, 'px'),}">
+					<Tabs
+						:list="[
+							{ name: '会员优选', value: '1' },
+							{ name: '离岛免税', value: '2' },
+							{ name: '线下门店', value: '3' },
+							{ name: '出境免税', value: '4' },
+							{ name: '旅行服务', value: '5' }
+						]"
+						key-value="value"
+						:custom-style="{ background: 'transparent' }"
+						:active-style="{
+							fontWeight: 'bold',
+							fontSize: '14px',
+							color: 'var(--uv-text-color)'
+						}"
+						:inactive-style="{
+							fontSize: '14px'
+						}"
+						:itemStyle="{
+							// alignItems: 'flex-end',
+							height: addUnit(screen.menuBtnRect.height || 44, 'px'),
+							width: '120rpx',
+							padding: '0 8rpx'
+						}"
+						lineWidth="40rpx"
+						lineHeight="16rpx"
+						:show-more-btn="false"
+						:lineColor="`url(${lineBg}) 100% 100%`"
+						:modelValue="current"
+					/>
+				</view>
+			</view>
+		</template>
 		<template #top-extra>
 			<Tabs
 				:list="tabsList"
@@ -56,19 +100,22 @@ import PageContainer from '@/components/PageContainer'
 import Tabs from '@/components/Tabs'
 import OrderItem from '@/pages/order/components/OrderItem'
 import usePageContext from '@/components/PageContainer/usePageContext'
-import { useRouter } from '@/composables'
+import { useScreenInfo } from '@/composables'
 import { onLoad } from '@dcloudio/uni-app'
 import ScrollPaging from '@/components/ScrollPaging'
 import useScrollPaging from '@/components/ScrollPaging/useScrollPaging'
 import useServices from '@/pages/order/useServices'
 import skeletonsConfig from './skeletons'
+import { addUnit } from '@/uni_modules/uv-ui-tools/libs/function'
+import {lineBg} from './context'
 
 const { skeletons } = usePageContext()
-const { router } = useRouter()
+const screen = useScreenInfo()
 const { ordersListControl } = useServices()
 
 const pageRef = ref(null)
 const activeTab = ref('all')
+const current = ref('2')
 
 const { pagedData: orderList, noMoreData } = ordersListControl
 const tabsList = ref([
