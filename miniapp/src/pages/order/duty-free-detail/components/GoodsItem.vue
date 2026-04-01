@@ -1,6 +1,6 @@
 <template>
 	<view class="flex flex-row gap-12px">
-		<view class="w-80px h-80px border-1px border-#F1F1F1 border-solid">
+		<view class="w-80px h-80px border-1px border-#F1F1F1 border-solid flex-shrink-0">
 			<uv-image :src="fullUploadFilePath(props.image)" mode="aspectFill" :width="80" :height="80" />
 		</view>
 		<view class="flex-1">
@@ -21,8 +21,8 @@
 				</view>
 			</view>
 			<view class="flex mt-4px">
-				<view class="flex items-center justify-center p-4px bg-#F5F5F5">
-					<text class="font-size-12px text-#A5A5A5">不支持7天无理由退货</text>
+				<view class="flex items-center justify-center px-4px bg-#F5F5F5 line-height-20px">
+					<text class="font-size-10px text-#A5A5A5">不支持7天无理由退货</text>
 				</view>
 			</view>
 		</view>

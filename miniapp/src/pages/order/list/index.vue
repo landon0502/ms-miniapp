@@ -15,7 +15,7 @@
 		<template #nav-left>
 			<view
 				class="justify-start flex-shrink-0 ml-[-11px] box-border px-24rpx flex flex-row items-center gap-12px"
-				:style="{ width: addUnit(screen.windowWidth - screen.menuBtnRect.width, 'px') }"
+				:style="{ width: addUnit(screen.windowWidth - screen.menuBtnRect.width - 10, 'px') }"
 			>
 				<view>
 					<uv-icon name="arrow-left" :size="20" />
@@ -32,11 +32,12 @@
 						key-value="value"
 						:custom-style="{ background: 'transparent' }"
 						:active-style="{
-							fontWeight: 'bold',
+							fontWeight: '400',
 							fontSize: '14px',
 							color: 'var(--uv-text-color)'
 						}"
 						:inactive-style="{
+							fontWeight: '400',
 							fontSize: '14px'
 						}"
 						:itemStyle="{

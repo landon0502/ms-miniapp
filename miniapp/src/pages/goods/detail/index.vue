@@ -150,6 +150,9 @@
 									:style="{
 										background: productInfo?.theme === 'black' ? '#fff' : '#B6161C'
 									}"
+									@click="()=>{
+										promotionRef.open(productInfo, currentSku)
+									}"
 								>
 									<PriceText
 										:value="discountPrice"
@@ -169,7 +172,7 @@
 										</template>
 									</PriceText>
 									<view class="pt-2px">
-										<uv-icon name="arrow-right" color="#fff" :size="10" />
+										<uv-icon name="arrow-right" :color="'#ffffff'" :size="10" />
 									</view>
 								</view>
 							</view>
@@ -222,11 +225,11 @@
 								</view>
 								<view>
 									<text class="text-[12px] text-#2F2F2F">
-										<view
-											class="py-2px px-4px text-[12px] text-#fff inline-block bg-#AC8B6A rounded-4rpx"
+										<text
+											class="py-2px px-4px text-[10px] text-#fff inline-block bg-#AC8B6A rounded-4rpx"
 										>
 											离岛免税
-										</view>
+										</text>
 										来海南，买免税。凭离岛机票/火车票/船票购买
 									</text>
 								</view>

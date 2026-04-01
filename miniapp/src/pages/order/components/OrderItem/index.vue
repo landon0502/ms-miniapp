@@ -19,21 +19,21 @@
 		</view>
 		<view>
 			<view>
-				<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{
+				<text class="font-size-10px text-#7E7E7E whitespace-nowrap">{{
 					order.shipping_store
 				}}</text>
 				<view class="flex justify-between items-center">
 					<view class="flex items-center gap-5px">
 						<view class="flex items-center">
 							<uv-icon :name="requireIcon" :size="8" />
-							<text class="font-size-12px text-#7E7E7E whitespace-nowrap">子订单号：</text>
-							<text class="font-size-12px text-#7E7E7E whitespace-nowrap">{{
+							<text class="font-size-10px text-#7E7E7E whitespace-nowrap">子订单号：</text>
+							<text class="font-size-10px text-#7E7E7E whitespace-nowrap">{{
 								order.sub_order_no
 							}}</text>
 						</view>
 						<uv-icon
 							:name="copyLineIcon"
-							:size="14"
+							:size="12"
 							@click="
 								() => {
 									uni.setClipboardData({
@@ -46,7 +46,7 @@
 							"
 						/>
 						<view
-							class="border-1px border-solid border-#D5B69D flex-center px-2px py-1px rounded-2px height-24rpx font-size-10px text-#D5B69D whitespace-nowrap"
+							class="border-1px border-solid border-#D5B69D flex-center px-2px rounded-2px height-20rpx text-8px text-#D5B69D whitespace-nowrap"
 							v-if="order.is_port_pickup === 1"
 						>
 							口岸自提
@@ -148,11 +148,12 @@ const getOrderButtons = (status) => {
 			)
 			break
 		case 'shipped':
-			buttons.push({ text: '申请开票', action: confirmReceive })
-			buttons.push({ text: '查看物流', action: () => {} })
+			buttons.push({ text: '取消订单', action: cancelOrder })
 			break
 		case 'completed':
-			buttons.push({ text: '申请售后', action: applyAfterSale })
+			buttons.push({ text: '申请开票', action: () => {} })
+			buttons.push({ text: '查看物流', action: () => {} })
+			
 			break
 	}
 

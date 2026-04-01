@@ -1,6 +1,6 @@
 <template>
 	<view class="flex flex-row gap-12px pos-relative" @click="handleClick">
-		<view>
+		<view class="border-1rpx border-solid border-#F1F1F1 w-[80px] h-[80px] overflow-hidden flex-shrink-0">
 			<uv-image :src="fullUploadFilePath(props.image)" :width="80" :height="80" />
 		</view>
 		<view class="flex flex-col">
@@ -39,7 +39,6 @@ const props = defineProps({
 const emit = defineEmits(['goods-tap'])
 
 const handleClick = () => {
-	console.log(111)
 	emit('goods-tap', props.goods)
 }
 </script>

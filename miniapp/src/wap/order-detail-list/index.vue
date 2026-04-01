@@ -22,7 +22,7 @@
 					<span class="text-gray-600 text-sm flex-1 text-#676767">订单号</span>
 					<span
 						class="text-sm flex-2 text-right border border-gray-300 px-2 py-1 rounded inline-block max-w-full break-all text-#333333"
-						>{{ orderInfo?.order_no || '加载中...' }}</span
+						>{{ orderInfo?.detail_list_order_no || '加载中...' }}</span
 					>
 				</view>
 				<uv-line />

@@ -1,171 +1,180 @@
 <template>
 	<PageContainer
 		:navBarProps="{
-			leftIcon: 'arrow-left',
-			bgColor: '#FB6B2F'
+			leftIcon: 'close',
+			leftIconColor: '#fff',
+			bgColor: '#000000'
 		}"
 		:content-style="{ padding: 0 }"
 		:custom-style="{ background: '#FFF' }"
 		footerFixed
+		:safeAreaInsetBottom="false"
+		fixedContentHeight
 	>
 		<template #nav-center>
 			<view class="flex justify-center items-center">
-				<text class="text-white text-center">订单明细</text>
+				<view class="flex flex-col items-center">
+					<text class="text-white text-center text-14px">琼州海峡轮渡管家</text>
+					<text class="text-white text-center text-10px">nxwx.digitalstrait.cn</text>
+				</view>
 			</view>
 		</template>
-		<view class="font-sans">
-			<uv-gap height="12px" bgColor="#EFEEF5" />
-			<!-- 订单信息列表 -->
-			<view class="px-12px shadow-sm">
-				<!-- 订单号 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">订单号</span>
-					<span
-						class="text-sm flex-2 text-right border border-gray-300 px-2 py-1 rounded inline-block max-w-full break-all text-#333333"
-						>{{ orderInfo?.order_no || '加载中...' }}</span
-					>
-				</view>
-				<uv-line />
-				<!-- 港区单号 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">港区单号</span>
-					<span
-						class="text-sm flex-2 text-right border border-gray-300 px-2 py-1 rounded inline-block max-w-full break-all text-#333333"
-						>{{ orderInfo?.route_info?.port_order_no || '加载中...' }}</span
-					>
-				</view>
-				<uv-line />
-				<!-- 航线 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">航线</span>
-					<span class="text-sm flex-2 text-right text-#333333">{{
-						orderInfo?.route_info?.route || '加载中...'
-					}}</span>
-				</view>
-				<uv-line />
-				<!-- 开航时间 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">开航时间</span>
-					<span class="text-sm flex-2 text-right px-2 py-1 rounded inline-block text-#333333">{{
-						orderInfo?.route_info?.departure_time || '加载中...'
-					}}</span>
-				</view>
-				<uv-line />
-				<!-- 航班代号(航班号) -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">航班代号(航班号)</span>
-					<span class="text-sm flex-2 text-right text-#333333"
-						>({{ orderInfo?.route_info?.offline_flight || '加载中...' }})</span
-					>
-				</view>
-				<uv-line />
-				<!-- 车型 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">车型</span>
-					<span class="text-sm flex-2 text-right text-#333333">{{
-						orderInfo?.route_info?.vehicle_type || '加载中...'
-					}}</span>
-				</view>
-				<uv-line />
-				<!-- 始发港 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">始发港</span>
-					<span class="text-sm flex-2 text-right text-#333333">{{
-						orderInfo?.route_info?.departure_port || '加载中...'
-					}}</span>
-				</view>
-				<uv-line />
-				<!-- 目的港 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">目的港</span>
-					<span class="text-sm flex-2 text-right">{{
-						orderInfo?.route_info?.destination_port || '加载中...'
-					}}</span>
-				</view>
-				<uv-line />
-				<!-- 旅客票价 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">旅客票价</span>
-					<span class="text-sm flex-2 text-right text-#333333"
-						>{{ (parseFloat(orderInfo?.route_info?.passenger_price) || 0).toFixed(2) }} 元</span
-					>
-				</view>
-				<uv-line />
-				<!-- 车辆票价 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">车辆票价</span>
-					<span class="text-sm flex-2 text-right text-#333333"
-						>{{ (parseFloat(orderInfo?.route_info?.vehicle_price) || 0).toFixed(2) }} 元</span
-					>
-				</view>
-				<uv-line />
-				<!-- 增值服务 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">增值服务</span>
-					<span class="text-sm flex-2 text-right text-#333333"
-						>{{ (parseFloat(orderInfo?.route_info?.value_added_service) || 0).toFixed(2) }} 元</span
-					>
-				</view>
-				<uv-line />
-				<!-- 总金额 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">总金额</span>
-					<span class="text-sm flex-2 text-right text-#333333"
-						>{{ (parseFloat(orderInfo?.route_info?.total_amount) || 0).toFixed(2) }} 元</span
-					>
-				</view>
-				<uv-line />
-				<!-- 订票时间 -->
-				<view class="flex justify-between items-center py-12px border-b border-gray-100">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">订票时间</span>
-					<span class="text-sm flex-2 text-righ px-2 py-1 rounded inline-block text-#333333">{{
-						orderInfo?.route_info?.booking_time || '加载中...'
-					}}</span>
-				</view>
-				<uv-line />
-				<!-- 订单状态 -->
-				<view class="flex justify-between items-center py-12px">
-					<span class="text-gray-600 text-sm flex-1 text-#676767">订单状态</span>
-					<span class="text-sm flex-2 text-right text-#333333">{{
-						orderInfo?.status || '已支付'
-					}}</span>
-				</view>
-				<uv-line />
-				<!-- 订单状态 -->
-				<view class="flex justify-between items-center py-12px">
-					<span class="text-gray-600 text-sm flex-1"></span>
-					<span class="text-sm flex-2 text-right text-#FF181A">下单成功</span>
+		<template #top-extra>
+			<uv-navbar
+				title="订单明细"
+				:safeAreaInsetTop="false"
+				bgColor="#FB6B2F"
+				:fixed="false"
+				:leftIcon="''"
+				titleStyle="color:#fff"
+			/>
+		</template>
+		<ScrollPaging :refresherEnabled="false" :loadmoreEnable="false" emptyDisabled>
+			<view class="font-sans">
+				<uv-gap height="12px" bgColor="#EFEEF5" />
+				<!-- 订单信息列表 -->
+				<view class="px-12px shadow-sm">
+					<!-- 订单号 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">订单号</span>
+						<span
+							class="text-sm flex-2 text-right border border-gray-300 px-2 py-1 rounded inline-block max-w-full break-all text-#333333"
+						>
+							{{  orderInfo?.detail_list_order_no || '加载中...' }}
+						</span>
+					</view>
+					<uv-line />
+					<!-- 港区单号 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">港区单号</span>
+						<span
+							class="text-sm flex-2 text-right border border-gray-300 px-2 py-1 rounded inline-block max-w-full break-all text-#333333"
+						>
+							{{ orderInfo?.route_info?.port_order_no || '加载中...' }}
+						</span>
+					</view>
+					<uv-line />
+					<!-- 航线 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">航线</span>
+						<span class="text-sm flex-2 text-right text-#333333">{{
+							orderInfo?.route_info?.route || '加载中...'
+						}}</span>
+					</view>
+					<uv-line />
+					<!-- 开航时间 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">开航时间</span>
+						<span class="text-sm flex-2 text-right px-2 py-1 rounded inline-block text-#333333">{{
+							orderInfo?.route_info?.departure_time || '加载中...'
+						}}</span>
+					</view>
+					<uv-line />
+					<!-- 航班代号(航班号) -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">航班代号(航班号)</span>
+						<span class="text-sm flex-2 text-right text-#333333">
+							({{ orderInfo?.route_info?.offline_flight || '加载中...' }})
+						</span>
+					</view>
+					<uv-line />
+					<!-- 车型 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">车型</span>
+						<span class="text-sm flex-2 text-right text-#333333">{{
+							orderInfo?.route_info?.vehicle_type || '加载中...'
+						}}</span>
+					</view>
+					<uv-line />
+					<!-- 始发港 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">始发港</span>
+						<span class="text-sm flex-2 text-right text-#333333">{{
+							orderInfo?.route_info?.departure_port || '加载中...'
+						}}</span>
+					</view>
+					<uv-line />
+					<!-- 目的港 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">目的港</span>
+						<span class="text-sm flex-2 text-right">{{
+							orderInfo?.route_info?.destination_port || '加载中...'
+						}}</span>
+					</view>
+					<uv-line />
+					<!-- 旅客票价 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">旅客票价</span>
+						<span class="text-sm flex-2 text-right text-#333333">
+							{{ (parseFloat(orderInfo?.route_info?.passenger_price) || 0).toFixed(2) }} 元
+						</span>
+					</view>
+					<uv-line />
+					<!-- 车辆票价 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">车辆票价</span>
+						<span class="text-sm flex-2 text-right text-#333333">
+							{{ (parseFloat(orderInfo?.route_info?.vehicle_price) || 0).toFixed(2) }} 元
+						</span>
+					</view>
+					<uv-line />
+					<!-- 增值服务 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">增值服务</span>
+						<span class="text-sm flex-2 text-right text-#333333"
+							>{{
+								(parseFloat(orderInfo?.route_info?.value_added_service) || 0).toFixed(2)
+							}}
+							元</span
+						>
+					</view>
+					<uv-line />
+					<!-- 总金额 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">总金额</span>
+						<span class="text-sm flex-2 text-right text-#333333"
+							>{{ (parseFloat(orderInfo?.route_info?.total_amount) || 0).toFixed(2) }} 元</span
+						>
+					</view>
+					<uv-line />
+					<!-- 订票时间 -->
+					<view class="flex justify-between items-center py-12px border-b border-gray-100">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">订票时间</span>
+						<span class="text-sm flex-2 text-righ px-2 py-1 rounded inline-block text-#333333">{{
+							orderInfo?.route_info?.booking_time || '加载中...'
+						}}</span>
+					</view>
+					<uv-line />
+					<!-- 订单状态 -->
+					<view class="flex justify-between items-center py-12px">
+						<span class="text-gray-600 text-sm flex-1 text-#676767">订单状态</span>
+						<span class="text-sm flex-2 text-right text-#333333">{{
+							orderInfo?.status || '已支付'
+						}}</span>
+					</view>
+					<uv-line />
+					<!-- 订单状态 -->
+					<view class="flex justify-between items-center py-12px">
+						<span class="text-gray-600 text-sm flex-1"></span>
+						<span class="text-sm flex-2 text-right text-#FF181A">下单成功</span>
+					</view>
 				</view>
 			</view>
-		</view>
+		</ScrollPaging>
 		<template #footer>
-			<uv-line/>
-			<view class="w-full h-54px px-24rpx flex flex-row justify-end items-center box-border">
-				<uv-button
-					type="primary"
-					class="footer-btn"
-					:custom-style="{
-						borderRadius: '100px',
-						border: '0',
-						padding: '12px 24px',
-						background: '#EEEEEE'
-					}"
-					:custom-text-style="{
-						fontSize: '14px',
-						color: '#666666'
-					}"
-					text="复制地址"
-					@click="
-					() => {
-						uni.setClipboardData({
-							data: `https://www.xiaoxiaodou.cn/wap/#/wap/order-detail-list/index?id=${params.id}`,
-							success: function () {
-								console.log('复制成功，请粘贴到浏览器中打开')
-							}
-						})
-					}
-				"
-				></uv-button>
+			<view class="w-full bg-#333">
+				<uv-line />
+				<view class="h-54px px-24rpx box-border flex items-center justify-center">
+					<view class="flex flex-row items-center justify-center gap-200rpx">
+						<view @click="router.back()">
+							<uv-icon name="arrow-left" :size="26" :color="'#eeeeee'" />
+						</view>
+						<view class="opacity-50">
+							<uv-icon name="arrow-right" :size="26" :color="'#eeeeee'" />
+						</view>
+					</view>
+				</view>
+				<uv-safe-bottom></uv-safe-bottom>
 			</view>
 		</template>
 	</PageContainer>
@@ -179,9 +188,9 @@ import dayjs from 'dayjs'
 // 微信小程序的 onLoad 生命周期
 import { onLoad } from '@dcloudio/uni-app'
 import { useRouter } from '@/composables'
-
+import ScrollPaging from '@/components/ScrollPaging'
 // 使用 useRouter
-const { params } = useRouter()
+const { params, router } = useRouter()
 
 // 使用 useServices
 const { orderDetailControl } = useServices()

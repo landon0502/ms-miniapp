@@ -10,12 +10,35 @@
         <div class="login-header">
           <div class="logo">
             <div class="logo-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#gradient1)" />
-                <path d="M2 17L12 22L22 17" stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M2 12L12 17L22 12" stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path
+                  d="M2 17L12 22L22 17"
+                  stroke="url(#gradient1)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M2 12L12 17L22 12"
+                  stroke="url(#gradient1)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
                 <defs>
-                  <linearGradient id="gradient1" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <linearGradient
+                    id="gradient1"
+                    x1="2"
+                    y1="2"
+                    x2="22"
+                    y2="22"
+                    gradientUnits="userSpaceOnUse"
+                  >
                     <stop stop-color="#667eea" />
                     <stop offset="1" stop-color="#764ba2" />
                   </linearGradient>
@@ -27,7 +50,12 @@
           </div>
         </div>
         <div class="login-body">
-          <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" class="login-form">
+          <el-form
+            :model="loginForm"
+            :rules="loginRules"
+            ref="loginFormRef"
+            class="login-form"
+          >
             <el-form-item prop="username">
               <div class="input-wrapper">
                 <el-icon class="input-icon"><User /></el-icon>
@@ -64,7 +92,7 @@
                 :loading="loading"
                 size="large"
               >
-                {{ loading ? '登录中...' : '立即登录' }}
+                {{ loading ? "登录中..." : "立即登录" }}
               </el-button>
             </el-form-item>
           </el-form>
@@ -86,87 +114,106 @@
           </div>
         </div>
       </div>
+
       <div class="copyright">
         <p>© 2026 后台管理系统 | Powered by Vue 3 + Element Plus</p>
+      </div>
+      <div class="copyright text-10px transform-scale-90">
+        <p class="opacity-50">
+          This system is intended for technical sharing and learning purposes
+          only. Please do not use it for commercial activities. Any consequences
+          arising from unauthorized commercial use shall be borne by the user.
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '../store/modules/user'
-import { ElMessage } from 'element-plus'
-import { User, Lock, ChatDotRound, Message, Document } from '@element-plus/icons-vue'
-import { login } from '../api/auth'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "../store/modules/user";
+import { ElMessage } from "element-plus";
+import {
+  User,
+  Lock,
+  ChatDotRound,
+  Message,
+  Document,
+} from "@element-plus/icons-vue";
+import { login } from "../api/auth";
 
-const router = useRouter()
-const userStore = useUserStore()
-const loginFormRef = ref(null)
-const loading = ref(false)
-const rememberMe = ref(false)
+const router = useRouter();
+const userStore = useUserStore();
+const loginFormRef = ref(null);
+const loading = ref(false);
+const rememberMe = ref(false);
 
 const loginForm = ref({
-  username: 'admin',
-  password: '123456'
-})
+  username: "admin",
+  password: "123456",
+});
 
 const loginRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    { required: true, message: "请输入用户名", trigger: "blur" },
+    {
+      min: 3,
+      max: 20,
+      message: "用户名长度在 3 到 20 个字符",
+      trigger: "blur",
+    },
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于 6 个字符', trigger: 'blur' }
-  ]
-}
+    { required: true, message: "请输入密码", trigger: "blur" },
+    { min: 6, message: "密码长度不能少于 6 个字符", trigger: "blur" },
+  ],
+};
 
 const handleLogin = async () => {
-  if (!loginFormRef.value) return
+  if (!loginFormRef.value) return;
 
   await loginFormRef.value.validate(async (valid) => {
     if (valid) {
-      loading.value = true
+      loading.value = true;
       try {
         const response = await login({
           username: loginForm.value.username,
-          password: loginForm.value.password
-        })
-        
+          password: loginForm.value.password,
+        });
+
         if (response.success) {
-          const { token, user } = response.data
-          userStore.setToken(token)
-          userStore.setUserInfo(user)
+          const { token, user } = response.data;
+          userStore.setToken(token);
+          userStore.setUserInfo(user);
           ElMessage.success({
-            message: '登录成功，欢迎回来！',
-            duration: 2000
-          })
+            message: "登录成功，欢迎回来！",
+            duration: 2000,
+          });
           setTimeout(() => {
-            router.push('/dashboard')
-          }, 500)
+            router.push("/dashboard");
+          }, 500);
         } else {
-          ElMessage.error(response.message || '登录失败，请重试')
+          ElMessage.error(response.message || "登录失败，请重试");
         }
       } catch (error) {
-        console.error('登录失败:', error)
-        ElMessage.error('登录失败，请检查网络连接或账号密码')
+        console.error("登录失败:", error);
+        ElMessage.error("登录失败，请检查网络连接或账号密码");
       } finally {
-        loading.value = false
+        loading.value = false;
       }
     }
-  })
-}
+  });
+};
 
 const quickLogin = (type) => {
   const typeMap = {
-    wechat: '微信',
-    dingtalk: '钉钉',
-    feishu: '飞书'
-  }
-  ElMessage.info(`${typeMap[type]}登录功能开发中...`)
-}
+    wechat: "微信",
+    dingtalk: "钉钉",
+    feishu: "飞书",
+  };
+  ElMessage.info(`${typeMap[type]}登录功能开发中...`);
+};
 </script>
 
 <style scoped>
@@ -217,7 +264,8 @@ const quickLogin = (type) => {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) rotate(0deg);
   }
   33% {
@@ -280,7 +328,8 @@ const quickLogin = (type) => {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -405,7 +454,7 @@ const quickLogin = (type) => {
 }
 
 .divider::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 0;

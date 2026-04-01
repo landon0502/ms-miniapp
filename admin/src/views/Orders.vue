@@ -710,17 +710,13 @@ const handleSubmit = async () => {
           return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
         };
 
-        // 生成子订单号
-        const generatedSubOrderNo =
-          "SUB" + Date.now() + Math.floor(Math.random() * 1000);
-
         if (form.value.id) {
           // 计算订单总价和实付金额
           const { total_price, actual_price } = calculatePrices();
           // 更新订单
           const updateResponse = await updateOrder(form.value.id, {
             user_id: form.value.user_id,
-            sub_order_no: generatedSubOrderNo,
+            sub_order_no:  form.value.sub_order_no,
             departure_time: formatDate(form.value.departure_time),
             order_time: formatDate(form.value.order_time),
             status: form.value.status,
@@ -756,7 +752,7 @@ const handleSubmit = async () => {
           // 创建订单
           const createResponse = await createOrder({
             user_id: form.value.user_id,
-            sub_order_no: generatedSubOrderNo,
+            sub_order_no: '',
             departure_time: formatDate(form.value.departure_time),
             order_time: formatDate(form.value.order_time),
             status: form.value.status,

@@ -259,10 +259,18 @@ router.post('/', async (req, res) => {
     
     // 生成子订单号函数
     const generateSubOrderNo = (mainOrderNo) => {
-      // 子订单号在主订单号基础上加1
-      const orderNoNum = parseInt(mainOrderNo);
-      const subOrderNoNum = orderNoNum + 1;
-      return String(subOrderNoNum);
+      // 子订单号在主订单号基础上加1，使用字符串处理避免科学计数法
+      let carry = 1;
+      let result = '';
+      for (let i = mainOrderNo.length - 1; i >= 0; i--) {
+        const digit = parseInt(mainOrderNo[i]) + carry;
+        carry = Math.floor(digit / 10);
+        result = (digit % 10) + result;
+      }
+      if (carry > 0) {
+        result = carry + result;
+      }
+      return result;
     };
     
     // 如果没有提供子订单号，自动生成一个
@@ -272,17 +280,18 @@ router.post('/', async (req, res) => {
     
     // 尝试创建订单
     try {
-      // 生成港区单号（如果没有提供）
+      // 生成港区单号和订单详情列表订单号（如果没有提供）
       const generatePortOrderNo = () => {
-        // 格式：02 + YYYYMMDD + 时间戳（精确到秒） + 随机序列
-        // 示例：0220240630231849319888371
-        const portCode = '02'; // 港区代码
+        // 格式：02 + YYYYMMDD + 时间（HHMMSS） + 时间戳 + 随机序列
+        // 固定长度25位
+        const portCode = '02'; // 港区代码 (2位)
         const date = new Date();
-        const dateStr = date.getFullYear() + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0'); // YYYYMMDD
-        const timeStr = String(date.getHours()).padStart(2, '0') + String(date.getMinutes()).padStart(2, '0') + String(date.getSeconds()).padStart(2, '0'); // HHMMSS
-        const timestamp = Date.now(); // 时间戳
-        const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0'); // 6位随机数
-        return portCode + dateStr + timeStr + timestamp.toString().slice(-9) + random;
+        const dateStr = date.getFullYear() + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0'); // YYYYMMDD (8位)
+        const timeStr = String(date.getHours()).padStart(2, '0') + String(date.getMinutes()).padStart(2, '0') + String(date.getSeconds()).padStart(2, '0'); // HHMMSS (6位)
+        const timestamp = Date.now().toString().slice(-5); // 时间戳后5位 (5位)
+        const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0'); // 4位随机数 (4位)
+        // 确保总长度为25位：2 + 8 + 6 + 5 + 4 = 25
+        return portCode + dateStr + timeStr + timestamp + random;
       };
       
       // 确保所有参数都不是 undefined
@@ -295,6 +304,19 @@ router.post('/', async (req, res) => {
     const consigneePhone = req.body.consignee_phone !== undefined ? req.body.consignee_phone : '';
     const consigneeIdcard = req.body.consignee_idcard !== undefined ? req.body.consignee_idcard : '';
     const portOrderNo = req.body.port_order_no !== undefined && req.body.port_order_no !== '' ? req.body.port_order_no : generatePortOrderNo();
+    // 生成detail_list_order_no，以HKXH前缀开头
+    const generateDetailListOrderNo = () => {
+      // 格式：HKXH + 02 + YYYYMMDD + 时间（HHMMSS） + 时间戳 + 随机序列
+      const prefix = 'HKXH'; // 固定前缀
+      const portCode = '02'; // 港区代码 (2位)
+      const date = new Date();
+      const dateStr = date.getFullYear() + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0'); // YYYYMMDD (8位)
+      const timeStr = String(date.getHours()).padStart(2, '0') + String(date.getMinutes()).padStart(2, '0') + String(date.getSeconds()).padStart(2, '0'); // HHMMSS (6位)
+      const timestamp = Date.now().toString().slice(-5); // 时间戳后5位 (5位)
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0'); // 4位随机数 (4位)
+      return prefix + portCode + dateStr + timeStr + timestamp + random;
+    };
+    const detailListOrderNo = generateDetailListOrderNo();
     const route = req.body.route !== undefined ? req.body.route : '';
     const vehicleType = req.body.vehicle_type !== undefined ? req.body.vehicle_type : '';
     const departurePort = req.body.departure_port !== undefined ? req.body.departure_port : '';
@@ -337,8 +359,8 @@ router.post('/', async (req, res) => {
       });
       
       const [orderResult] = await pool.execute(
-        'INSERT INTO orders (order_no, sub_order_no, user_id, total_price, actual_price, points_deduction, mail_tax, mail_tax_discount, is_port_pickup, offline_flight, consignee_name, consignee_phone, consignee_idcard, port_order_no, route, vehicle_type, departure_port, destination_port, passenger_price, vehicle_price, value_added_service, order_templ, status, departure_time, order_time, shipping_store) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [order_no, generated_sub_order_no, user_id, total_price, actual_price, pointsDeduction, mailTax, mailTaxDiscount, isPortPickup, offlineFlight, consigneeName, consigneePhone, consigneeIdcard, portOrderNo, route, vehicleType, departurePort, destinationPort, passengerPrice, vehiclePrice, valueAddedService, orderTempl, 'pending', departureTime, orderTime, shippingStore]
+        'INSERT INTO orders (order_no, sub_order_no, user_id, total_price, actual_price, points_deduction, mail_tax, mail_tax_discount, is_port_pickup, offline_flight, consignee_name, consignee_phone, consignee_idcard, port_order_no, detail_list_order_no, route, vehicle_type, departure_port, destination_port, passenger_price, vehicle_price, value_added_service, order_templ, status, departure_time, order_time, shipping_store) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [order_no, generated_sub_order_no, user_id, total_price, actual_price, pointsDeduction, mailTax, mailTaxDiscount, isPortPickup, offlineFlight, consigneeName, consigneePhone, consigneeIdcard, portOrderNo, detailListOrderNo, route, vehicleType, departurePort, destinationPort, passengerPrice, vehiclePrice, valueAddedService, orderTempl, 'pending', departureTime, orderTime, shippingStore]
       );
       
       const orderId = orderResult.insertId;
@@ -516,6 +538,7 @@ router.put('/:id', async (req, res) => {
       consignee_phone = ?, 
       consignee_idcard = ?, 
       port_order_no = ?, 
+      detail_list_order_no = ?, 
       route = ?, 
       vehicle_type = ?, 
       departure_port = ?, 
@@ -531,6 +554,19 @@ router.put('/:id', async (req, res) => {
       shipping_store = ? 
       WHERE id = ?`;
     
+    // 生成detail_list_order_no，以HKXH前缀开头
+    const generateDetailListOrderNo = () => {
+      // 格式：HKXH + 02 + YYYYMMDD + 时间（HHMMSS） + 时间戳 + 随机序列
+      const prefix = 'HKXH'; // 固定前缀
+      const portCode = '02'; // 港区代码 (2位)
+      const date = new Date();
+      const dateStr = date.getFullYear() + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0'); // YYYYMMDD (8位)
+      const timeStr = String(date.getHours()).padStart(2, '0') + String(date.getMinutes()).padStart(2, '0') + String(date.getSeconds()).padStart(2, '0'); // HHMMSS (6位)
+      const timestamp = Date.now().toString().slice(-5); // 时间戳后5位 (5位)
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0'); // 4位随机数 (4位)
+      return prefix + portCode + dateStr + timeStr + timestamp + random;
+    };
+
     const params = [
       user_id !== undefined ? user_id : currentOrder[0].user_id,
       (total_price !== undefined && total_price !== null && total_price > 0) ? total_price : currentOrder[0].total_price,
@@ -544,6 +580,7 @@ router.put('/:id', async (req, res) => {
       req.body.consignee_phone !== undefined ? req.body.consignee_phone : currentOrder[0].consignee_phone || '',
       req.body.consignee_idcard !== undefined ? req.body.consignee_idcard : currentOrder[0].consignee_idcard || '',
       req.body.port_order_no !== undefined && req.body.port_order_no !== '' ? req.body.port_order_no : (currentOrder[0].port_order_no || generatePortOrderNo()),
+      currentOrder[0].detail_list_order_no || generateDetailListOrderNo(),
       req.body.route !== undefined ? req.body.route : currentOrder[0].route || '',
       req.body.vehicle_type !== undefined ? req.body.vehicle_type : currentOrder[0].vehicle_type || '',
       req.body.departure_port !== undefined ? req.body.departure_port : currentOrder[0].departure_port || '',

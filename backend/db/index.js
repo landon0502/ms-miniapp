@@ -274,6 +274,12 @@ export async function initDatabase() {
       if (result21.length === 0) {
         await connection.execute('ALTER TABLE orders ADD COLUMN order_templ INT DEFAULT 1 COMMENT "订单模版配置（1或2）"');
       }
+      
+      // 添加订单详情列表订单号字段
+      const [result22] = await connection.execute('SHOW COLUMNS FROM orders WHERE Field = ?', ['detail_list_order_no']);
+      if (result22.length === 0) {
+        await connection.execute('ALTER TABLE orders ADD COLUMN detail_list_order_no VARCHAR(50) COMMENT "订单详情列表订单号"');
+      }
     } catch (error) {
       console.error('添加订单表新字段失败:', error);
     }
@@ -302,6 +308,7 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN vehicle_price DECIMAL(10,2) DEFAULT 0 COMMENT '车辆票价'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN value_added_service DECIMAL(10,2) DEFAULT 0 COMMENT '增值服务'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN order_templ INT DEFAULT 1 COMMENT '订单模版配置（1或2）'`);
+    await connection.execute(`ALTER TABLE orders MODIFY COLUMN detail_list_order_no VARCHAR(50) COMMENT '订单详情列表订单号'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN status VARCHAR(20) NOT NULL COMMENT '订单状态'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN departure_time TIMESTAMP COMMENT '离岛时间'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN order_time TIMESTAMP COMMENT '下单时间'`);
