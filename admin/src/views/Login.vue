@@ -54,27 +54,27 @@
             :model="loginForm"
             :rules="loginRules"
             ref="loginFormRef"
-            class="login-form"
+            class="login-form w-full"
           >
             <el-form-item prop="username">
-              <div class="input-wrapper">
+              <div class="input-wrapper w-full">
                 <el-icon class="input-icon"><User /></el-icon>
                 <el-input
                   v-model="loginForm.username"
                   placeholder="请输入用户名"
-                  class="custom-input"
+                  class="custom-input flex-1"
                   size="large"
                 />
               </div>
             </el-form-item>
             <el-form-item prop="password">
-              <div class="input-wrapper">
+              <div class="input-wrapper w-full">
                 <el-icon class="input-icon"><Lock /></el-icon>
                 <el-input
                   v-model="loginForm.password"
                   type="password"
                   placeholder="请输入密码"
-                  class="custom-input"
+                  class="custom-input flex-1"
                   size="large"
                   show-password
                 />
