@@ -59,9 +59,9 @@
 										<view class="flex flex-row gap-12px items-center">
 											<view class="flex flex-row gap-4px items-center py-4px">
 												<uv-icon :name="briefcaseIcon" :size="14" />
-												<text class="font-size-12px text-#353535">离岛时间：</text>
+												<text class="font-size-12px text-#353535">离岛信息：</text>
 												<text class="font-size-12px text-#353535">
-													{{ formatDate(orderInfo?.route_info?.departure_time) }}/
+													{{ formatDate(orderInfo?.route_info?.sailing_time) }}/
 													{{ orderInfo?.route_info?.offline_flight }}
 												</text>
 											</view>
@@ -131,10 +131,9 @@
 									<view class="flex flex-row items-center py-6px">
 										<text class="font-size-12px text-#A2A2A2">提货方式：</text>
 										<text class="font-size-12px text-#5D5D5D ml-4px">
-											{{ orderInfo?.pickup_method || '离岛提货点自提' }}-<text
-												class="text-#C49262"
-												>{{ orderInfo?.pickup_location || '新海港' }}</text
-											>
+											{{ orderInfo?.pickup_method || '口岸自提' }}-<text class="text-#C49262">
+												{{ orderInfo?.pickup_location || '新海港' }}
+											</text>
 										</text>
 									</view>
 								</view>
@@ -251,10 +250,10 @@
 
 		<!-- 底部操作 -->
 		<template #footer>
-			<uv-line/>
+			<uv-line />
 			<view class="footer-buttons flex flex-row items-center justify-between px-24px py-12px">
 				<view @click="handleClickOrderDetail">
-					<text class="text-12px text-#999">订单明细</text>
+					<text class="text-12px text-#999">更多</text>
 				</view>
 
 				<uv-button
@@ -266,7 +265,7 @@
 						background: '#CA9B6E'
 					}"
 					:custom-text-style="{
-						fontSize: '14px',
+						fontSize: '12px',
 						color: '#fff'
 					}"
 					:text="'再次购买'"
@@ -307,7 +306,7 @@ const { data: orderInfo, loading, error } = orderDetailControl
 // 格式化时间函数
 const formatDate = (dateString) => {
 	if (!dateString) return '加载中...'
-	return dayjs(dateString).format('YYYY-MM-DD HH:mm:ss')
+	return dayjs(dateString).format('YYYY-MM-DD HH:mm')
 }
 
 // 格式化订单状态

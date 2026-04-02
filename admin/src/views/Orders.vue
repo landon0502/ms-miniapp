@@ -66,9 +66,9 @@
       <el-table-column prop="value_added_service" label="增值服务" width="100">
         <template #default="{ row }"> ¥{{ row.value_added_service }} </template>
       </el-table-column>
-      <el-table-column prop="departure_time" label="离岛时间" width="180">
+      <el-table-column prop="departure_time" label="离岛时间(开航时间)" width="180">
         <template #default="{ row }">
-          {{ formatDate(row.departure_time) }}
+          {{ formatDate(row.sailing_time) }}
         </template>
       </el-table-column>
       <el-table-column prop="order_time" label="下单时间" width="180">
@@ -119,112 +119,166 @@
         label-width="100px"
         label-position="top"
       >
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="订单状态" prop="status">
-              <el-select
-                v-model="form.status"
-                placeholder="选择订单状态"
-                style="width: 100%"
-              >
-                <el-option label="待支付" value="pending" />
-                <el-option label="已支付" value="paid" />
-                <el-option label="已发货" value="shipped" />
-                <el-option label="已完成" value="completed" />
-                <el-option label="已取消" value="cancelled" />
-                <el-option label="售后中" value="refund" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="下单时间" prop="order_time">
-              <el-date-picker
-                v-model="form.order_time"
-                type="datetime"
-                placeholder="选择下单时间"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DD HH:mm:ss"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="是否为口岸自提" prop="is_port_pickup">
-              <el-radio-group v-model="form.is_port_pickup">
-                <el-radio :label="0">否</el-radio>
-                <el-radio :label="1">是</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="订单模板" prop="order_templ">
-              <el-radio-group v-model="form.order_templ">
-                <el-radio :label="1">模板1</el-radio>
-                <el-radio :label="2">模板2</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <!-- 基本订单信息卡片 -->
+        <el-card class="base-info-card" shadow="hover" style="margin-bottom: 20px;">
+          <template #header>
+            <div class="card-header">
+              <span>基本订单信息</span>
+            </div>
+          </template>
+          <el-row :gutter="20">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="订单状态" prop="status">
+                <el-select
+                  v-model="form.status"
+                  placeholder="选择订单状态"
+                  style="width: 100%"
+                >
+                  <el-option label="待支付" value="pending" />
+                  <el-option label="已支付" value="paid" />
+                  <el-option label="已发货" value="shipped" />
+                  <el-option label="已完成" value="completed" />
+                  <el-option label="已取消" value="cancelled" />
+                  <el-option label="售后中" value="refund" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="下单时间" prop="order_time">
+                <el-date-picker
+                  v-model="form.order_time"
+                  type="datetime"
+                  placeholder="选择下单时间"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="是否为口岸自提" prop="is_port_pickup">
+                <el-radio-group v-model="form.is_port_pickup">
+                  <el-radio :label="0">否</el-radio>
+                  <el-radio :label="1">是</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="订单模板" prop="order_templ">
+                <el-radio-group v-model="form.order_templ">
+                  <el-radio :label="1">模板1</el-radio>
+                  <el-radio :label="2">模板2</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-card>
 
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="积分抵扣" prop="points_deduction">
-              <el-input
-                v-model.number="form.points_deduction"
-                placeholder="积分抵扣金额"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="行邮税" prop="mail_tax">
-              <el-input
-                v-model.number="form.mail_tax"
-                placeholder="行邮税金额"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="行邮税优惠" prop="mail_tax_discount">
-              <el-input
-                v-model.number="form.mail_tax_discount"
-                placeholder="行邮税优惠金额"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="收货人姓名" prop="consignee_name">
-              <el-input
-                v-model="form.consignee_name"
-                placeholder="请输入收货人姓名"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="收货人电话" prop="consignee_phone">
-              <el-input
-                v-model="form.consignee_phone"
-                placeholder="请输入收货人电话"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="收货人身份证号" prop="consignee_idcard">
-              <el-input
-                v-model="form.consignee_idcard"
-                placeholder="请输入收货人身份证号"
-                style="width: 100%"
-                maxlength="18"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <!-- 提货信息卡片 -->
+        <el-card class="pickup-info-card" shadow="hover" style="margin-bottom: 20px;">
+          <template #header>
+            <div class="card-header">
+              <span>提货信息</span>
+            </div>
+          </template>
+          <el-row :gutter="20">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="提货方式" prop="pickup_method">
+                <el-input
+                  v-model="form.pickup_method"
+                  placeholder="请输入提货方式"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="提货点" prop="pickup_location">
+                <el-input
+                  v-model="form.pickup_location"
+                  placeholder="请输入提货点"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-card>
+
+        <!-- 费用信息卡片 -->
+        <el-card class="cost-info-card" shadow="hover" style="margin-bottom: 20px;">
+          <template #header>
+            <div class="card-header">
+              <span>费用信息</span>
+            </div>
+          </template>
+          <el-row :gutter="20">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="积分抵扣" prop="points_deduction">
+                <el-input
+                  v-model.number="form.points_deduction"
+                  placeholder="积分抵扣金额"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="行邮税" prop="mail_tax">
+                <el-input
+                  v-model.number="form.mail_tax"
+                  placeholder="行邮税金额"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="行邮税优惠" prop="mail_tax_discount">
+                <el-input
+                  v-model.number="form.mail_tax_discount"
+                  placeholder="行邮税优惠金额"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-card>
+
+        <!-- 收货人信息卡片 -->
+        <el-card class="consignee-info-card" shadow="hover" style="margin-bottom: 20px;">
+          <template #header>
+            <div class="card-header">
+              <span>收货人信息</span>
+            </div>
+          </template>
+          <el-row :gutter="20">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="收货人姓名" prop="consignee_name">
+                <el-input
+                  v-model="form.consignee_name"
+                  placeholder="请输入收货人姓名"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="收货人电话" prop="consignee_phone">
+                <el-input
+                  v-model="form.consignee_phone"
+                  placeholder="请输入收货人电话"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="收货人身份证号" prop="consignee_idcard">
+                <el-input
+                  v-model="form.consignee_idcard"
+                  placeholder="请输入收货人身份证号"
+                  style="width: 100%"
+                  maxlength="18"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-card>
 
         <!-- 航线相关参数卡片 -->
         <el-card class="route-info-card" shadow="hover">
@@ -234,7 +288,7 @@
             </div>
           </template>
           <el-row :gutter="20">
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="港区单号" prop="port_order_no">
                 <el-input
                   v-model="form.port_order_no"
@@ -243,7 +297,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="航线" prop="route">
                 <el-input
                   v-model="form.route"
@@ -252,7 +306,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="航班号" prop="offline_flight">
                 <el-input
                   v-model="form.offline_flight"
@@ -263,10 +317,10 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="8">
-              <el-form-item label="开航时间" prop="departure_time">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+              <el-form-item label="开航时间" prop="sailing_time">
                 <el-date-picker
-                  v-model="form.departure_time"
+                  v-model="form.sailing_time"
                   type="datetime"
                   placeholder="选择开航时间"
                   style="width: 100%"
@@ -274,7 +328,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="车型" prop="vehicle_type">
                 <el-input
                   v-model="form.vehicle_type"
@@ -283,7 +337,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="始发港" prop="departure_port">
                 <el-input
                   v-model="form.departure_port"
@@ -294,7 +348,7 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="目的港" prop="destination_port">
                 <el-input
                   v-model="form.destination_port"
@@ -303,7 +357,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="旅客票价" prop="passenger_price">
                 <el-input
                   v-model="form.passenger_price"
@@ -313,7 +367,7 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="车辆票价" prop="vehicle_price">
                 <el-input
                   v-model="form.vehicle_price"
@@ -325,7 +379,7 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="8">
+            <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="增值服务" prop="value_added_service">
                 <el-input
                   v-model="form.value_added_service"
@@ -466,6 +520,7 @@ const form = ref({
   user_id: "0000001",
   sub_order_no: "",
   departure_time: null,
+  sailing_time: null,
   order_time: null,
   status: "pending",
   points_deduction: 0,
@@ -473,6 +528,8 @@ const form = ref({
   mail_tax_discount: 0,
   is_port_pickup: 0,
   order_templ: 1,
+  pickup_method: "口岸自提",
+  pickup_location: "新海港",
   offline_flight: "HA2140",
   consignee_name: "",
   consignee_phone: "",
@@ -561,7 +618,7 @@ const handleAddOrder = () => {
   form.value = {
     user_id: "0000001",
     sub_order_no: "",
-    departure_time: null,
+    sailing_time: null,
     order_time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
     status: "pending",
     points_deduction: 0,
@@ -569,6 +626,8 @@ const handleAddOrder = () => {
     mail_tax_discount: 0,
     is_port_pickup: 0,
     order_templ: 1,
+    pickup_method: "口岸自提",
+    pickup_location: "新海港",
     offline_flight: "HA2140",
     consignee_name: "",
     consignee_phone: "",
@@ -593,8 +652,8 @@ const handleEditOrder = (row) => {
     id: row.id,
     user_id: row.user_id,
     sub_order_no: row.sub_order_no,
-    departure_time: row.departure_time
-      ? dayjs(row.departure_time).format("YYYY-MM-DD HH:mm:ss")
+    sailing_time: row.sailing_time
+      ? dayjs(row.sailing_time).format("YYYY-MM-DD HH:mm:ss")
       : null,
     order_time: row.order_time
       ? dayjs(row.order_time).format("YYYY-MM-DD HH:mm:ss")
@@ -605,6 +664,8 @@ const handleEditOrder = (row) => {
     mail_tax_discount: row.mail_tax_discount || 0,
     is_port_pickup: row.is_port_pickup || 0,
     order_templ: row.order_templ || 1,
+    pickup_method: row.pickup_method || "口岸自提",
+    pickup_location: row.pickup_location || "新海港",
     offline_flight: row.offline_flight || "HA2140",
     consignee_name: row.consignee_name || "",
     consignee_phone: row.consignee_phone || "",
@@ -718,6 +779,7 @@ const handleSubmit = async () => {
             user_id: form.value.user_id,
             sub_order_no:  form.value.sub_order_no,
             departure_time: formatDate(form.value.departure_time),
+            sailing_time: formatDate(form.value.sailing_time),
             order_time: formatDate(form.value.order_time),
             status: form.value.status,
             points_deduction: form.value.points_deduction,
@@ -725,6 +787,8 @@ const handleSubmit = async () => {
             mail_tax_discount: form.value.mail_tax_discount,
             is_port_pickup: form.value.is_port_pickup,
             order_templ: form.value.order_templ,
+            pickup_method: form.value.pickup_method,
+            pickup_location: form.value.pickup_location,
             offline_flight: form.value.offline_flight,
             consignee_name: form.value.consignee_name,
             consignee_phone: form.value.consignee_phone,
@@ -754,6 +818,7 @@ const handleSubmit = async () => {
             user_id: form.value.user_id,
             sub_order_no: '',
             departure_time: formatDate(form.value.departure_time),
+            sailing_time: formatDate(form.value.sailing_time),
             order_time: formatDate(form.value.order_time),
             status: form.value.status,
             points_deduction: form.value.points_deduction,
@@ -761,6 +826,8 @@ const handleSubmit = async () => {
             mail_tax_discount: form.value.mail_tax_discount,
             is_port_pickup: form.value.is_port_pickup,
             order_templ: form.value.order_templ,
+            pickup_method: form.value.pickup_method,
+            pickup_location: form.value.pickup_location,
             offline_flight: form.value.offline_flight,
             consignee_name: form.value.consignee_name,
             consignee_phone: form.value.consignee_phone,

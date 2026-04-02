@@ -66,7 +66,7 @@
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
 						<span class="text-gray-600 text-sm flex-1 text-#676767">开航时间</span>
 						<span class="text-sm flex-2 text-right px-2 py-1 rounded inline-block text-#333333">{{
-							orderInfo?.route_info?.departure_time || '加载中...'
+							orderInfo?.route_info?.sailing_time || '加载中...'
 						}}</span>
 					</view>
 					<uv-line />

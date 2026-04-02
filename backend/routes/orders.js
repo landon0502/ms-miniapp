@@ -325,8 +325,11 @@ router.post('/', async (req, res) => {
     const vehiclePrice = req.body.vehicle_price !== undefined ? req.body.vehicle_price : 0;
     const valueAddedService = req.body.value_added_service !== undefined ? req.body.value_added_service : 0;
     const orderTempl = req.body.order_templ !== undefined ? req.body.order_templ : 1;
-    const departureTime = departure_time !== undefined ? departure_time : null;
-    const orderTime = order_time !== undefined ? order_time : new Date();
+    const pickupMethod = req.body.pickup_method !== undefined ? req.body.pickup_method : '口岸自提';
+    const pickupLocation = req.body.pickup_location !== undefined ? req.body.pickup_location : '新海港';
+    const sailingTime = req.body.sailing_time !== undefined ? req.body.sailing_time : null;
+    const departureTime = req.body.departure_time !== undefined && req.body.departure_time !== '' ? req.body.departure_time : null;
+    const orderTime = req.body.order_time !== undefined ? req.body.order_time : new Date();
     const shippingStore = '海南电商离岛免税';
       
       // 检查所有参数是否都不是 undefined
@@ -359,8 +362,8 @@ router.post('/', async (req, res) => {
       });
       
       const [orderResult] = await pool.execute(
-        'INSERT INTO orders (order_no, sub_order_no, user_id, total_price, actual_price, points_deduction, mail_tax, mail_tax_discount, is_port_pickup, offline_flight, consignee_name, consignee_phone, consignee_idcard, port_order_no, detail_list_order_no, route, vehicle_type, departure_port, destination_port, passenger_price, vehicle_price, value_added_service, order_templ, status, departure_time, order_time, shipping_store) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [order_no, generated_sub_order_no, user_id, total_price, actual_price, pointsDeduction, mailTax, mailTaxDiscount, isPortPickup, offlineFlight, consigneeName, consigneePhone, consigneeIdcard, portOrderNo, detailListOrderNo, route, vehicleType, departurePort, destinationPort, passengerPrice, vehiclePrice, valueAddedService, orderTempl, 'pending', departureTime, orderTime, shippingStore]
+        'INSERT INTO orders (order_no, sub_order_no, user_id, total_price, actual_price, points_deduction, mail_tax, mail_tax_discount, is_port_pickup, offline_flight, consignee_name, consignee_phone, consignee_idcard, port_order_no, detail_list_order_no, route, vehicle_type, departure_port, destination_port, passenger_price, vehicle_price, value_added_service, order_templ, pickup_method, pickup_location, sailing_time, status, departure_time, order_time, shipping_store) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [order_no, generated_sub_order_no, user_id, total_price, actual_price, pointsDeduction, mailTax, mailTaxDiscount, isPortPickup, offlineFlight, consigneeName, consigneePhone, consigneeIdcard, portOrderNo, detailListOrderNo, route, vehicleType, departurePort, destinationPort, passengerPrice, vehiclePrice, valueAddedService, orderTempl, pickupMethod, pickupLocation, sailingTime, 'pending', departureTime, orderTime, shippingStore]
       );
       
       const orderId = orderResult.insertId;
@@ -547,6 +550,9 @@ router.put('/:id', async (req, res) => {
       vehicle_price = ?, 
       value_added_service = ?, 
       order_templ = ?, 
+      pickup_method = ?, 
+      pickup_location = ?, 
+      sailing_time = ?, 
       status = ?, 
       departure_time = ?, 
       sub_order_no = ?, 
@@ -589,10 +595,13 @@ router.put('/:id', async (req, res) => {
       req.body.vehicle_price !== undefined ? req.body.vehicle_price : currentOrder[0].vehicle_price || 0,
       req.body.value_added_service !== undefined ? req.body.value_added_service : currentOrder[0].value_added_service || 0,
       req.body.order_templ !== undefined ? req.body.order_templ : currentOrder[0].order_templ || 1,
+      req.body.pickup_method !== undefined ? req.body.pickup_method : currentOrder[0].pickup_method || '口岸自提',
+      req.body.pickup_location !== undefined ? req.body.pickup_location : currentOrder[0].pickup_location || '新海港',
+      req.body.sailing_time !== undefined ? (req.body.sailing_time !== '' ? req.body.sailing_time : null) : currentOrder[0].sailing_time || null,
       status !== undefined ? status : currentOrder[0].status,
-      departure_time !== undefined ? departure_time : currentOrder[0].departure_time,
+      departure_time !== undefined ? (departure_time !== '' ? departure_time : null) : currentOrder[0].departure_time,
       sub_order_no !== undefined ? sub_order_no : generated_sub_order_no,
-      order_time !== undefined ? order_time : currentOrder[0].order_time,
+      order_time !== undefined ? (order_time !== '' ? order_time : null) : currentOrder[0].order_time,
       '海南电商离岛免税',
       req.params.id
     ];

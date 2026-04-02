@@ -338,8 +338,8 @@ router.post('/', async (req, res) => {
     const vehiclePrice = req.body.vehicle_price !== undefined ? req.body.vehicle_price : 0;
     const valueAddedService = req.body.value_added_service !== undefined ? req.body.value_added_service : 0;
     const orderTempl = req.body.order_templ !== undefined ? req.body.order_templ : 1;
-    const departureTime = departure_time !== undefined ? departure_time : null;
-    const orderTime = order_time !== undefined ? order_time : new Date();
+    const departureTime = req.body.departure_time !== undefined && req.body.departure_time !== '' ? req.body.departure_time : null;
+    const orderTime = req.body.order_time !== undefined ? req.body.order_time : new Date();
     const shippingStore = '海南电商离岛免税';
       
       // 检查所有参数是否都不是 undefined
@@ -610,6 +610,9 @@ router.get('/:id', async (req, res) => {
       order_no: order.order_no,
       order_templ: order.order_templ || 1,
       detail_list_order_no: order.detail_list_order_no || '',
+      departure_time: order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null,
+      pickup_location: order.pickup_location || '新海港',
+      pickup_method: order.pickup_method || '口岸自提',
       items: items,
       points_deduction: order.points_deduction || 0,
       discount: discount,
@@ -623,7 +626,7 @@ router.get('/:id', async (req, res) => {
         port_order_no: order.port_order_no || '',
         route: order.route || '',
         offline_flight: order.offline_flight || 'HA2140', // 从数据库中取值，移到route_info中
-        departure_time: order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null,
+        sailing_time: order.sailing_time ? dayjs(order.sailing_time).format('YYYY-MM-DD HH:mm:ss') : null,
         vehicle_type: order.vehicle_type || '',
         departure_port: order.departure_port || '',
         destination_port: order.destination_port || '',

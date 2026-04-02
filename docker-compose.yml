@@ -36,12 +36,6 @@ services:
     ports:
       - "3306:3306"
     restart: always
-    # environment:
-    #   - MYSQL_HOST=8.134.59.165
-    #   - MYSQL_ROOT_PASSWORD=00000000
-    #   - MYSQL_DATABASE=duty_free_shopping
-    #   - MYSQL_USER=root
-    #   - MYSQL_PASSWORD=00000000
     environment:
       - MYSQL_HOST=localhost
       - MYSQL_ROOT_PASSWORD=00000000

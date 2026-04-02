@@ -280,6 +280,24 @@ export async function initDatabase() {
       if (result22.length === 0) {
         await connection.execute('ALTER TABLE orders ADD COLUMN detail_list_order_no VARCHAR(50) COMMENT "订单详情列表订单号"');
       }
+      
+      // 添加提货方式字段
+      const [result23] = await connection.execute('SHOW COLUMNS FROM orders WHERE Field = ?', ['pickup_method']);
+      if (result23.length === 0) {
+        await connection.execute('ALTER TABLE orders ADD COLUMN pickup_method VARCHAR(50) DEFAULT "口岸自提" COMMENT "提货方式"');
+      }
+      
+      // 添加提货点字段
+      const [result24] = await connection.execute('SHOW COLUMNS FROM orders WHERE Field = ?', ['pickup_location']);
+      if (result24.length === 0) {
+        await connection.execute('ALTER TABLE orders ADD COLUMN pickup_location VARCHAR(100) DEFAULT "新海港" COMMENT "提货点"');
+      }
+      
+      // 添加开航时间字段
+      const [result25] = await connection.execute('SHOW COLUMNS FROM orders WHERE Field = ?', ['sailing_time']);
+      if (result25.length === 0) {
+        await connection.execute('ALTER TABLE orders ADD COLUMN sailing_time TIMESTAMP COMMENT "开航时间"');
+      }
     } catch (error) {
       console.error('添加订单表新字段失败:', error);
     }
@@ -309,6 +327,9 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN value_added_service DECIMAL(10,2) DEFAULT 0 COMMENT '增值服务'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN order_templ INT DEFAULT 1 COMMENT '订单模版配置（1或2）'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN detail_list_order_no VARCHAR(50) COMMENT '订单详情列表订单号'`);
+    await connection.execute(`ALTER TABLE orders MODIFY COLUMN pickup_method VARCHAR(50) DEFAULT '口岸自提' COMMENT '提货方式'`);
+    await connection.execute(`ALTER TABLE orders MODIFY COLUMN pickup_location VARCHAR(100) DEFAULT '新海港' COMMENT '提货点'`);
+    await connection.execute(`ALTER TABLE orders MODIFY COLUMN sailing_time TIMESTAMP COMMENT '开航时间'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN status VARCHAR(20) NOT NULL COMMENT '订单状态'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN departure_time TIMESTAMP COMMENT '离岛时间'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN order_time TIMESTAMP COMMENT '下单时间'`);

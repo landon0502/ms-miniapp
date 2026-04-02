@@ -1,7 +1,7 @@
 <template>
 	<PageContainer
 		:navBarProps="{
-			title: '订单详情',
+			title: '已提货',
 			leftIcon: 'arrow-left'
 		}"
 		fixedContentHeight
@@ -64,7 +64,7 @@
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="timeIcon" :size="14" />
 										<text class="font-size-14px text-#9E9E9E">{{
-											formatDate(orderInfo?.route_info?.departure_time)
+											formatDate(orderInfo?.route_info?.sailing_time)
 										}}</text>
 									</view>
 								</view>
@@ -122,7 +122,9 @@
 									<view class="flex flex-row items-center py-10px">
 										<text class="font-size-15px text-#A2A2A2">提货方式：</text>
 										<text class="font-size-13px text-#5D5D5D font-bold ml-4px">
-											离岛提货点自提-<text class="text-#9D6261">新海港</text>
+											{{ orderInfo?.pickup_method || '口岸自提' }}-<text class="text-#9D6261">
+												{{ orderInfo?.pickup_location || '新海港' }}
+											</text>
 										</text>
 									</view>
 									<uv-line />
@@ -235,10 +237,10 @@
 
 		<!-- 底部操作 -->
 		<template #footer>
-			<uv-line/>
+			<uv-line />
 			<view class="footer-buttons flex flex-row items-center justify-between px-24px py-12px">
 				<view @click="handleClickOrderDetail">
-					<text class="text-12px text-#999">订单明细</text>
+					<text class="text-12px text-#999">更多</text>
 				</view>
 				<uv-button
 					class="footer-btn"
@@ -249,7 +251,7 @@
 						background: '#CA9B6E'
 					}"
 					:custom-text-style="{
-						fontSize: '14px',
+						fontSize: '12px',
 						color: '#fff'
 					}"
 					:text="'再次购买'"
@@ -292,7 +294,7 @@ const { data: orderInfo, loading, error } = orderDetailControl
 // 格式化时间函数
 const formatDate = (dateString) => {
 	if (!dateString) return '加载中...'
-	return dayjs(dateString).format('YYYY-MM-DD HH:mm:ss')
+	return dayjs(dateString).format('YYYY-MM-DD HH:mm')
 }
 
 const pagingRef = shallowRef(null)

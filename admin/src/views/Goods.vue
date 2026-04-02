@@ -122,57 +122,70 @@
         class="goods-form"
         label-position="top"
       >
-        <div class="form-row">
-          <el-form-item label="商品名称" prop="name" class="form-item-col">
-            <el-input v-model="form.name" placeholder="请输入商品名称" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item label="商品库存" prop="stock" class="form-item-col">
-            <el-input
-              v-model.number="form.stock"
-              type="number"
-              placeholder="请输入商品库存"
-            />
-          </el-form-item>
-          <el-form-item label="商品分类" prop="category" class="form-item-col">
-            <el-input v-model="form.category" placeholder="请输入商品分类" />
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item
-            label="商品描述"
-            prop="description"
-            class="form-item-col"
-          >
-            <el-input
-              v-model="form.description"
-              type="textarea"
-              placeholder="请输入商品描述"
-            />
-          </el-form-item>
-          <el-form-item label="商品主题" prop="theme" class="form-item-col">
-            <el-radio-group v-model="form.theme">
-              <el-radio label="red">红色主题</el-radio>
-              <el-radio label="black">黑色主题</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            label="计量类型"
-            prop="measurement_type"
-            class="form-item-col"
-          >
-            <el-radio-group v-model="form.measurement_type">
-              <el-radio label="spec">规格</el-radio>
-              <el-radio label="capacity">容量</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </div>
-        <div class="form-row">
-          <el-form-item label="商品图片" class="form-item-col">
-            <UploadImage v-model="form.image" :limit="1" />
-          </el-form-item>
-        </div>
+        <el-row :gutter="20">
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item label="商品名称" prop="name" class="form-item-col">
+              <el-input v-model="form.name" placeholder="请输入商品名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item label="商品库存" prop="stock" class="form-item-col">
+              <el-input
+                v-model.number="form.stock"
+                type="number"
+                placeholder="请输入商品库存"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item
+              label="商品分类"
+              prop="category"
+              class="form-item-col"
+            >
+              <el-input v-model="form.category" placeholder="请输入商品分类" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item
+              label="商品描述"
+              prop="description"
+              class="form-item-col"
+            >
+              <el-input
+                v-model="form.description"
+                type="textarea"
+                placeholder="请输入商品描述"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item label="商品主题" prop="theme" class="form-item-col">
+              <el-radio-group v-model="form.theme">
+                <el-radio label="red">红色主题</el-radio>
+                <el-radio label="black">黑色主题</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item
+              label="计量类型"
+              prop="measurement_type"
+              class="form-item-col"
+            >
+              <el-radio-group v-model="form.measurement_type">
+                <el-radio label="spec">规格</el-radio>
+                <el-radio label="capacity">容量</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item label="商品图片" class="form-item-col">
+              <UploadImage v-model="form.image" :limit="1" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <div class="form-row">
           <el-form-item label="商品规格" prop="skus" class="form-item-full">
             <div v-if="form.skus && form.skus.length > 0">
@@ -1207,7 +1220,7 @@ export default {
     const handleDeletePromotion = async (promotionId, index) => {
       if (promotionId) {
         try {
-          if(promotionId){
+          if (promotionId) {
             await deletePromotion(promotionId);
           }
           form.value.promotions.splice(index, 1);
@@ -1297,7 +1310,7 @@ export default {
           await deleteProductSku(skuId);
           ElMessage.success("删除规格成功");
           fetchGoodsList();
-        } 
+        }
         form.value.skus.splice(index, 1);
       } catch (error) {
         ElMessage.error("删除规格失败");

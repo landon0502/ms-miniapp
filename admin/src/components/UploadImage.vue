@@ -1,25 +1,32 @@
 <template>
-  <el-upload
-    class="upload-image"
-    :class="{ 'avatar-uploader': !multiple, 'multi-uploader': multiple }"
-    :action="uploadUrl"
-    name="file"
-    accept="image/*"
-    :show-file-list="showFileList"
-    :on-success="handleSuccess"
-    :on-error="handleError"
-    :on-remove="handleRemove"
-    :before-upload="beforeUpload"
-    :multiple="multiple"
-    :limit="limit"
-    :file-list="fileList"
-    :list-type="listType"
-  >
-    <template v-if="!showFileList || fileList.length < limit">
-      <el-icon><Plus /></el-icon>
-      <span v-if="buttonText" class="upload-text">{{ buttonText }}</span>
-    </template>
-  </el-upload>
+  <div :class="{'upload-image-container': true, 'hide-upload-button': fileList.length >= limit}">
+    <el-upload
+      class="upload-image"
+      :class="{ 'avatar-uploader': !multiple, 'multi-uploader': multiple }"
+      :action="uploadUrl"
+      name="file"
+      accept="image/*"
+      :show-file-list="showFileList"
+      :on-success="handleSuccess"
+      :on-error="handleError"
+      :on-remove="handleRemove"
+      :before-upload="beforeUpload"
+      :multiple="multiple"
+      :limit="limit"
+      :file-list="fileList"
+      :list-type="listType"
+    >
+      <template v-if="!showFileList || fileList.length < limit">
+        <div class="upload-button-content">
+          <el-icon><Plus /></el-icon>
+          <span v-if="buttonText" class="upload-text">{{ buttonText }}</span>
+        </div>
+      </template>
+      <template v-else>
+        <div class="upload-button-hidden"></div>
+      </template>
+    </el-upload>
+  </div>
 </template>
 
 <script setup>
@@ -84,7 +91,6 @@ const fileList = ref([]);
 
 // 初始化文件列表
 const initFileList = () => {
- 
   if (!props.modelValue) {
     fileList.value = [];
     return;
@@ -150,7 +156,7 @@ const handleRemove = (file, fileListData) => {
 const updateValue = () => {
   const urls = fileList.value
     .map((item) => item.response?.url || item.url)
-    .filter((url) => typeof url === 'string' && url !== '');
+    .filter((url) => typeof url === "string" && url !== "");
   if (props.multiple) {
     emit("update:modelValue", urls);
   } else {
@@ -174,7 +180,7 @@ const defaultBeforeUpload = (file) => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .upload-image {
   display: inline-block;
 }
@@ -201,5 +207,23 @@ const defaultBeforeUpload = (file) => {
   margin-left: 8px;
   font-size: 14px;
   color: var(--el-text-color-regular);
+}
+
+.upload-button-hidden {
+  display: none;
+}
+
+.upload-image-container {
+  :deep(.el-upload-list--picture-card ){
+    .el-upload-list__item {
+      width: 100px;
+      height: 100px;
+    }
+  }
+}
+.hide-upload-button {
+  :deep(.el-upload--picture-card) {
+    display: none !important;
+  }
 }
 </style>
