@@ -31,11 +31,6 @@
           </template>
         </el-table-column>
         <el-table-column prop="name" label="商品名称" />
-        <el-table-column prop="price" label="价格" width="100">
-          <template #default="scope">
-            <span>¥{{ scope.row.price }}</span>
-          </template>
-        </el-table-column>
         <el-table-column prop="stock" label="库存" width="100" />
         <el-table-column label="规格" min-width="150">
           <template #default="scope">
