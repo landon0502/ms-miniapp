@@ -318,11 +318,11 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :xs="24" :sm="12" :md="8" :lg="6">
-              <el-form-item label="开航时间" prop="sailing_time">
+              <el-form-item label="开航时间（离岛时间）" prop="sailing_time">
                 <el-date-picker
                   v-model="form.sailing_time"
                   type="datetime"
-                  placeholder="选择开航时间"
+                  placeholder="选择开航时间（离岛时间）"
                   style="width: 100%"
                   value-format="YYYY-MM-DD HH:mm:ss"
                 />

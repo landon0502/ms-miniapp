@@ -1,7 +1,7 @@
 <template>
 	<PageContainer
 		:navBarProps="{
-			title: '订单详情',
+			title: '已提货',
 			leftIcon: 'arrow-left'
 		}"
 		fixedContentHeight

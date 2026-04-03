@@ -118,6 +118,9 @@
       <div class="copyright">
         <p>© 2026 后台管理系统 | Powered by Vue 3 + Element Plus</p>
       </div>
+      <div class="copyright">
+        <p>蜀ICP备2026012676号</p>
+      </div>
       <div class="copyright text-10px transform-scale-90">
         <p class="opacity-50">
           This system is intended for technical sharing and learning purposes

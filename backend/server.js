@@ -14,6 +14,7 @@ import promotionsRouter from './routes/promotions.js';
 import couponsRouter from './routes/coupons.js';
 import authRouter from './routes/auth.js';
 import authMiddleware from './middleware/auth.js';
+import sysConfigMiddleware from './middleware/system.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
@@ -57,6 +58,9 @@ if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
 
 // 静态文件服务
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// 系统配置中间件
+app.use(sysConfigMiddleware);
 
 // 注册 miniapp 专用路由（不需要验证token）
 app.use('/api/miniapp/orders', miniappOrdersRouter);

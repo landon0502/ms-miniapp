@@ -52,6 +52,9 @@
           </router-view>
         </div>
       </el-main>
+      <el-footer class="icp-footer">
+        <p>蜀ICP备2026012676号</p>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -213,5 +216,19 @@ export default {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+.icp-footer {
+  text-align: center;
+  padding: 15px 0;
+  color: #909399;
+  font-size: 12px;
+  border-top: 1px solid #ebeef5;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+.icp-footer p {
+  margin: 0;
 }
 </style>
