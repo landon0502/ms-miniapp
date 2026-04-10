@@ -85,7 +85,7 @@ export async function initDatabase() {
     
     // 添加用户表字段注释
     await connection.execute(`ALTER TABLE users MODIFY COLUMN id INT AUTO_INCREMENT COMMENT '用户ID'`);
-    await connection.execute(`ALTER TABLE users MODIFY COLUMN username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名'`);
+    await connection.execute(`ALTER TABLE users MODIFY COLUMN username VARCHAR(50) NOT NULL COMMENT '用户名'`);
     await connection.execute(`ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NOT NULL COMMENT '密码'`);
     await connection.execute(`ALTER TABLE users MODIFY COLUMN nickname VARCHAR(100) COMMENT '昵称'`);
     await connection.execute(`ALTER TABLE users MODIFY COLUMN avatar VARCHAR(255) COMMENT '头像'`);
@@ -487,9 +487,9 @@ export async function initDatabase() {
       CREATE TABLE IF NOT EXISTS discounts (
         id INT PRIMARY KEY AUTO_INCREMENT,
         product_id INT NOT NULL,
-        name VARCHAR(255) NOT NULL,
         end_time DATETIME,
         value DECIMAL(3,1) NOT NULL,
+        min_quantity INT DEFAULT 1,
         FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
       )
     `);
@@ -507,13 +507,39 @@ export async function initDatabase() {
       console.error('添加折扣表start_time字段失败:', error);
     }
     
+    // 检查并添加min_quantity字段
+    try {
+      const [minQuantityResult] = await connection.execute(
+        'SHOW COLUMNS FROM discounts WHERE Field = ?',
+        ['min_quantity']
+      );
+      if (minQuantityResult.length === 0) {
+        await connection.execute('ALTER TABLE discounts ADD COLUMN min_quantity INT DEFAULT 1 COMMENT "享受折扣的最小购买件数"');
+      }
+    } catch (error) {
+      console.error('添加折扣表min_quantity字段失败:', error);
+    }
+    
+    // 检查并删除name字段
+    try {
+      const [nameResult] = await connection.execute(
+        'SHOW COLUMNS FROM discounts WHERE Field = ?',
+        ['name']
+      );
+      if (nameResult.length > 0) {
+        await connection.execute('ALTER TABLE discounts DROP COLUMN name');
+      }
+    } catch (error) {
+      console.error('删除折扣表name字段失败:', error);
+    }
+    
     // 添加折扣表字段注释
     await connection.execute(`ALTER TABLE discounts MODIFY COLUMN id INT AUTO_INCREMENT COMMENT '折扣ID'`);
     await connection.execute(`ALTER TABLE discounts MODIFY COLUMN product_id INT NOT NULL COMMENT '商品ID'`);
-    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN name VARCHAR(255) NOT NULL COMMENT '折扣内容'`);
     await connection.execute(`ALTER TABLE discounts MODIFY COLUMN start_time DATETIME COMMENT '活动开始时间'`);
     await connection.execute(`ALTER TABLE discounts MODIFY COLUMN end_time DATETIME COMMENT '活动结束时间'`);
     await connection.execute(`ALTER TABLE discounts MODIFY COLUMN value DECIMAL(3,1) NOT NULL COMMENT '折扣值（1-10之间）'`);
+    await connection.execute(`ALTER TABLE discounts MODIFY COLUMN min_quantity INT DEFAULT 1 COMMENT '享受折扣的最小购买件数'`);
     
     // 创建优惠券表
     await connection.execute(`

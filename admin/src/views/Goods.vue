@@ -70,6 +70,22 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
+        <el-table-column label="折扣" min-width="150">
+          <template #default="scope">
+            <div v-if="scope.row.discounts && (Array.isArray(scope.row.discounts) ? scope.row.discounts.length > 0 : true)">
+              <div class="discount-list">
+                <span
+                  v-for="(discount, index) in (Array.isArray(scope.row.discounts) ? scope.row.discounts : [scope.row.discounts])"
+                  :key="index"
+                  class="discount-tag"
+                >
+                  {{ formatDiscount(discount) }}
+                </span>
+              </div>
+            </div>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="theme" label="主题" width="120">
           <template #default="scope">
             <el-tag :type="scope.row.theme === 'red' ? 'danger' : 'info'">
@@ -396,12 +412,6 @@
                   label-position="top"
                 >
                   <div class="form-row">
-                    <el-form-item label="折扣内容" class="form-item-col">
-                      <el-input
-                        v-model="discount.name"
-                        placeholder="请输入折扣内容"
-                      />
-                    </el-form-item>
                     <el-form-item label="活动开始时间" class="form-item-col">
                       <el-date-picker
                         v-model="discount.start_time"
@@ -423,6 +433,13 @@
                         v-model.number="discount.value"
                         type="number"
                         placeholder="请输入折扣值（1-10之间）"
+                      />
+                    </el-form-item>
+                    <el-form-item label="购买件数" class="form-item-col">
+                      <el-input
+                        v-model.number="discount.min_quantity"
+                        type="number"
+                        placeholder="请输入享受折扣的最小购买件数"
                       />
                     </el-form-item>
                   </div>
@@ -593,12 +610,6 @@
         label-position="top"
       >
         <div class="form-row">
-          <el-form-item label="折扣内容" class="form-item-col">
-            <el-input
-              v-model="discountForm.name"
-              placeholder="请输入折扣内容"
-            />
-          </el-form-item>
           <el-form-item label="活动开始时间" class="form-item-col">
             <el-date-picker
               v-model="discountForm.start_time"
@@ -620,6 +631,13 @@
               v-model.number="discountForm.value"
               type="number"
               placeholder="请输入折扣值（1-10之间）"
+            />
+          </el-form-item>
+          <el-form-item label="购买件数" class="form-item-col">
+            <el-input
+              v-model.number="discountForm.min_quantity"
+              type="number"
+              placeholder="请输入享受折扣的最小购买件数"
             />
           </el-form-item>
         </div>
@@ -975,19 +993,18 @@ export default {
                 ? [{ url: getImageUrl(promotion.image) }]
                 : [],
             })),
-            discounts: productDetail.discounts
-              ? [
-                  {
-                    ...productDetail.discounts,
-                    start_time: productDetail.discounts.start_time
-                      ? new Date(productDetail.discounts.start_time)
-                      : null,
-                    end_time: productDetail.discounts.end_time
-                      ? new Date(productDetail.discounts.end_time)
-                      : null,
-                    value: productDetail.discounts.value || 1,
-                  },
-                ]
+            discounts: productDetail.discounts && Array.isArray(productDetail.discounts)
+              ? productDetail.discounts.map((discount) => ({
+                  ...discount,
+                  start_time: discount.start_time
+                    ? new Date(discount.start_time)
+                    : null,
+                  end_time: discount.end_time
+                    ? new Date(discount.end_time)
+                    : null,
+                  value: discount.value || 1,
+                  min_quantity: discount.min_quantity || 1,
+                }))
               : [],
           };
           dialogVisible.value = true;
@@ -1237,10 +1254,10 @@ export default {
     const handleAddDiscount = () => {
       form.value.discounts.push({
         id: "",
-        name: "",
         start_time: null,
         end_time: null,
         value: 1,
+        min_quantity: 1,
       });
     };
 
@@ -1253,6 +1270,7 @@ export default {
         start_time: discount.start_time ? new Date(discount.start_time) : null,
         end_time: discount.end_time ? new Date(discount.end_time) : null,
         value: discount.value || 1,
+        min_quantity: discount.min_quantity || 1,
       };
       currentDiscountIndex.value = index;
       discountDialogVisible.value = true;
@@ -1368,6 +1386,7 @@ export default {
               ? dayjs(discount.end_time).format("YYYY-MM-DD HH:mm:ss")
               : null,
             value: Number(discount.value) || 1,
+            min_quantity: Number(discount.min_quantity) || 1,
           })),
         };
         if (form.value.id) {
@@ -1435,6 +1454,17 @@ export default {
       return labelColorMap[label] || "info";
     };
 
+    // 格式化折扣信息
+    const formatDiscount = (discount) => {
+      if (!discount) return "";
+      const { value, min_quantity } = discount;
+      if (min_quantity === 1) {
+        return `${value}折`;
+      } else {
+        return `${min_quantity}件${value}折`;
+      }
+    };
+
     return {
       searchQuery,
       currentPage,
@@ -1462,6 +1492,7 @@ export default {
       discountFormRef,
       getImageUrl,
       getLabelType,
+      formatDiscount,
       handleAddGoods,
       handleEditGoods,
       handleSaveGoods,
@@ -1546,6 +1577,38 @@ export default {
 
 :deep(.el-table__row) {
   transition: all 0.3s ease;
+}
+
+/* 促销和折扣标签样式 */
+.promotion-list,
+.discount-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.promotion-tag {
+  background-color: #f0f9ff;
+  border: 1px solid #e1f5fe;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #0288d1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.discount-tag {
+  background-color: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #ef6c00;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* 规格样式 */

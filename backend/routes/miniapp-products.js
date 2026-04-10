@@ -225,14 +225,23 @@ router.get('/:id', async (req, res) => {
       return coupon;
     });
     
-    // 获取有效期内的折扣数据
-    const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ? AND (end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())', [req.params.id]);
+    // 获取所有折扣数据（包括未设置日期的），优先根据 min_quantity 升序返回，如果 min_quantity 相同，则根据 value 升序进行返回
+    const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ? AND ((end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())) OR (start_time IS NULL AND end_time IS NULL) ORDER BY min_quantity ASC, value ASC', [req.params.id]);
     
     // 生成标签
     const tags = [];
     // 添加折扣标签
     if (discounts.length > 0) {
-      tags.push(discounts[0].name);
+      discounts.forEach(discount => {
+        // 处理折扣值，整数时不显示小数
+        const discountValue = parseFloat(discount.value);
+        const displayValue = Number.isInteger(discountValue) ? discountValue : discount.value;
+        if (discount.min_quantity === 1) {
+          tags.push(`${displayValue}折`);
+        } else {
+          tags.push(`${discount.min_quantity}件${displayValue}折`);
+        }
+      });
     }
     // 添加优惠券标签
     if (coupons.length > 0) {
@@ -252,7 +261,7 @@ router.get('/:id', async (req, res) => {
         skus: parsedSkus, 
         promotions, 
         promotion_labels: promotionLabels,
-        discounts: discounts.length > 0 ? discounts[0] : null,
+        discounts: discounts,
         coupons: parsedCoupons,
         tags
       }

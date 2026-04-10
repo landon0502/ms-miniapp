@@ -244,8 +244,8 @@ router.get('/:id', async (req, res) => {
       return coupon;
     });
     
-    // 获取有效期内的折扣数据
-    const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ? AND (end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())', [req.params.id]);
+    // 获取所有折扣数据
+    const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ?', [req.params.id]);
     
     // 生成标签
     const tags = [];
@@ -271,7 +271,7 @@ router.get('/:id', async (req, res) => {
         skus: parsedSkus, 
         promotions, 
         promotion_labels: promotionLabels,
-        discounts: discounts.length > 0 ? discounts[0] : null,
+        discounts: discounts,
         coupons: parsedCoupons,
         tags
       }
@@ -472,11 +472,11 @@ router.post('/', async (req, res) => {
       // 处理折扣
       if (discounts && Array.isArray(discounts)) {
         for (const discount of discounts) {
-          const { name, start_time, end_time, value } = discount;
+          const { start_time, end_time, value, min_quantity } = discount;
           
           await connection.execute(
-            'INSERT INTO discounts (product_id, name, start_time, end_time, value) VALUES (?, ?, ?, ?, ?)',
-            [productId, name, start_time, end_time, value]
+            'INSERT INTO discounts (product_id, start_time, end_time, value, min_quantity) VALUES (?, ?, ?, ?, ?)',
+            [productId, start_time, end_time, value, min_quantity]
           );
         }
       }
@@ -951,11 +951,11 @@ router.put('/:id', async (req, res) => {
         
         // 添加新的折扣
         for (const discount of discounts) {
-          const { name, start_time, end_time, value } = discount;
+          const { start_time, end_time, value, min_quantity } = discount;
           
           await connection.execute(
-            'INSERT INTO discounts (product_id, name, start_time, end_time, value) VALUES (?, ?, ?, ?, ?)',
-            [req.params.id, name, start_time, end_time, value]
+            'INSERT INTO discounts (product_id, start_time, end_time, value, min_quantity) VALUES (?, ?, ?, ?, ?)',
+            [req.params.id, start_time, end_time, value, min_quantity]
           );
         }
       }

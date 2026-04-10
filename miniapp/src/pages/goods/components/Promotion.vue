@@ -22,7 +22,7 @@
 							class="flex flex-col items-center bg-#B6161C10 w-full py-48rpx border-t-2px border-t-solid border-t-#B6161C pos-relative promotion-info"
 						>
 							<text class="text-10px text-#2F2F2F">现在购买，享受一下优惠</text>
-							<view class="flex flex-row items-center justify-center gap-48rpx">
+							<view class="flex flex-row items-start justify-center gap-48rpx mt-36rpx">
 								<view class="flex flex-col gap-18rpx items-center w-200rpx">
 									<text class="font-bold text-14px text-#B6161C">￥{{ currentSku?.price }}</text>
 									<view
@@ -30,21 +30,50 @@
 										>参考价</view
 									>
 								</view>
-								<text class="text-14px text-#B6161C">-</text>
+								<view class="text-14px text-#B6161C h-16px line-height-16px">-</view>
 								<view class="flex flex-col gap-18rpx items-center w-200rpx">
 									<text class="font-bold text-14px text-#B6161C"
 										>￥{{ new Decimal(currentSku?.price).minus(discountPrice).toFixed(2) }}</text
 									>
-									<view
-										class="text-10px text-#B6161C border-1rpx border-solid border-#B6161C rounded-2px text-center bg-#fff w-120rpx"
-										>促销价</view
-									>
+									<view class="flex flex-col items-center">
+										<view
+											class="text-10px text-#B6161C border-1rpx border-solid border-#B6161C rounded-2px text-center bg-#fff w-120rpx"
+											>促销价</view
+										>
+										<view v-if="firstDiscount?.min_quantity > 1">
+											<text class="text-10px text-#B6161C">{{
+												'需满' + firstDiscount?.min_quantity + '件'
+											}}</text>
+										</view>
+									</view>
 								</view>
 							</view>
 						</view>
 					</view>
 					<view class="flex flex-col gap-24rpx" v-if="!isEmpty(productInfo?.promotions)">
 						<text class="text-10px text-#999">优惠活动</text>
+						<template v-if="!isEmpty(productInfo?.discounts)">
+							<view
+								v-for="discount in productInfo?.discounts"
+								:key="discount.id"
+								class="flex flex-row gap-12rpx items-cener"
+							>
+								<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
+									<text class="text-#B6161C text-10px">
+										{{
+											`${discount.min_quantity > 1 ? discount.min_quantity + '件' : ''}${Number(discount.value)}折`
+										}}
+									</text>
+								</view>
+								<view class="flex-1 flex items-center">
+									<text class="text-10px line-clamp-1"
+										>此商品专享{{
+											`${discount.min_quantity > 1 ? '满' + discount.min_quantity + '件' : ''}${Number(discount.value)}折`
+										}}折</text
+									>
+								</view>
+							</view>
+						</template>
 						<view
 							class="flex flex-row gap-16rpx"
 							v-for="promotion in productInfo?.promotions"
@@ -110,6 +139,8 @@ const popupRef = shallowRef()
 const productInfo = ref()
 const currentSku = ref()
 
+const firstDiscount = computed(() => productInfo.value?.discounts?.[0])
+
 /**
  * 优惠价格
  */
@@ -117,8 +148,8 @@ const discountPrice = computed(() => {
 	if (currentSku.value?.activities) {
 		return null
 	}
-	if (productInfo.value?.discounts) {
-		return new Decimal(Number(productInfo.value?.discounts?.value))
+	if (firstDiscount.value) {
+		return new Decimal(Number(firstDiscount.value?.value))
 			.times(Number(currentSku.value?.price || 0))
 			.div(10)
 			.toFixed(2)

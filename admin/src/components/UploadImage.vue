@@ -15,6 +15,7 @@
       :limit="limit"
       :file-list="fileList"
       :list-type="listType"
+      :headers="uploadHeaders"
     >
       <template v-if="!showFileList || fileList.length < limit">
         <div class="upload-button-content">
@@ -33,6 +34,7 @@
 import { ref, watch, computed } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import { useUserStore } from "../store/modules/user";
 
 const props = defineProps({
   // 图片URL或URL数组
@@ -79,11 +81,22 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "success", "error", "remove"]);
 
+// 用户存储
+const userStore = useUserStore();
+
 // 上传地址
 const uploadUrl = computed(() => {
-  const baseUrl =
-    location.protocol + "//" + import.meta.env.VITE_API_BASE_URL || "";
+  const baseUrl = 
+    location.protocol + '//' + (import.meta.env.DEV ? location.hostname : import.meta.env.VITE_API_BASE_URL);
   return baseUrl + props.action;
+});
+
+// 上传 headers
+const uploadHeaders = computed(() => {
+  const token = userStore.token;
+  return {
+    Authorization: token ? `Bearer ${token}` : ""
+  };
 });
 
 // 文件列表

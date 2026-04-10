@@ -33,9 +33,11 @@
 					<view
 						class="w-110rpx pos-absolute z-2 right-24rpx top-200rpx bg-#343233 border-2rpx border-#343233 border-solid rounded-6px overflow-hidden"
 						v-if="!isEmpty(productInfo?.promotions)"
-						@click="()=>{
-							promotionRef.open(productInfo, currentSku)
-						}"
+						@click="
+							() => {
+								promotionRef.open(productInfo, currentSku)
+							}
+						"
 					>
 						<view class="w-full rounded-6px overflow-hidden bg-#fff">
 							<view v-for="(item, index) in productInfo?.promotions" class="w-110rpx h-110rpx">
@@ -150,9 +152,11 @@
 									:style="{
 										background: productInfo?.theme === 'black' ? '#fff' : '#B6161C'
 									}"
-									@click="()=>{
-										promotionRef.open(productInfo, currentSku)
-									}"
+									@click="
+										() => {
+											promotionRef.open(productInfo, currentSku)
+										}
+									"
 								>
 									<PriceText
 										:value="discountPrice"
@@ -252,21 +256,29 @@
 							<view class="flex flex-row gap-32rpx">
 								<text class="text-13px font-500">促销</text>
 								<view class="flex-1 flex flex-col gap-18rpx">
-									<view
-										v-if="!isEmpty(productInfo?.discounts)"
-										class="flex flex-row gap-12rpx items-cener"
-									>
-										<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
-											<text class="text-#B6161C text-10px">
-												{{ productInfo.discounts.value + '折' }}
-											</text>
+									<template v-if="!isEmpty(productInfo?.discounts)">
+										<view
+											v-for="discount in productInfo?.discounts"
+											:key="discount.id"
+											class="flex flex-row gap-12rpx items-cener"
+										>
+											<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
+												<text class="text-#B6161C text-10px">
+													{{
+														`${discount.min_quantity > 1 ? discount.min_quantity + '件' : ''}${Number(discount.value)}折`
+													}}
+												</text>
+											</view>
+											<view class="flex-1 flex items-center">
+												<text class="text-10px line-clamp-1"
+													>此商品专享{{
+														`${discount.min_quantity > 1 ? '满' + discount.min_quantity + '件' : ''}${Number(discount.value)}折`
+													}}折</text
+												>
+											</view>
 										</view>
-										<view class="flex-1 flex items-center">
-											<text class="text-10px line-clamp-1"
-												>此商品专享{{ productInfo.discounts.value }}折</text
-											>
-										</view>
-									</view>
+									</template>
+
 									<view
 										v-for="promotion in productInfo?.promotions"
 										:key="promotion.id"
@@ -413,8 +425,9 @@ const imageList = computed(() => currentSku.value?.images ?? [])
  * 优惠价格
  */
 const discountPrice = computed(() => {
-	if (productInfo.value?.discounts) {
-		return (productInfo.value?.discounts?.value * (currentSku.value?.price || 0)) / 10
+	let firstDiscount = productInfo.value?.discounts?.[0]
+	if (firstDiscount) {
+		return (firstDiscount.value * (currentSku.value?.price || 0)) / 10
 	}
 	return null
 })
@@ -422,7 +435,9 @@ const discountPrice = computed(() => {
 // 支付倒计时
 const payCountDownTime = computed(() => {
 	const { day, hour, minute, second } = formatMs(remaining.value * 1000)
-	return [day * 24 + Number(hour), minute, second].map((n) => (Number(n) < 10 ? '0' + Number(n) : Number(n))).join(':')
+	return [day * 24 + Number(hour), minute, second]
+		.map((n) => (Number(n) < 10 ? '0' + Number(n) : Number(n)))
+		.join(':')
 })
 
 const { load } = useScrollPaging(pagingRef, {
