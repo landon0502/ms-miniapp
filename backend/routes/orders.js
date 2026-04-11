@@ -327,6 +327,7 @@ router.post('/', async (req, res) => {
     const orderTempl = req.body.order_templ !== undefined ? req.body.order_templ : 1;
     const pickupMethod = req.body.pickup_method !== undefined ? req.body.pickup_method : '口岸自提';
     const pickupLocation = req.body.pickup_location !== undefined ? req.body.pickup_location : '新海港';
+    const pickupAddress = req.body.pickup_address !== undefined ? req.body.pickup_address : '';
     const sailingTime = req.body.sailing_time !== undefined ? req.body.sailing_time : null;
     const departureTime = req.body.departure_time !== undefined && req.body.departure_time !== '' ? req.body.departure_time : null;
     const orderTime = req.body.order_time !== undefined ? req.body.order_time : new Date();
@@ -362,8 +363,8 @@ router.post('/', async (req, res) => {
       });
       
       const [orderResult] = await pool.execute(
-        'INSERT INTO orders (order_no, sub_order_no, user_id, total_price, actual_price, points_deduction, mail_tax, mail_tax_discount, is_port_pickup, offline_flight, consignee_name, consignee_phone, consignee_idcard, port_order_no, detail_list_order_no, route, vehicle_type, departure_port, destination_port, passenger_price, vehicle_price, value_added_service, order_templ, pickup_method, pickup_location, sailing_time, status, departure_time, order_time, shipping_store) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [order_no, generated_sub_order_no, user_id, total_price, actual_price, pointsDeduction, mailTax, mailTaxDiscount, isPortPickup, offlineFlight, consigneeName, consigneePhone, consigneeIdcard, portOrderNo, detailListOrderNo, route, vehicleType, departurePort, destinationPort, passengerPrice, vehiclePrice, valueAddedService, orderTempl, pickupMethod, pickupLocation, sailingTime, 'pending', departureTime, orderTime, shippingStore]
+        'INSERT INTO orders (order_no, sub_order_no, user_id, total_price, actual_price, points_deduction, mail_tax, mail_tax_discount, is_port_pickup, offline_flight, consignee_name, consignee_phone, consignee_idcard, port_order_no, detail_list_order_no, route, vehicle_type, departure_port, destination_port, passenger_price, vehicle_price, value_added_service, order_templ, pickup_method, pickup_location, pickup_address, sailing_time, status, departure_time, order_time, shipping_store) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [order_no, generated_sub_order_no, user_id, total_price, actual_price, pointsDeduction, mailTax, mailTaxDiscount, isPortPickup, offlineFlight, consigneeName, consigneePhone, consigneeIdcard, portOrderNo, detailListOrderNo, route, vehicleType, departurePort, destinationPort, passengerPrice, vehiclePrice, valueAddedService, orderTempl, pickupMethod, pickupLocation, pickupAddress, sailingTime, 'pending', departureTime, orderTime, shippingStore]
       );
       
       const orderId = orderResult.insertId;
@@ -552,6 +553,7 @@ router.put('/:id', async (req, res) => {
       order_templ = ?, 
       pickup_method = ?, 
       pickup_location = ?, 
+      pickup_address = ?, 
       sailing_time = ?, 
       status = ?, 
       departure_time = ?, 
@@ -597,6 +599,7 @@ router.put('/:id', async (req, res) => {
       req.body.order_templ !== undefined ? req.body.order_templ : currentOrder[0].order_templ || 1,
       req.body.pickup_method !== undefined ? req.body.pickup_method : currentOrder[0].pickup_method || '口岸自提',
       req.body.pickup_location !== undefined ? req.body.pickup_location : currentOrder[0].pickup_location || '新海港',
+      req.body.pickup_address !== undefined ? req.body.pickup_address : currentOrder[0].pickup_address || '',
       req.body.sailing_time !== undefined ? (req.body.sailing_time !== '' ? req.body.sailing_time : null) : currentOrder[0].sailing_time || null,
       status !== undefined ? status : currentOrder[0].status,
       departure_time !== undefined ? (departure_time !== '' ? departure_time : null) : currentOrder[0].departure_time,

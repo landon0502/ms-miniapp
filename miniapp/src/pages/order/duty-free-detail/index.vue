@@ -40,29 +40,46 @@
 									<view class="px-12px"> <uv-line /></view>
 									<view class="p-12px">
 										<view class="flex flex-col gap-12px">
-											<view class="flex flex-row gap-4px items-center py-4px">
+											<view class="flex flex-row gap-8px items-center py-4px">
 												<text class="font-size-16px text-#5D5D5D font-bold">{{
-													orderInfo?.consignee_name || '加载中...'
+													orderInfo?.consignee_name || '--'
 												}}</text>
 												<text class="font-size-12px text-#353535">{{
-													orderInfo?.consignee_phone || '加载中...'
+													orderInfo?.consignee_phone || '--'
 												}}</text>
 											</view>
 
 											<view class="flex flex-row gap-4px items-center py-4px">
 												<uv-icon :name="idcardIcon" :size="14" />
 												<text class="font-size-12px text-#353535">{{
-													orderInfo?.consignee_idcard || '加载中...'
+													orderInfo?.consignee_idcard || '--'
 												}}</text>
 											</view>
 										</view>
 										<view class="flex flex-row gap-12px items-center">
-											<view class="flex flex-row gap-4px items-center py-4px">
-												<uv-icon :name="briefcaseIcon" :size="14" />
-												<text class="font-size-12px text-#353535">离岛信息：</text>
+											<view class="flex flex-row gap-4px items-start py-4px">
+												<view class="flex flex-row items-center gap-4px">
+													<uv-icon :name="briefcaseIcon" :size="14" />
+													<text class="font-size-12px text-#353535 whitespace-nowrap"
+														>离岛信息：</text
+													>
+												</view>
 												<text class="font-size-12px text-#353535">
 													{{ formatDate(orderInfo?.route_info?.sailing_time) }}/
 													{{ orderInfo?.route_info?.offline_flight }}
+												</text>
+											</view>
+										</view>
+										<view class="flex flex-row gap-12px items-center">
+											<view class="flex flex-row gap-4px items-start py-4px">
+												<view class="flex flex-row items-center gap-4px">
+													<uv-icon name="map" :size="14" :color="'#353535'" />
+													<text class="font-size-12px text-#353535 whitespace-nowrap"
+														>自提地址：</text
+													>
+												</view>
+												<text class="font-size-12px text-#353535">
+													{{ orderInfo?.pickup_address || '--' }}
 												</text>
 											</view>
 										</view>
@@ -83,60 +100,67 @@
 						<template #content>
 							<view>
 								<view>
-									<view class="flex flex-row items-center py-6px">
-										<text class="font-size-12px text-#A2A2A2">订单编号：</text>
-										<text class="font-size-12px text-#5D5D5D ml-4px">
-											{{ orderInfo?.order_no || '加载中...' }}
-										</text>
-										<view
-											class="font-size-12px rounded-8px text-#333333 bg-#F5F5F5 px-8px py-2px ml-8px"
-											@click="
-												() => {
-													uni.setClipboardData({
-														data: orderInfo?.order_no,
-														success: function () {
-															console.log('复制成功')
-														}
-													})
-												}
-											"
-										>
-											复制
+									<view class="flex justify-between">
+										<view class="flex flex-row items-center py-6px">
+											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">订单编号</text>
+											<text class="font-size-12px text-#5D5D5D ml-8px">
+												{{ orderInfo?.order_no || '--' }}
+											</text>
+											<view
+												class="font-size-12px rounded-8px text-#333333 bg-#F5F5F5 px-8px py-2px ml-8px"
+												@click="
+													() => {
+														uni.setClipboardData({
+															data: orderInfo?.order_no,
+															success: function () {
+																console.log('复制成功')
+															}
+														})
+													}
+												"
+											>
+												复制
+											</view>
+										</view>
+										<view @click="showOrderInfoMore = !showOrderInfoMore" class="flex flex-row items-center py-6px">
+											<uv-icon :name="showOrderInfoMore ? 'arrow-up' : 'arrow-down'" :size="16" :color="'#8E8E8E'" />
 										</view>
 									</view>
 								</view>
-								<view>
-									<view class="flex flex-row items-center py-6px">
-										<text class="font-size-12px text-#A2A2A2">发货门店：</text>
-										<text class="font-size-12px text-#5D5D5D ml-4px"> 海南电商离岛免税 </text>
+								<template v-if="showOrderInfoMore">
+									<view>
+										<view class="flex flex-row items-center py-6px">
+											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">发货门店</text>
+											<text class="font-size-12px text-#5D5D5D ml-8px"> 海南电商离岛免税 </text>
+										</view>
 									</view>
-								</view>
-								<view>
-									<view class="flex flex-row items-center py-6px">
-										<text class="font-size-12px text-#A2A2A2">下单时间：</text>
-										<text class="font-size-12px text-#5D5D5D ml-4px">
-											{{ formatDate(orderInfo?.order_time) }}
-										</text>
-									</view>
-								</view>
-								<view>
-									<view class="flex flex-row items-center py-6px">
-										<text class="font-size-12px text-#A2A2A2">支付方式：</text>
-										<text class="font-size-12px text-#5D5D5D ml-4px">
-											{{ orderInfo?.payment_method || '大会员积分支付,微信支付' }}
-										</text>
-									</view>
-								</view>
-								<view>
-									<view class="flex flex-row items-center py-6px">
-										<text class="font-size-12px text-#A2A2A2">提货方式：</text>
-										<text class="font-size-12px text-#5D5D5D ml-4px">
-											{{ orderInfo?.pickup_method || '口岸自提' }}-<text class="text-#C49262">
-												{{ orderInfo?.pickup_location || '新海港' }}
+									<view>
+										<view class="flex flex-row items-center py-6px">
+											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">下单时间</text>
+											<text class="font-size-12px text-#5D5D5D ml-8px">
+												{{ formatDate(orderInfo?.order_time) }}
 											</text>
-										</text>
+										</view>
 									</view>
-								</view>
+									<view>
+										<view class="flex flex-row items-center py-6px">
+											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">支付方式</text>
+											<text class="font-size-12px text-#5D5D5D ml-8px">
+												{{ orderInfo?.payment_method || '大会员积分支付,微信支付' }}
+											</text>
+										</view>
+									</view>
+									<view>
+										<view class="flex flex-row items-center py-6px">
+											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">提货方式</text>
+											<text class="font-size-12px text-#5D5D5D ml-8px">
+												{{ orderInfo?.pickup_method || '口岸自提' }}-<text class="text-#C49262">
+													{{ orderInfo?.pickup_location || '新海港' }}
+												</text>
+											</text>
+										</view>
+									</view>
+								</template>
 								<view class="mt-12px">
 									<uv-line />
 								</view>
@@ -144,12 +168,12 @@
 									<view>
 										<uv-icon :name="serveIcon" :size="24" />
 									</view>
-									<text class="font-size-14px text-#5D5D5D">联系我们</text>
+									<text class="font-size-12px text-#333333">联系我们</text>
 								</view>
 							</view>
 						</template>
 					</Card>
-					<Card title="离岛自提商品列表" :titleBold="false" showHeadLine>
+					<Card title="离岛自提商品列表" :titleSize="16" :titleBold="false" showHeadLine>
 						<template #content>
 							<view class="flex flex-col gap-12px">
 								<view
@@ -277,7 +301,7 @@
 
 <script setup>
 import PageContainer from '@/components/PageContainer'
-import { shallowRef, computed } from 'vue'
+import { shallowRef, computed, ref } from 'vue'
 import Card from '@/components/Card'
 import serveIcon from '@/assets/images/serve-icon.png'
 import idcardIcon from '@/assets/images/id-card-o.png'
@@ -302,10 +326,11 @@ const { orderDetailControl } = useServices()
 
 // 从 orderDetailControl 中解构出属性，确保响应式
 const { data: orderInfo, loading, error } = orderDetailControl
+const showOrderInfoMore = ref(false)
 
 // 格式化时间函数
 const formatDate = (dateString) => {
-	if (!dateString) return '加载中...'
+	if (!dateString) return '--'
 	return dayjs(dateString).format('YYYY-MM-DD HH:mm')
 }
 

@@ -8,40 +8,40 @@
 						v-if="!isUndef(discountPrice)"
 					>
 						<view
-							class="rounded-8rpx border-1rpx border-solid border-#B6161C bg-#B6161C11 flex flex-center flex-col px-24rpx py-4px"
+							class="rounded-8rpx border-1rpx border-solid border-#B7131B bg-#E5302611 flex flex-center flex-col px-24rpx py-4px"
 						>
 							<PriceText
 								:value="discountPrice"
-								text-color="#B6161C"
+								text-color="#B7131B"
 								:decimalsStyle="{ fontSize: '16px' }"
 								:fontBold="600"
 							/>
-							<text class="text-#B6161C text-10px">预估到手价</text>
+							<text class="text-#B7131B text-10px">预估到手价</text>
 						</view>
 						<view
-							class="flex flex-col items-center bg-#B6161C10 w-full py-48rpx border-t-2px border-t-solid border-t-#B6161C pos-relative promotion-info"
+							class="flex flex-col items-center bg-#B7131B10 w-full py-48rpx border-t-2px border-t-solid border-t-#B7131B pos-relative promotion-info"
 						>
 							<text class="text-10px text-#2F2F2F">现在购买，享受一下优惠</text>
 							<view class="flex flex-row items-start justify-center gap-48rpx mt-36rpx">
 								<view class="flex flex-col gap-18rpx items-center w-200rpx">
-									<text class="font-bold text-14px text-#B6161C">￥{{ currentSku?.price }}</text>
+									<text class="font-bold text-14px text-#B7131B">￥{{ currentSku?.price }}</text>
 									<view
-										class="text-10px text-#B6161C border-1rpx border-solid border-#B6161C rounded-2px text-center bg-#fff w-120rpx"
+										class="text-10px text-#B7131B border-1rpx border-solid border-#B7131B rounded-2px text-center bg-#fff w-120rpx"
 										>参考价</view
 									>
 								</view>
-								<view class="text-14px text-#B6161C h-16px line-height-16px">-</view>
+								<view class="text-14px text-#B7131B h-16px line-height-16px">-</view>
 								<view class="flex flex-col gap-18rpx items-center w-200rpx">
-									<text class="font-bold text-14px text-#B6161C"
+									<text class="font-bold text-14px text-#B7131B"
 										>￥{{ new Decimal(currentSku?.price).minus(discountPrice).toFixed(2) }}</text
 									>
 									<view class="flex flex-col items-center">
 										<view
-											class="text-10px text-#B6161C border-1rpx border-solid border-#B6161C rounded-2px text-center bg-#fff w-120rpx"
+											class="text-10px text-#B7131B border-1rpx border-solid border-#B7131B rounded-2px text-center bg-#fff w-120rpx"
 											>促销价</view
 										>
 										<view v-if="firstDiscount?.min_quantity > 1">
-											<text class="text-10px text-#B6161C">{{
+											<text class="text-10px text-#B7131B">{{
 												'需满' + firstDiscount?.min_quantity + '件'
 											}}</text>
 										</view>
@@ -59,7 +59,7 @@
 								class="flex flex-row gap-12rpx items-cener"
 							>
 								<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
-									<text class="text-#B6161C text-10px">
+									<text class="text-#E53026 text-10px">
 										{{
 											`${discount.min_quantity > 1 ? discount.min_quantity + '件' : ''}${Number(discount.value)}折`
 										}}
@@ -81,7 +81,7 @@
 						>
 							<view>
 								<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
-									<text class="text-#B6161C text-10px">赠品</text>
+									<text class="text-#E53026 text-10px">{{ promotion?.label }}</text>
 								</view>
 							</view>
 							<view class="flex flex-col gap-12rpx flex-1">
@@ -95,7 +95,7 @@
 						<view class="flex flex-col mt-24rpx gap-24rpx">
 							<view class="flex flex-row" v-for="coupon in productInfo.coupons" :key="coupon.id">
 								<view
-									class="w-180rpx h-140rpx flex-shrink-0 bg-#B6161C flex flex-center flex-col gap-12rpx pos-relative"
+									class="w-180rpx h-140rpx flex-shrink-0 bg-#B7131B flex flex-center flex-col gap-12rpx pos-relative"
 								>
 									<view class="h-full w-10rpx decorate-line pos-absolute top-0 left-0"></view>
 									<text class="text-12px text-#fff">
@@ -104,7 +104,7 @@
 									<text class="text-12px text-#fff">满减券</text>
 								</view>
 								<view class="flex-1 flex flex-col justify-between p-12rpx box-border">
-									<text class="text-12px text-#B6161C">{{ coupon.name }}</text>
+									<text class="text-12px text-#B7131B">{{ coupon.name }}</text>
 									<view class="flex flex-row justify-between items-center">
 										<text class="text-10px text-#999">
 											{{ dayjs(coupon.start_time).format('YYYY.MM.DD') }}-{{
@@ -112,7 +112,7 @@
 											}}
 										</text>
 										<view
-											class="text-12px text-#fff line-height-24px rounded-full bg-#B6161C px-12px"
+											class="text-12px text-#fff line-height-24px rounded-full bg-#B7131B px-12px"
 										>
 											点击领取
 										</view>
@@ -186,7 +186,7 @@ defineExpose({
 		height: 0;
 		border-left: 5px solid transparent;
 		border-right: 5px solid transparent;
-		border-bottom: 5px solid #c55553;
+		border-bottom: 5px solid #B7131B;
 		background-color: transparent;
 		z-index: 9;
 	}

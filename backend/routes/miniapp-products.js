@@ -209,8 +209,36 @@ router.get('/:id', async (req, res) => {
     // 获取所有促销数据（包括过期的）
     const [promotions] = await pool.execute('SELECT * FROM promotions WHERE product_id = ?', [req.params.id]);
     
+    // 过滤出在活动时间范围内的促销活动，或未设置时间的促销活动
+    const validPromotions = promotions.filter(promotion => {
+      const now = new Date();
+      const startTime = promotion.start_time ? new Date(promotion.start_time) : null;
+      const endTime = promotion.end_time ? new Date(promotion.end_time) : null;
+      
+      // 如果未设置时间，则直接通过
+      if (!startTime && !endTime) {
+        return true;
+      }
+      
+      // 校验当前时间是否在活动时间范围内
+      let valid = true;
+      if (startTime) {
+        valid = valid && now >= startTime;
+      }
+      if (endTime) {
+        valid = valid && now <= endTime;
+      }
+      return valid;
+    }).map(promotion => {
+      // 添加 label 字段，当设置时间范围时值为 限时赠品，没有时间范围时返回 赠品
+      return {
+        ...promotion,
+        label: (promotion.start_time || promotion.end_time) ? '限时赠品' : '赠品'
+      };
+    });
+    
     // 提取促销活动标签并去重
-    const promotionLabels = [...new Set(promotions.map(promotion => promotion.label).filter(label => label))];
+    const promotionLabels = [...new Set(validPromotions.map(promotion => promotion.label).filter(label => label))];
     
     // 获取有效期内的商品优惠券
     const [coupons] = await pool.execute('SELECT * FROM coupons WHERE NOW() BETWEEN start_time AND end_time AND product_ids LIKE ?', [`%${req.params.id}%`]);
@@ -248,8 +276,8 @@ router.get('/:id', async (req, res) => {
       tags.push(...coupons.map(item=>item.label));
     }
     // 添加赠品标签
-    if (promotions.length > 0) {
-      tags.push('赠品');
+    if (validPromotions.length > 0) {
+      tags.push(...promotionLabels);
     }
     
     res.json({
@@ -259,7 +287,7 @@ router.get('/:id', async (req, res) => {
       data: { 
         ...row, 
         skus: parsedSkus, 
-        promotions, 
+        promotions: validPromotions, 
         promotion_labels: promotionLabels,
         discounts: discounts,
         coupons: parsedCoupons,

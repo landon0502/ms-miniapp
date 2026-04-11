@@ -298,6 +298,12 @@ export async function initDatabase() {
       if (result25.length === 0) {
         await connection.execute('ALTER TABLE orders ADD COLUMN sailing_time TIMESTAMP COMMENT "开航时间"');
       }
+      
+      // 添加自提地址字段
+      const [result26] = await connection.execute('SHOW COLUMNS FROM orders WHERE Field = ?', ['pickup_address']);
+      if (result26.length === 0) {
+        await connection.execute('ALTER TABLE orders ADD COLUMN pickup_address VARCHAR(255) COMMENT "自提地址"');
+      }
     } catch (error) {
       console.error('添加订单表新字段失败:', error);
     }
@@ -330,6 +336,7 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN pickup_method VARCHAR(50) DEFAULT '口岸自提' COMMENT '提货方式'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN pickup_location VARCHAR(100) DEFAULT '新海港' COMMENT '提货点'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN sailing_time TIMESTAMP COMMENT '开航时间'`);
+    await connection.execute(`ALTER TABLE orders MODIFY COLUMN pickup_address VARCHAR(255) COMMENT '自提地址'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN status VARCHAR(20) NOT NULL COMMENT '订单状态'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN departure_time TIMESTAMP COMMENT '离岛时间'`);
     await connection.execute(`ALTER TABLE orders MODIFY COLUMN order_time TIMESTAMP COMMENT '下单时间'`);

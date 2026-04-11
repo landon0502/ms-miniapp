@@ -200,6 +200,15 @@
                 />
               </el-form-item>
             </el-col>
+            <el-col :xs="24" :sm="24" :md="16" :lg="12">
+              <el-form-item label="自提地址" prop="pickup_address">
+                <el-input
+                  v-model="form.pickup_address"
+                  placeholder="请输入自提地址"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
           </el-row>
         </el-card>
 
@@ -530,6 +539,7 @@ const form = ref({
   order_templ: 1,
   pickup_method: "口岸自提",
   pickup_location: "新海港",
+  pickup_address: "",
   offline_flight: "HA2140",
   consignee_name: "",
   consignee_phone: "",
@@ -628,6 +638,7 @@ const handleAddOrder = () => {
     order_templ: 1,
     pickup_method: "口岸自提",
     pickup_location: "新海港",
+    pickup_address: "",
     offline_flight: "HA2140",
     consignee_name: "",
     consignee_phone: "",
@@ -666,6 +677,7 @@ const handleEditOrder = (row) => {
     order_templ: row.order_templ || 1,
     pickup_method: row.pickup_method || "口岸自提",
     pickup_location: row.pickup_location || "新海港",
+    pickup_address: row.pickup_address || "",
     offline_flight: row.offline_flight || "HA2140",
     consignee_name: row.consignee_name || "",
     consignee_phone: row.consignee_phone || "",
@@ -789,6 +801,7 @@ const handleSubmit = async () => {
             order_templ: form.value.order_templ,
             pickup_method: form.value.pickup_method,
             pickup_location: form.value.pickup_location,
+            pickup_address: form.value.pickup_address,
             offline_flight: form.value.offline_flight,
             consignee_name: form.value.consignee_name,
             consignee_phone: form.value.consignee_phone,
@@ -828,6 +841,7 @@ const handleSubmit = async () => {
             order_templ: form.value.order_templ,
             pickup_method: form.value.pickup_method,
             pickup_location: form.value.pickup_location,
+            pickup_address: form.value.pickup_address,
             offline_flight: form.value.offline_flight,
             consignee_name: form.value.consignee_name,
             consignee_phone: form.value.consignee_phone,

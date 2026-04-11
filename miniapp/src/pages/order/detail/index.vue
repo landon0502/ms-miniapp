@@ -38,19 +38,19 @@
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="locationIcon" :size="18" />
 										<text class="font-size-14px text-#5D5D5D font-bold">{{
-											orderInfo?.consignee_name || '加载中...'
+											orderInfo?.consignee_name || '--'
 										}}</text>
 									</view>
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="phoneIcon" :size="14" />
 										<text class="font-size-14px text-#9E9E9E">{{
-											orderInfo?.consignee_phone || '加载中...'
+											orderInfo?.consignee_phone || '--'
 										}}</text>
 									</view>
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="idcardIcon" :size="14" />
 										<text class="font-size-14px text-#9E9E9E">{{
-											orderInfo?.consignee_idcard || '加载中...'
+											orderInfo?.consignee_idcard || '--'
 										}}</text>
 									</view>
 								</view>
@@ -58,7 +58,7 @@
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="steamerIcon" :size="14" />
 										<text class="font-size-14px text-#9E9E9E">{{
-											orderInfo?.route_info?.offline_flight || '加载中...'
+											orderInfo?.route_info?.offline_flight || '--'
 										}}</text>
 									</view>
 									<view class="flex flex-row gap-4px items-center py-4px">
@@ -67,6 +67,9 @@
 											formatDate(orderInfo?.route_info?.sailing_time)
 										}}</text>
 									</view>
+								</view>
+								<view class="p-l-22px mt-12px">
+									<text class="font-size-12px text-#B7131B">已变更</text>
 								</view>
 							</view>
 						</template>
@@ -77,10 +80,10 @@
 						<template #content>
 							<view>
 								<view>
-									<view class="flex flex-row items-center py-10px">
-										<text class="font-size-15px text-#A2A2A2">订单编号：</text>
-										<text class="font-size-13px text-#5D5D5D font-bold ml-4px">
-											{{ orderInfo?.order_no || '加载中...' }}
+									<view class="flex flex-row items-center py-10px ">
+										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">订单编号：</text>
+										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
+											{{ orderInfo?.order_no || '--' }}
 										</text>
 										<view
 											class="font-size-12px rounded-8px text-#333333 bg-#F5F5F5 px-8px py-2px ml-8px"
@@ -102,8 +105,8 @@
 								</view>
 								<view>
 									<view class="flex flex-row items-center py-10px">
-										<text class="font-size-15px text-#A2A2A2">下单时间：</text>
-										<text class="font-size-13px text-#5D5D5D font-bold ml-4px">
+										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">下单时间：</text>
+										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
 											{{ formatDate(orderInfo?.order_time) }}
 										</text>
 									</view>
@@ -111,8 +114,8 @@
 								</view>
 								<view>
 									<view class="flex flex-row items-center py-10px">
-										<text class="font-size-15px text-#A2A2A2">支付方式：</text>
-										<text class="font-size-13px text-#5D5D5D font-bold ml-4px">
+										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">支付方式：</text>
+										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
 											大会员积分支付,微信支付
 										</text>
 									</view>
@@ -120,8 +123,8 @@
 								</view>
 								<view>
 									<view class="flex flex-row items-center py-10px">
-										<text class="font-size-15px text-#A2A2A2">提货方式：</text>
-										<text class="font-size-13px text-#5D5D5D font-bold ml-4px">
+										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">提货方式：</text>
+										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
 											{{ orderInfo?.pickup_method || '口岸自提' }}-<text class="text-#9D6261">
 												{{ orderInfo?.pickup_location || '新海港' }}
 											</text>
@@ -133,12 +136,12 @@
 									<view>
 										<uv-icon :name="serveIcon" :size="24" />
 									</view>
-									<text class="font-size-14px text-#5D5D5D">联系我们</text>
+									<text class="font-size-12px text-#333333">联系我们</text>
 								</view>
 							</view>
 						</template>
 					</Card>
-					<Card title="离岛自提商品列表" :titleBold="false" showHeadLine>
+					<Card title="离岛自提商品列表" :titleSize="16"  :titleBold="false" showHeadLine>
 						<template #content>
 							<view class="flex flex-col gap-12px">
 								<view
@@ -293,7 +296,7 @@ const { data: orderInfo, loading, error } = orderDetailControl
 
 // 格式化时间函数
 const formatDate = (dateString) => {
-	if (!dateString) return '加载中...'
+	if (!dateString) return '--'
 	return dayjs(dateString).format('YYYY-MM-DD HH:mm')
 }
 

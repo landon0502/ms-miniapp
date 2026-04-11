@@ -613,6 +613,7 @@ router.get('/:id', async (req, res) => {
       departure_time: order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null,
       pickup_location: order.pickup_location || '新海港',
       pickup_method: order.pickup_method || '口岸自提',
+      pickup_address: order.pickup_address || '',
       items: items,
       points_deduction: order.points_deduction || 0,
       discount: discount,

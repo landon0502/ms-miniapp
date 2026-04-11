@@ -140,17 +140,18 @@
 						<template #title>
 							<view class="flex flex-row items-center gap-12rpx">
 								<PriceText
-									:prefixStyle="{ fontSize: '14px' }"
-									:decimalsStyle="{ fontSize: '14px' }"
+									:prefixStyle="{ fontSize: '16px' }"
+									:decimalsStyle="{ fontSize: '16px' }"
 									:value="currentSku?.price"
 									textSize="large"
-									:textColor="productInfo?.theme === 'black' ? '#fff' : '#B6161C'"
+									:textColor="productInfo?.theme === 'black' ? '#fff' : '#E53026'"
 								/>
 								<view
-									class="pr-8rpx pl-12rpx rounded-full bg-#B6161C flex items-center justify-center"
+									class="discount-price position-relative"
 									v-if="!isUndef(discountPrice)"
 									:style="{
-										background: productInfo?.theme === 'black' ? '#fff' : '#B6161C'
+										'--bg-color': productInfo?.theme === 'black' ? '#fff' : '#E53026',
+										'--bar-bg': productInfo?.theme === 'black' ? '#000' : '#FFF'
 									}"
 									@click="
 										() => {
@@ -158,25 +159,27 @@
 										}
 									"
 								>
-									<PriceText
-										:value="discountPrice"
-										:prefixStyle="{ fontSize: '14px' }"
-										:integerStyle="{ fontSize: '14px' }"
-										:decimalsStyle="{ fontSize: '14px' }"
-										:textColor="productInfo?.theme === 'black' ? '#000' : '#FFF'"
-									>
-										<template #prefix>
-											<text
-												class="font-size-10px color-[#fff]"
-												:style="{
-													color: productInfo?.theme === 'black' ? '#000' : '#FFF'
-												}"
-												>预估到价</text
-											>
-										</template>
-									</PriceText>
-									<view class="pt-2px">
-										<uv-icon name="arrow-right" :color="'#ffffff'" :size="10" />
+									<view class="discount-price-box pos-relative z-4 pr-8rpx pl-12rpx flex items-center justify-center bg-[var(--bg-color)]">
+										<PriceText
+											:value="discountPrice"
+											:prefixStyle="{ fontSize: '14px' }"
+											:integerStyle="{ fontSize: '14px' }"
+											:decimalsStyle="{ fontSize: '14px' }"
+											:textColor="productInfo?.theme === 'black' ? '#000' : '#FFF'"
+										>
+											<template #prefix>
+												<text
+													class="font-size-10px color-[#fff]"
+													:style="{
+														color: productInfo?.theme === 'black' ? '#000' : '#FFF'
+													}"
+													>预估到手</text
+												>
+											</template>
+										</PriceText>
+										<view class="pt-2px">
+											<uv-icon name="arrow-right" :color="productInfo?.theme === 'black' ? '#333' : '#ffffff'" :size="10" />
+										</view>
 									</view>
 								</view>
 							</view>
@@ -197,8 +200,8 @@
 											v-for="label in productInfo?.tags"
 											:key="label"
 											:text="label"
-											bgColor="#FFF5F8"
-											:color="productInfo?.theme === 'black' ? '#000' : '#B6161C'"
+											bgColor="#FFEAEB"
+											:color="productInfo?.theme === 'black' ? '#000' : '#E53026'"
 											borderColor="transparent"
 											size="mini"
 										></uv-tags>
@@ -212,9 +215,9 @@
 										}"
 									>
 										<text
-											class="text-[10px] text-#B6161C"
+											class="text-[10px] text-#E53026"
 											:style="{
-												color: productInfo?.theme === 'black' ? '#fff' : '#B6161C'
+												color: productInfo?.theme === 'black' ? '#fff' : '#E53026'
 											}"
 											>领券</text
 										>
@@ -222,7 +225,7 @@
 											<uv-icon
 												name="arrow-right"
 												:size="8"
-												:color="productInfo?.theme === 'black' ? '#000' : '#B6161C'"
+												:color="productInfo?.theme === 'black' ? '#000' : '#E53026'"
 											/>
 										</view>
 									</view>
@@ -263,7 +266,7 @@
 											class="flex flex-row gap-12rpx items-cener"
 										>
 											<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
-												<text class="text-#B6161C text-10px">
+												<text class="text-#E53026 text-10px">
 													{{
 														`${discount.min_quantity > 1 ? discount.min_quantity + '件' : ''}${Number(discount.value)}折`
 													}}
@@ -285,7 +288,7 @@
 										class="flex flex-row gap-12rpx items-cener"
 									>
 										<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
-											<text class="text-#B6161C text-10px">赠品</text>
+											<text class="text-#E53026 text-10px">{{ promotion?.label }}</text>
 										</view>
 										<view class="flex-1 flex items-center">
 											<text class="text-10px line-clamp-1">{{ promotion?.name }}</text>
@@ -296,15 +299,16 @@
 										class="flex flex-row gap-12rpx items-cener"
 									>
 										<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
-											<text class="text-#B6161C text-10px"> 领券 </text>
+											<text class="text-#E53026 text-10px"> 领券 </text>
 										</view>
 										<view class="flex-1 flex flex-wrap gap-4px">
 											<view
-												class="coupons-item pos-relative border-2rpx border-solid border-#B6161C flex-center px-4px py-2px rounded-3px"
+												class="coupons-item pos-relative flex-center px-8px py-3px rounded-3px"
 												v-for="coupon in productInfo.coupons"
 												:key="coupon.id"
 											>
-												<text class="text-10px text-#B6161C">{{ coupon.label }}</text>
+												<view class="border-bg"></view>
+												<text class="text-10px text-#E53026">{{ coupon.label }}</text>
 											</view>
 										</view>
 									</view>
@@ -357,10 +361,10 @@
 								加入购物袋
 							</view>
 							<view
-								class="flex-1 h-[70rpx] leading-[70rpx] text-center text-12px rounded-full border-2rpx border-solid border-#B6161C bg-#B6161C text-#fff"
+								class="flex-1 h-[70rpx] leading-[70rpx] text-center text-12px rounded-full border-2rpx border-solid border-#E53026 bg-#E53026 text-#fff"
 								:style="{
-									backgroundColor: productInfo?.theme === 'black' ? '#000' : '#B6161C',
-									borderColor: productInfo?.theme === 'black' ? '#000' : '#B6161C'
+									backgroundColor: productInfo?.theme === 'black' ? '#000' : '#E53026',
+									borderColor: productInfo?.theme === 'black' ? '#000' : '#E53026'
 								}"
 							>
 								立即购买
@@ -372,6 +376,11 @@
 		</template>
 		<template #page-extra>
 			<Promotion ref="promotionRef" />
+			<view
+				class="fixed right-10px bottom-300rpx bg-#fff rounded-full w-100rpx h-100rpx rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+			>
+				<uv-icon :name="serverIcon" :size="40" />
+			</view>
 		</template>
 	</PageContainer>
 </template>
@@ -395,6 +404,7 @@ import aixinIcon from '@/assets/images/aixin.png'
 import { fullUploadFilePath, formatMs } from '@/utils/utils'
 import Promotion from '../components/Promotion'
 import msIcon from '@/assets/images/ms.png'
+import serverIcon from '@/assets/images/server2-icon.png'
 import dayjs from 'dayjs'
 
 const { params } = useRouter()
@@ -499,6 +509,66 @@ onLoad(async () => {
 	}
 	:deep(._img) {
 		display: block;
+	}
+}
+.coupons-item {
+	position: relative;
+	overflow: hidden;
+
+	.border-bg {
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		border-radius: 6rpx;
+		border: 2rpx solid #c82525;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 2;
+	}
+	&::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		left: -6rpx;
+		width: 10rpx;
+		height: 10rpx;
+		background-color: #f5f5f5;
+		z-index: 9;
+		border-radius: 10rpx;
+		border: 1rpx solid #c82525;
+	}
+	&::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		right: -6rpx;
+		width: 10rpx;
+		height: 10rpx;
+		background-color: #f5f5f5;
+		z-index: 9;
+		border-radius: 10rpx;
+		border: 1rpx solid #c82525;
+	}
+}
+.discount-price {
+	margin-left: 16rpx;
+	&-box{
+		border-radius: 32rpx 40rpx 40rpx 0 ;
+	}
+	&::after {
+		content: '';
+		display: block;
+		width: 40rpx;
+		height: 40rpx;
+		background-color: var(--bg-color);
+		position: absolute;
+		bottom: 0;
+		left: -26rpx;
+		z-index: 3;
+		background: radial-gradient(circle at left top, var(--bar-bg) 0%, var(--bar-bg) 70%,var(--bg-color) 70%,var(--bg-color) 60%, );
 	}
 }
 </style>

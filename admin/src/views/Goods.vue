@@ -60,9 +60,9 @@
                   {{ promotion.name }}
                   <el-tag
                     size="small"
-                    :type="promotion.type === '赠品' ? 'success' : 'warning'"
+                    :type="(promotion.start_time || promotion.end_time) ? 'warning' : (promotion.type === '赠品' ? 'success' : 'warning')"
                   >
-                    {{ promotion.type }}
+                    {{ (promotion.start_time || promotion.end_time) ? '限时赠品' : promotion.type }}
                   </el-tag>
                 </span>
               </div>
