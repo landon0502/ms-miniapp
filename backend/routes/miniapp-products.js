@@ -253,8 +253,8 @@ router.get('/:id', async (req, res) => {
       return coupon;
     });
     
-    // 获取所有折扣数据（包括未设置日期的），优先根据 min_quantity 升序返回，如果 min_quantity 相同，则根据 value 升序进行返回
-    const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ? AND ((end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())) OR (start_time IS NULL AND end_time IS NULL) ORDER BY min_quantity ASC, value ASC', [req.params.id]);
+    // 获取有效期内的商品折扣，优先根据 min_quantity 升序返回，如果 min_quantity 相同，则根据 value 升序进行返回
+    const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ? AND ((end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())) ORDER BY min_quantity ASC, value ASC', [req.params.id]);
     
     // 生成标签
     const tags = [];

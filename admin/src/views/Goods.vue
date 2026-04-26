@@ -361,34 +361,37 @@
                         placeholder="选择活动结束时间"
                       />
                     </el-form-item> -->
-                      <el-form-item label="赠品规格名" class="form-item-col">
+                      <!-- <el-form-item label="赠品规格名" class="form-item-col">
                         <el-input
                           v-model="promotion.sku_name"
                           placeholder="请输入赠品规格名"
                         />
-                      </el-form-item>
-                    </div>
-                    <!-- 赠品类型特有字段 -->
-                    <div class="form-row">
+                      </el-form-item> -->
                       <el-form-item label="赠品图片" class="form-item-col">
                         <UploadImage v-model="promotion.image" :limit="1" />
                       </el-form-item>
-                      <!-- <el-form-item label="赠品数量" class="form-item-col">
+                    </div>
+                    <!-- 赠品类型特有字段 -->
+                    <!-- <div class="form-row">
+                      <el-form-item label="赠品图片" class="form-item-col">
+                        <UploadImage v-model="promotion.image" :limit="1" />
+                      </el-form-item>
+                      <el-form-item label="赠品数量" class="form-item-col">
                       <el-input
                         v-model.number="promotion.quantity"
                         type="number"
                         placeholder="请输入赠品数量"
                       />
-                    </el-form-item> -->
+                    </el-form-item>
 
-                      <!-- <el-form-item label="满赠条件" class="form-item-col">
+                      <el-form-item label="满赠条件" class="form-item-col">
                       <el-input
                         v-model.number="promotion.condition"
                         type="number"
                         placeholder="请输入满赠条件（满多少金额）"
                       />
-                    </el-form-item> -->
-                    </div>
+                    </el-form-item>
+                    </div> -->
                   </el-form>
                 </div>
               </div>
@@ -599,12 +602,12 @@
               placeholder="请输入赠品数量"
             />
           </el-form-item>
-          <el-form-item label="赠品规格名" class="form-item-col">
+          <!-- <el-form-item label="赠品规格名" class="form-item-col">
             <el-input
               v-model="promotionForm.sku_name"
               placeholder="请输入赠品规格名"
             />
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="满赠条件" class="form-item-col">
             <el-input
               v-model.number="promotionForm.condition"

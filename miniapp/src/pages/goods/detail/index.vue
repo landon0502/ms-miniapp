@@ -35,7 +35,7 @@
 						v-if="!isEmpty(productInfo?.promotions)"
 						@click="
 							() => {
-								promotionRef.open(productInfo, currentSku)
+								// promotionRef.open(productInfo, currentSku)
 							}
 						"
 					>
@@ -155,7 +155,7 @@
 									}"
 									@click="
 										() => {
-											promotionRef.open(productInfo, currentSku)
+											// promotionRef.open(productInfo, currentSku)
 										}
 									"
 								>
@@ -209,7 +209,7 @@
 									<view
 										class="flex items-center justify-between gap-6rpx pr-4px pl-8px py-1px rounded-full h-32rpx mt-3px"
 										v-if="!isEmpty(productInfo?.coupons)"
-										@click="promotionRef.open(productInfo, currentSku)"
+										
 										:style="{
 											background: productInfo?.theme === 'black' ? '#000' : '#fff'
 										}"
@@ -241,10 +241,10 @@
 									</text>
 								</view>
 								<view>
-									<text class="text-16px">{{ productInfo?.name }}</text>
+									<text class="text-17px">{{ productInfo?.name }}</text>
 								</view>
 								<view>
-									<text class="text-12px text-#A4A4A4">{{ currentSku?.sku_name }}</text>
+									<text class="text-12px text-#A4A4A4">{{ productInfo?.description }}</text>
 								</view>
 							</view>
 						</template>
@@ -273,7 +273,7 @@
 												</text>
 											</view>
 											<view class="flex-1 flex items-center">
-												<text class="text-11px line-clamp-1"
+												<text class="text-12px line-clamp-1"
 													>此商品专享{{
 														`${discount.min_quantity > 1 ? '满' + discount.min_quantity + '件' : ''}${Number(discount.value)}折`
 													}}</text
@@ -291,7 +291,7 @@
 											<text class="text-#E53026 text-10px">{{ promotion?.label }}</text>
 										</view>
 										<view class="flex-1 flex items-center">
-											<text class="text-10px line-clamp-1">{{ promotion?.name }}</text>
+											<text class="text-12px line-clamp-1">{{ promotion?.name }}</text>
 										</view>
 									</view>
 									<view
@@ -313,7 +313,7 @@
 										</view>
 									</view>
 								</view>
-								<view @click="promotionRef.open(productInfo, currentSku)">
+								<view>
 									<uv-icon :name="moreIcon" :size="16" />
 								</view>
 							</view>
@@ -375,9 +375,9 @@
 			</view>
 		</template>
 		<template #page-extra>
-			<Promotion ref="promotionRef" />
+			<!-- <Promotion ref="promotionRef" /> -->
 			<view
-				class="fixed right-10px bottom-300rpx bg-#fff rounded-full w-90rpx h-90rpx rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+				class="fixed right-10px bottom-300rpx bg-#fff rounded-full w-90rpx h-90rpx rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
 			>
 				<uv-icon :name="serverIcon" :size="32" />
 			</view>
@@ -402,7 +402,7 @@ import homeIcon from '@/assets/images/home.png'
 import gouwudaiIcon from '@/assets/images/gouwudai.png'
 import aixinIcon from '@/assets/images/aixin.png'
 import { fullUploadFilePath, formatMs } from '@/utils/utils'
-import Promotion from '../components/Promotion'
+// import Promotion from '../components/Promotion'
 import msIcon from '@/assets/images/ms.png'
 import serverIcon from '@/assets/images/server2-icon.png'
 import dayjs from 'dayjs'
@@ -412,7 +412,7 @@ const { params } = useRouter()
  * 组件实例
  */
 const pagingRef = shallowRef()
-const promotionRef = shallowRef()
+// const promotionRef = shallowRef()
 const { start, remaining } = useCountdown()
 /**
  * 变量声明

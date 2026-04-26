@@ -21,7 +21,7 @@
 				<view class="flex justify-between items-center py-12px border-b border-gray-100">
 					<text class="text-gray-600 text-sm font-light flex-1 text-#999999">订单号</text>
 					<text
-						class="text-sm font-light flex-2 text-right border border-gray-300   max-w-full break-all text-#444444"
+						class="text-sm font-light flex-2 text-right border border-gray-300   max-w-full break-all text-#444444 text-bold"
 						>{{ orderInfo?.detail_list_order_no || '--' }}</text
 					>
 				</view>
@@ -162,9 +162,9 @@ const { orderDetailControl } = useServices()
 const { data: orderInfo, loading, error } = orderDetailControl
 const amount = computed(() => {
 	return (
-		(parseFloat(orderInfo?.route_info?.value_added_service) || 0) +
-		(parseFloat(orderInfo?.route_info?.vehicle_price) || 0) +
-		(parseFloat(orderInfo?.route_info?.passenger_price) || 0)
+		(parseFloat(orderInfo.value?.route_info?.value_added_service) || 0) +
+		(parseFloat(orderInfo.value?.route_info?.vehicle_price) || 0) +
+		(parseFloat(orderInfo.value?.route_info?.passenger_price) || 0)
 	).toFixed(2)
 })
 // 格式化时间函数
