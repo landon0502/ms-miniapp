@@ -64,7 +64,7 @@
 														>离岛信息：</text
 													>
 												</view>
-												<text class="font-size-12px text-#353535">
+												<text class="font-size-12px text-#353535 tracking-[1rpx]">
 													{{ formatDate(orderInfo?.route_info?.sailing_time) }}/
 													{{ orderInfo?.route_info?.offline_flight }}
 												</text>
@@ -78,7 +78,7 @@
 														>自提地址：</text
 													>
 												</view>
-												<text class="font-size-12px text-#353535">
+												<text class="font-size-12px text-#353535 tracking-[1rpx]">
 													{{ orderInfo?.pickup_address || '--' }}
 												</text>
 											</view>
@@ -154,9 +154,7 @@
 										<view class="flex flex-row items-center py-6px">
 											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">提货方式</text>
 											<text class="font-size-12px text-#5D5D5D ml-8px">
-												{{ orderInfo?.pickup_method || '口岸自提' }}-<text class="text-#C49262">
-													{{ orderInfo?.pickup_location || '新海港' }}
-												</text>
+												{{ orderInfo?.pickup_method || '口岸自提' }}
 											</text>
 										</view>
 									</view>
@@ -164,9 +162,9 @@
 								<view class="mt-12px">
 									<uv-line />
 								</view>
-								<view class="flex flex-row items-center justify-center pt-12px gap-8px">
+								<view class="flex flex-row items-center justify-center pt-12px gap-2px">
 									<view>
-										<uv-icon :name="serveIcon" :size="24" />
+										<uv-icon :name="serveIcon" :size="28" />
 									</view>
 									<text class="font-size-12px text-#333333">联系我们</text>
 								</view>
@@ -303,7 +301,7 @@
 import PageContainer from '@/components/PageContainer'
 import { shallowRef, computed, ref } from 'vue'
 import Card from '@/components/Card'
-import serveIcon from '@/assets/images/serve-icon.png'
+import serveIcon from '@/assets/images/goal-server.png'
 import idcardIcon from '@/assets/images/id-card-o.png'
 import briefcaseIcon from '@/assets/images/briefcase-icon.png'
 import expressPackageFull from '@/assets/images/express-package-full.png'

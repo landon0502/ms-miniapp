@@ -60,9 +60,19 @@
                   {{ promotion.name }}
                   <el-tag
                     size="small"
-                    :type="(promotion.start_time || promotion.end_time) ? 'warning' : (promotion.type === '赠品' ? 'success' : 'warning')"
+                    :type="
+                      promotion.start_time || promotion.end_time
+                        ? 'warning'
+                        : promotion.type === '赠品'
+                        ? 'success'
+                        : 'warning'
+                    "
                   >
-                    {{ (promotion.start_time || promotion.end_time) ? '限时赠品' : promotion.type }}
+                    {{
+                      promotion.start_time || promotion.end_time
+                        ? "限时赠品"
+                        : promotion.type
+                    }}
                   </el-tag>
                 </span>
               </div>
@@ -72,10 +82,19 @@
         </el-table-column>
         <el-table-column label="折扣" min-width="150">
           <template #default="scope">
-            <div v-if="scope.row.discounts && (Array.isArray(scope.row.discounts) ? scope.row.discounts.length > 0 : true)">
+            <div
+              v-if="
+                scope.row.discounts &&
+                (Array.isArray(scope.row.discounts)
+                  ? scope.row.discounts.length > 0
+                  : true)
+              "
+            >
               <div class="discount-list">
                 <span
-                  v-for="(discount, index) in (Array.isArray(scope.row.discounts) ? scope.row.discounts : [scope.row.discounts])"
+                  v-for="(discount, index) in Array.isArray(scope.row.discounts)
+                    ? scope.row.discounts
+                    : [scope.row.discounts]"
                   :key="index"
                   class="discount-tag"
                 >
@@ -139,7 +158,7 @@
               <el-input v-model="form.name" placeholder="请输入商品名称" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+          <!-- <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="商品库存" prop="stock" class="form-item-col">
               <el-input
                 v-model.number="form.stock"
@@ -147,7 +166,7 @@
                 placeholder="请输入商品库存"
               />
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item
               label="商品分类"
@@ -187,6 +206,7 @@
               <el-radio-group v-model="form.measurement_type">
                 <el-radio label="spec">规格</el-radio>
                 <el-radio label="capacity">容量</el-radio>
+                <el-radio label="series">系列</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -199,124 +219,127 @@
 
         <div class="form-row">
           <el-form-item label="商品规格" prop="skus" class="form-item-full">
-            <div v-if="form.skus && form.skus.length > 0">
-              <div
-                v-for="(sku, index) in form.skus"
-                :key="sku.id"
-                class="sku-item"
-              >
-                <div class="sku-header">
-                  <span class="sku-index">规格 {{ index + 1 }}</span>
-                  <div class="sku-actions">
-                    <el-button
-                      type="primary"
-                      link
-                      size="small"
-                      @click="handleEditSku(form, sku, index)"
-                    >
-                      <el-icon><Edit /></el-icon>
-                    </el-button>
-                    <el-button
-                      type="danger"
-                      link
-                      size="small"
-                      @click="handleDeleteSku(sku.id, index)"
-                    >
-                      <el-icon><Delete /></el-icon>
-                    </el-button>
-                  </div>
-                </div>
-                <el-form
-                  :model="sku"
-                  label-width="100px"
-                  class="sku-form"
-                  label-position="top"
-                >
-                  <div class="form-row">
-                    <el-form-item label="规格名称" class="form-item-col">
-                      <el-input
-                        v-model="sku.sku_name"
-                        placeholder="请输入规格名称"
-                      />
-                    </el-form-item>
-                    <el-form-item label="规格价格" class="form-item-col">
-                      <el-input
-                        v-model.number="sku.price"
-                        type="number"
-                        placeholder="请输入规格价格"
-                      />
-                    </el-form-item>
-                    <el-form-item label="规格库存" class="form-item-col">
-                      <el-input
-                        v-model.number="sku.stock"
-                        type="number"
-                        placeholder="请输入规格库存"
-                      />
-                    </el-form-item>
-                  </div>
-                  <div class="form-row">
-                    <el-form-item label="规格图片" class="form-item-full">
-                      <UploadImage
-                        v-model="sku.imageList"
-                        :multiple="true"
-                        :limit="5"
-                      />
-                    </el-form-item>
-                  </div>
-                </el-form>
-              </div>
-            </div>
             <div>
-              <el-button type="primary" link @click="handleAddSku">
-                <el-icon><Plus /></el-icon>
-                <span>添加规格</span>
-              </el-button>
+              <div v-if="form.skus && form.skus.length > 0">
+                <div
+                  v-for="(sku, index) in form.skus"
+                  :key="sku.id"
+                  class="sku-item"
+                >
+                  <div class="sku-header">
+                    <span class="sku-index">规格 {{ index + 1 }}</span>
+                    <div class="sku-actions">
+                      <el-button
+                        type="primary"
+                        link
+                        size="small"
+                        @click="handleEditSku(form, sku, index)"
+                      >
+                        <el-icon><Edit /></el-icon>
+                      </el-button>
+                      <el-button
+                        type="danger"
+                        link
+                        size="small"
+                        @click="handleDeleteSku(sku.id, index)"
+                      >
+                        <el-icon><Delete /></el-icon>
+                      </el-button>
+                    </div>
+                  </div>
+                  <el-form
+                    :model="sku"
+                    label-width="100px"
+                    class="sku-form"
+                    label-position="top"
+                  >
+                    <div class="form-row">
+          <el-form-item label="规格名称" class="form-item-col">
+            <el-input
+              v-model="sku.sku_name"
+              placeholder="请输入规格名称"
+            />
+          </el-form-item>
+          <el-form-item label="规格价格" class="form-item-col">
+            <el-input
+              v-model.number="sku.price"
+              type="number"
+              placeholder="请输入规格价格"
+            />
+          </el-form-item>
+          <el-form-item label="实付金额" class="form-item-col">
+            <el-input
+              v-model.number="sku.actual_price"
+              type="number"
+              placeholder="请输入实付金额"
+            />
+          </el-form-item>
+        </div>
+                    <div class="form-row">
+                      <el-form-item label="规格图片" class="form-item-full">
+                        <UploadImage
+                          v-model="sku.imageList"
+                          :multiple="true"
+                          :limit="10"
+                        />
+                      </el-form-item>
+                    </div>
+                  </el-form>
+                </div>
+              </div>
+              <div>
+                <el-button type="primary" link @click="handleAddSku">
+                  <el-icon><Plus /></el-icon>
+                  <span>添加规格</span>
+                </el-button>
+              </div>
             </div>
           </el-form-item>
         </div>
         <div class="form-row">
           <el-form-item label="赠品" class="form-item-full">
-            <div v-if="form.promotions && form.promotions.length > 0">
-              <div
-                v-for="(promotion, index) in form.promotions"
-                :key="promotion.id"
-                class="promotion-item"
-              >
-                <div class="promotion-header">
-                  <span class="promotion-index">促销 {{ index + 1 }}</span>
-                  <div class="promotion-actions">
-                    <el-button
-                      type="primary"
-                      link
-                      size="small"
-                      @click="handleEditPromotion(promotion, index)"
-                    >
-                      <el-icon><Edit /></el-icon>
-                    </el-button>
-                    <el-button
-                      type="danger"
-                      link
-                      size="small"
-                      @click="handleDeletePromotion(promotion.id, index)"
-                    >
-                      <el-icon><Delete /></el-icon>
-                    </el-button>
-                  </div>
-                </div>
-                <el-form
-                  :model="promotion"
-                  label-width="100px"
-                  class="promotion-form"
-                  label-position="top"
+            <div>
+              <div v-if="form.promotions && form.promotions.length > 0">
+                <div
+                  v-for="(promotion, index) in form.promotions"
+                  :key="promotion.id"
+                  class="promotion-item"
                 >
-                  <div class="form-row">
-                    <el-form-item label="活动内容" class="form-item-col">
-                      <el-input
-                        v-model="promotion.name"
-                        placeholder="请输入活动内容"
-                      />
-                    </el-form-item>
-                    <el-form-item label="活动标签" class="form-item-col">
+                  <div class="promotion-header">
+                    <span class="promotion-index">促销 {{ index + 1 }}</span>
+                    <div class="promotion-actions">
+                      <el-button
+                        type="primary"
+                        link
+                        size="small"
+                        @click="handleEditPromotion(promotion, index)"
+                      >
+                        <el-icon><Edit /></el-icon>
+                      </el-button>
+                      <el-button
+                        type="danger"
+                        link
+                        size="small"
+                        @click="handleDeletePromotion(promotion.id, index)"
+                      >
+                        <el-icon><Delete /></el-icon>
+                      </el-button>
+                    </div>
+                  </div>
+                  <el-form
+                    :model="promotion"
+                    label-width="100px"
+                    class="promotion-form"
+                    label-position="top"
+                  >
+                    <div class="form-row">
+                      <el-form-item label="活动内容" class="form-item-col">
+                        <el-input
+                          v-model="promotion.name"
+                          placeholder="请输入活动内容"
+                        />
+                      </el-form-item>
+                      <!-- <el-form-item label="活动标签" class="form-item-col">
                       <el-input
                         v-model="promotion.label"
                         placeholder="请输入活动标签"
@@ -337,119 +360,123 @@
                         type="datetime"
                         placeholder="选择活动结束时间"
                       />
-                    </el-form-item>
-                  </div>
-                  <!-- 赠品类型特有字段 -->
-                  <div class="form-row">
-                    <el-form-item label="赠品图片" class="form-item-col">
-                      <UploadImage v-model="promotion.image" :limit="1" />
-                    </el-form-item>
-                    <el-form-item label="赠品数量" class="form-item-col">
+                    </el-form-item> -->
+                      <el-form-item label="赠品规格名" class="form-item-col">
+                        <el-input
+                          v-model="promotion.sku_name"
+                          placeholder="请输入赠品规格名"
+                        />
+                      </el-form-item>
+                    </div>
+                    <!-- 赠品类型特有字段 -->
+                    <div class="form-row">
+                      <el-form-item label="赠品图片" class="form-item-col">
+                        <UploadImage v-model="promotion.image" :limit="1" />
+                      </el-form-item>
+                      <!-- <el-form-item label="赠品数量" class="form-item-col">
                       <el-input
                         v-model.number="promotion.quantity"
                         type="number"
                         placeholder="请输入赠品数量"
                       />
-                    </el-form-item>
-                    <el-form-item label="赠品规格名" class="form-item-col">
-                      <el-input
-                        v-model="promotion.sku_name"
-                        placeholder="请输入赠品规格名"
-                      />
-                    </el-form-item>
-                    <el-form-item label="满赠条件" class="form-item-col">
+                    </el-form-item> -->
+
+                      <!-- <el-form-item label="满赠条件" class="form-item-col">
                       <el-input
                         v-model.number="promotion.condition"
                         type="number"
                         placeholder="请输入满赠条件（满多少金额）"
                       />
-                    </el-form-item>
-                  </div>
-                </el-form>
+                    </el-form-item> -->
+                    </div>
+                  </el-form>
+                </div>
               </div>
+              <el-button type="primary" link @click="handleAddPromotion">
+                <el-icon><Plus /></el-icon>
+                <span>添加赠品</span>
+              </el-button>
             </div>
-            <el-button type="primary" link @click="handleAddPromotion">
-              <el-icon><Plus /></el-icon>
-              <span>添加赠品</span>
-            </el-button>
           </el-form-item>
         </div>
 
         <!-- 商品折扣配置 -->
         <div class="form-row">
           <el-form-item label="商品折扣" class="form-item-full">
-            <div v-if="form.discounts && form.discounts.length > 0">
-              <div
-                v-for="(discount, index) in form.discounts"
-                :key="discount.id"
-                class="promotion-item"
-              >
-                <div class="promotion-header">
-                  <span class="promotion-index">折扣 {{ index + 1 }}</span>
-                  <div class="promotion-actions">
-                    <el-button
-                      type="primary"
-                      link
-                      size="small"
-                      @click="handleEditDiscount(discount, index)"
-                    >
-                      <el-icon><Edit /></el-icon>
-                    </el-button>
-                    <el-button
-                      type="danger"
-                      link
-                      size="small"
-                      @click="handleDeleteDiscount(discount.id)"
-                    >
-                      <el-icon><Delete /></el-icon>
-                    </el-button>
-                  </div>
-                </div>
-                <el-form
-                  :model="discount"
-                  label-width="100px"
-                  class="promotion-form"
-                  label-position="top"
+            <div>
+              <div v-if="form.discounts && form.discounts.length > 0">
+                <div
+                  v-for="(discount, index) in form.discounts"
+                  :key="discount.id"
+                  class="promotion-item"
                 >
-                  <div class="form-row">
-                    <el-form-item label="活动开始时间" class="form-item-col">
-                      <el-date-picker
-                        v-model="discount.start_time"
-                        type="datetime"
-                        placeholder="选择活动开始时间"
-                        style="width: 100%"
-                      />
-                    </el-form-item>
-                    <el-form-item label="活动结束时间" class="form-item-col">
-                      <el-date-picker
-                        v-model="discount.end_time"
-                        type="datetime"
-                        placeholder="选择活动结束时间"
-                        style="width: 100%"
-                      />
-                    </el-form-item>
-                    <el-form-item label="折扣值" class="form-item-col">
-                      <el-input
-                        v-model.number="discount.value"
-                        type="number"
-                        placeholder="请输入折扣值（1-10之间）"
-                      />
-                    </el-form-item>
-                    <el-form-item label="购买件数" class="form-item-col">
-                      <el-input
-                        v-model.number="discount.min_quantity"
-                        type="number"
-                        placeholder="请输入享受折扣的最小购买件数"
-                      />
-                    </el-form-item>
+                  <div class="promotion-header">
+                    <span class="promotion-index">折扣 {{ index + 1 }}</span>
+                    <div class="promotion-actions">
+                      <el-button
+                        type="primary"
+                        link
+                        size="small"
+                        @click="handleEditDiscount(discount, index)"
+                      >
+                        <el-icon><Edit /></el-icon>
+                      </el-button>
+                      <el-button
+                        type="danger"
+                        link
+                        size="small"
+                        @click="handleDeleteDiscount(discount.id)"
+                      >
+                        <el-icon><Delete /></el-icon>
+                      </el-button>
+                    </div>
                   </div>
-                </el-form>
+                  <el-form
+                    :model="discount"
+                    label-width="100px"
+                    class="promotion-form"
+                    label-position="top"
+                  >
+                    <div class="form-row">
+                      <!-- <el-form-item label="活动开始时间" class="form-item-col">
+                        <el-date-picker
+                          v-model="discount.start_time"
+                          type="datetime"
+                          placeholder="选择活动开始时间"
+                          style="width: 100%"
+                        />
+                      </el-form-item>
+                      <el-form-item label="活动结束时间" class="form-item-col">
+                        <el-date-picker
+                          v-model="discount.end_time"
+                          type="datetime"
+                          placeholder="选择活动结束时间"
+                          style="width: 100%"
+                        />
+                      </el-form-item> -->
+                      <el-form-item label="折扣值" class="form-item-col">
+                        <el-input
+                          v-model.number="discount.value"
+                          type="number"
+                          placeholder="请输入折扣值（1-10之间）"
+                        />
+                      </el-form-item>
+                      <el-form-item label="购买件数" class="form-item-col">
+                        <el-input
+                          v-model.number="discount.min_quantity"
+                          type="number"
+                          placeholder="请输入享受折扣的最小购买件数"
+                        />
+                      </el-form-item>
+                    </div>
+                  </el-form>
+                </div>
               </div>
+              <el-button type="primary" link @click="handleAddDiscount">
+                <el-icon><Plus /></el-icon>
+                <span>添加折扣</span>
+              </el-button>
             </div>
-            <el-button type="primary" link @click="handleAddDiscount">
-              <el-icon><Plus /></el-icon>
-              <span>添加折扣</span>
-            </el-button>
           </el-form-item>
         </div>
         <!-- 富文本编辑器放在底部单独占一行 -->
@@ -492,18 +519,18 @@
             placeholder="请输入规格价格"
           />
         </el-form-item>
-        <el-form-item label="规格库存" prop="stock">
+        <el-form-item label="实付金额" prop="actual_price">
           <el-input
-            v-model.number="skuForm.stock"
+            v-model.number="skuForm.actual_price"
             type="number"
-            placeholder="请输入规格库存"
+            placeholder="请输入实付金额"
           />
         </el-form-item>
         <el-form-item label="规格图片">
           <UploadImage
             v-model="skuForm.imageList"
             :multiple="true"
-            :limit="5"
+            :limit="10"
           />
         </el-form-item>
       </el-form>
@@ -721,6 +748,7 @@ export default {
       id: "",
       sku_name: "",
       price: 0,
+      actual_price: 0,
       stock: 0,
       imageList: [],
       images: [],
@@ -776,15 +804,6 @@ export default {
               callback();
             }
           },
-          trigger: "blur",
-        },
-      ],
-      stock: [
-        { required: true, message: "请输入规格库存", trigger: "blur" },
-        {
-          type: "number",
-          min: 0,
-          message: "库存必须大于等于0",
           trigger: "blur",
         },
       ],
@@ -971,7 +990,7 @@ export default {
               id: sku.id,
               sku_name: sku.sku_name,
               price: sku.price,
-              stock: sku.stock,
+              actual_price: sku.actual_price || 0,
               imageList: sku.images || [],
             })),
             promotions: (productDetail.promotions || []).map((promotion) => ({
@@ -993,19 +1012,20 @@ export default {
                 ? [{ url: getImageUrl(promotion.image) }]
                 : [],
             })),
-            discounts: productDetail.discounts && Array.isArray(productDetail.discounts)
-              ? productDetail.discounts.map((discount) => ({
-                  ...discount,
-                  start_time: discount.start_time
-                    ? new Date(discount.start_time)
-                    : null,
-                  end_time: discount.end_time
-                    ? new Date(discount.end_time)
-                    : null,
-                  value: discount.value || 1,
-                  min_quantity: discount.min_quantity || 1,
-                }))
-              : [],
+            discounts:
+              productDetail.discounts && Array.isArray(productDetail.discounts)
+                ? productDetail.discounts.map((discount) => ({
+                    ...discount,
+                    start_time: discount.start_time
+                      ? new Date(discount.start_time)
+                      : null,
+                    end_time: discount.end_time
+                      ? new Date(discount.end_time)
+                      : null,
+                    value: discount.value || 1,
+                    min_quantity: discount.min_quantity || 1,
+                  }))
+                : [],
           };
           dialogVisible.value = true;
         } else {
@@ -1030,7 +1050,7 @@ export default {
         const submitData = {
           ...skuForm.value,
           price: Number(skuForm.value.price),
-          stock: Number(skuForm.value.stock),
+          actual_price: Number(skuForm.value.actual_price) || 0,
           images: (skuForm.value.imageList || [])
             .map((url) => {
               // 将完整URL转换为相对路径
@@ -1136,7 +1156,7 @@ export default {
           id: "",
           sku_name: "",
           price: 0,
-          stock: 0,
+          actual_price: 0,
           imageList: [],
           images: [],
           product_id: product.id,
@@ -1149,7 +1169,7 @@ export default {
           id: "",
           sku_name: "",
           price: 0,
-          stock: 0,
+          actual_price: 0,
           imageList: [],
           images: [],
         });
@@ -1307,8 +1327,8 @@ export default {
         id: sku.id,
         sku_name: sku.sku_name,
         price: sku.price,
-        stock: sku.stock,
-        imageList: (sku.images || []).map((img) => getImageUrl(img)),
+        actual_price: sku.actual_price || 0,
+        imageList: sku.imageList || [],
         images: sku.images || [],
         product_id: product.id,
       };
@@ -1343,7 +1363,7 @@ export default {
           skus: form.value.skus.map((sku) => ({
             ...sku,
             price: Number(sku.price),
-            stock: Number(sku.stock),
+            actual_price: Number(sku.actual_price) || 0,
             images: (sku.imageList || [])
               .map((url) => {
                 // 将完整URL转换为相对路径

@@ -68,6 +68,17 @@
 										}}</text>
 									</view>
 								</view>
+								<view class="flex flex-row gap-12px items-center pl-18px">
+									<view class="flex flex-row gap-4px items-start py-4px">
+										<view class="flex flex-row items-center gap-4px">
+											<uv-icon :name="shAdr" :size="14" :color="'#9E9E9E'" />
+											<text class="font-size-12px text-#9E9E9E whitespace-nowrap">自提地址：</text>
+										</view>
+										<text class="font-size-12px text-#9E9E9E tracking-[1rpx]">
+											{{ orderInfo?.pickup_address || '--' }}
+										</text>
+									</view>
+								</view>
 								<view class="p-l-22px mt-12px">
 									<text class="font-size-12px text-#B7131B">已变更</text>
 								</view>
@@ -80,7 +91,7 @@
 						<template #content>
 							<view>
 								<view>
-									<view class="flex flex-row items-center py-10px ">
+									<view class="flex flex-row items-center py-10px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">订单编号：</text>
 										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
 											{{ orderInfo?.order_no || '--' }}
@@ -125,23 +136,21 @@
 									<view class="flex flex-row items-center py-10px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">提货方式：</text>
 										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
-											{{ orderInfo?.pickup_method || '口岸自提' }}-<text class="text-#9D6261">
-												{{ orderInfo?.pickup_location || '新海港' }}
-											</text>
+											{{ orderInfo?.pickup_method || '口岸自提' }}
 										</text>
 									</view>
 									<uv-line />
 								</view>
-								<view class="flex flex-row items-center justify-center pt-12px gap-8px">
+								<view class="flex flex-row items-center justify-center pt-12px gap-2px">
 									<view>
-										<uv-icon :name="serveIcon" :size="24" />
+										<uv-icon :name="serveIcon" :size="28" />
 									</view>
 									<text class="font-size-12px text-#333333">联系我们</text>
 								</view>
 							</view>
 						</template>
 					</Card>
-					<Card title="离岛自提商品列表" :titleSize="16"  :titleBold="false" showHeadLine>
+					<Card title="离岛自提商品列表" :titleSize="16" :titleBold="false" showHeadLine>
 						<template #content>
 							<view class="flex flex-col gap-12px">
 								<view
@@ -270,10 +279,11 @@ import { computed, shallowRef } from 'vue'
 import Card from '@/components/Card'
 import articleIcon from '@/assets/images/article-icon.png'
 import locationIcon from '@/assets/images/location.png'
-import serveIcon from '@/assets/images/serve-icon.png'
+import serveIcon from '@/assets/images/red-server.png'
 import phoneIcon from '@/assets/images/phone-icon.png'
 import idcardIcon from '@/assets/images/id-card-o.png'
 import steamerIcon from '@/assets/images/steamer-icon.png'
+import shAdr from '@/assets/images/sh-adr.png'
 import timeIcon from '@/assets/images/time-icon.png'
 import GoodsItem from './components/GoodsItem'
 import ScrollPaging from '@/components/ScrollPaging'

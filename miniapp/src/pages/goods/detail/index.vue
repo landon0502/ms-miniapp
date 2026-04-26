@@ -68,7 +68,7 @@
 				>
 					<view class="px-16rpx">
 						<text class="text-[24rpx]">
-							{{ { capacity: '计量', spec: '规格' }[productInfo?.measurement_type] }}
+							{{ { capacity: '计量', spec: '规格', series: '系列' }[productInfo?.measurement_type] }}
 						</text>
 					</view>
 					<uv-line direction="col" length="100rpx" color="#DADADA"></uv-line>
@@ -200,14 +200,14 @@
 											v-for="label in productInfo?.tags"
 											:key="label"
 											:text="label"
-											bgColor="#FFEAEB"
+											:bgColor="productInfo?.theme === 'black' ? '#FFF9F9' : '#FFEAEB'"
 											:color="productInfo?.theme === 'black' ? '#000' : '#E53026'"
 											borderColor="transparent"
 											size="mini"
 										></uv-tags>
 									</view>
 									<view
-										class="flex items-center justify-between gap-6rpx px-4px py-2px rounded-full h-32rpx"
+										class="flex items-center justify-between gap-6rpx pr-4px pl-8px py-1px rounded-full h-32rpx mt-3px"
 										v-if="!isEmpty(productInfo?.coupons)"
 										@click="promotionRef.open(productInfo, currentSku)"
 										:style="{
@@ -266,17 +266,17 @@
 											class="flex flex-row gap-12rpx items-cener"
 										>
 											<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
-												<text class="text-#E53026 text-10px">
+												<text class="text-#E53026 text-11px">
 													{{
 														`${discount.min_quantity > 1 ? discount.min_quantity + '件' : ''}${Number(discount.value)}折`
 													}}
 												</text>
 											</view>
 											<view class="flex-1 flex items-center">
-												<text class="text-10px line-clamp-1"
+												<text class="text-11px line-clamp-1"
 													>此商品专享{{
 														`${discount.min_quantity > 1 ? '满' + discount.min_quantity + '件' : ''}${Number(discount.value)}折`
-													}}折</text
+													}}</text
 												>
 											</view>
 										</view>
@@ -296,7 +296,7 @@
 									</view>
 									<view
 										v-if="!isEmpty(productInfo?.coupons)"
-										class="flex flex-row gap-12rpx items-cener"
+										class="flex flex-row gap-12rpx items-center"
 									>
 										<view class="px-4px py-2px rounded-2px bg-#FEEBF2 flex flex-center">
 											<text class="text-#E53026 text-10px"> 领券 </text>
@@ -377,9 +377,9 @@
 		<template #page-extra>
 			<Promotion ref="promotionRef" />
 			<view
-				class="fixed right-10px bottom-300rpx bg-#fff rounded-full w-100rpx h-100rpx rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+				class="fixed right-10px bottom-300rpx bg-#fff rounded-full w-90rpx h-90rpx rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
 			>
-				<uv-icon :name="serverIcon" :size="40" />
+				<uv-icon :name="serverIcon" :size="32" />
 			</view>
 		</template>
 	</PageContainer>

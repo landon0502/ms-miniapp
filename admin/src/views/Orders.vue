@@ -475,6 +475,7 @@
                       v-model.number="item.discount_amount"
                       placeholder="实付金额"
                       style="width: 150px"
+                      :disabled="true"
                     />
                   </div>
                   <div class="flex flex-col items-start gap-1">
@@ -716,7 +717,8 @@ const handleProductChange = async (item) => {
         item.skus = response.data.data.skus || [];
         if (item.skus.length > 0) {
           item.sku_id = item.sku_id || item.skus[0].id;
-          // 不再自动设置单价，由用户输入实付金额
+          // 自动设置第一个规格的实付金额
+          item.discount_amount = item.skus[0].actual_price || 0;
         }
       } else {
         ElMessage.error(`获取商品规格失败: ${response.data.message}`);
@@ -733,7 +735,8 @@ const handleSkuChange = (item) => {
   if (item.sku_id && item.skus) {
     const selectedSku = item.skus.find((sku) => sku.id == item.sku_id);
     if (selectedSku) {
-      // 不再自动设置单价，由用户输入实付金额
+      // 从规格中获取实付金额
+      item.discount_amount = selectedSku.actual_price || 0;
     }
   }
 };

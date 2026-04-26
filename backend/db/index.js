@@ -100,7 +100,7 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE products MODIFY COLUMN detail_description TEXT COMMENT '商品详细描述（富文本）'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN price DECIMAL(10,2) COMMENT '商品价格'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN original_price DECIMAL(10,2) COMMENT '商品原价'`);
-    await connection.execute(`ALTER TABLE products MODIFY COLUMN stock INT NOT NULL COMMENT '商品库存'`);
+    await connection.execute(`ALTER TABLE products MODIFY COLUMN stock INT NOT NULL DEFAULT 0 COMMENT '商品库存'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN category VARCHAR(100) COMMENT '商品分类'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN image VARCHAR(255) COMMENT '商品主图'`);
     await connection.execute(`ALTER TABLE products MODIFY COLUMN theme VARCHAR(20) DEFAULT 'red' COMMENT '详情页主题（red或black）'`);
@@ -115,11 +115,39 @@ export async function initDatabase() {
         product_id INT NOT NULL,
         sku_name VARCHAR(100) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
-        stock INT NOT NULL,
+        actual_price DECIMAL(10,2) DEFAULT 0,
+        stock INT NOT NULL DEFAULT 0,
         images TEXT,
         FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
       )
     `);
+    
+    // 检查并添加actual_price字段（如果不存在）
+    try {
+      const [result] = await connection.execute(
+        'SHOW COLUMNS FROM product_skus WHERE Field = ?',
+        ['actual_price']
+      );
+      if (result.length === 0) {
+        await connection.execute('ALTER TABLE product_skus ADD COLUMN actual_price DECIMAL(10,2) DEFAULT 0 COMMENT "实付金额"');
+      }
+    } catch (error) {
+      console.error('添加actual_price字段失败:', error);
+    }
+    
+    // 为product_skus表的stock字段添加默认值
+    try {
+      await connection.execute('ALTER TABLE product_skus MODIFY COLUMN stock INT NOT NULL DEFAULT 0 COMMENT "规格库存"');
+    } catch (error) {
+      console.error('修改product_skus表stock字段默认值失败:', error);
+    }
+    
+    // 为products表的stock字段添加默认值
+    try {
+      await connection.execute('ALTER TABLE products MODIFY COLUMN stock INT NOT NULL DEFAULT 0 COMMENT "商品库存"');
+    } catch (error) {
+      console.error('修改products表stock字段默认值失败:', error);
+    }
     
     // 检查并处理images字段
     try {
@@ -141,6 +169,7 @@ export async function initDatabase() {
     await connection.execute(`ALTER TABLE product_skus MODIFY COLUMN product_id INT NOT NULL COMMENT '商品ID'`);
     await connection.execute(`ALTER TABLE product_skus MODIFY COLUMN sku_name VARCHAR(100) NOT NULL COMMENT '规格名称'`);
     await connection.execute(`ALTER TABLE product_skus MODIFY COLUMN price DECIMAL(10,2) NOT NULL COMMENT '规格价格'`);
+    await connection.execute(`ALTER TABLE product_skus MODIFY COLUMN actual_price DECIMAL(10,2) DEFAULT 0 COMMENT '实付金额'`);
     await connection.execute(`ALTER TABLE product_skus MODIFY COLUMN stock INT NOT NULL COMMENT '规格库存'`);
     await connection.execute(`ALTER TABLE product_skus MODIFY COLUMN images TEXT COMMENT '规格图片（JSON格式）'`);
     

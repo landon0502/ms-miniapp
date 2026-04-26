@@ -4,6 +4,18 @@ import { getPool } from '../db/index.js';
 
 const router = express.Router();
 
+function formatDateTime(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const seconds = String(d.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 /**
  * @swagger
  * /api/flash-sales: 
@@ -72,6 +84,12 @@ router.get('/', async (req, res) => {
       LIMIT ${pageSize} OFFSET ${offset}
     `);
     
+    const formattedRows = rows.map(row => ({
+      ...row,
+      start_time: formatDateTime(row.start_time),
+      end_time: formatDateTime(row.end_time)
+    }));
+    
     res.json({
       success: true,
       code: 200,
@@ -80,7 +98,7 @@ router.get('/', async (req, res) => {
         page,
         pageSize,
         total,
-        list: rows
+        list: formattedRows
       }
     });
   } catch (error) {
@@ -147,9 +165,9 @@ router.post('/', async (req, res) => {
     const pool = getPool();
     const { product_id, sku_id, activity_price, start_time, end_time } = req.body;
     
-    // 转换时间格式为MySQL可接受的格式
-    const formattedStartTime = new Date(start_time).toISOString().slice(0, 19).replace('T', ' ');
-    const formattedEndTime = new Date(end_time).toISOString().slice(0, 19).replace('T', ' ');
+    // 直接使用前端发送的时间字符串，因为前端已经格式化好了
+    const formattedStartTime = start_time;
+    const formattedEndTime = end_time;
     
     const [result] = await pool.execute(
       'INSERT INTO flash_sales (product_id, sku_id, activity_price, start_time, end_time) VALUES (?, ?, ?, ?, ?)',
@@ -242,9 +260,9 @@ router.put('/:id', async (req, res) => {
     const pool = getPool();
     const { product_id, sku_id, activity_price, start_time, end_time } = req.body;
     
-    // 转换时间格式为MySQL可接受的格式
-    const formattedStartTime = new Date(start_time).toISOString().slice(0, 19).replace('T', ' ');
-    const formattedEndTime = new Date(end_time).toISOString().slice(0, 19).replace('T', ' ');
+    // 直接使用前端发送的时间字符串，因为前端已经格式化好了
+    const formattedStartTime = start_time;
+    const formattedEndTime = end_time;
     
     const [result] = await pool.execute(
       'UPDATE flash_sales SET product_id = ?, sku_id = ?, activity_price = ?, start_time = ?, end_time = ? WHERE id = ?',

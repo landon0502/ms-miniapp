@@ -132,7 +132,9 @@ router.get('/', async (req, res) => {
             } else {
               item.sku.images = [];
             }
-            console.log('获取规格信息成功');
+            // 从商品规格表中获取 actual_price 并赋值给 price
+              item.price = parseFloat(item.sku.actual_price || 0);
+              console.log('获取规格信息成功, actual_price:', item.sku.actual_price);
           }
         }
       }
@@ -389,8 +391,25 @@ router.post('/', async (req, res) => {
           const productId = item.product_id !== undefined ? item.product_id : null;
           const skuId = item.sku_id !== undefined ? item.sku_id : null;
           const quantity = item.quantity !== undefined ? item.quantity : 1;
-          const price = item.discount_amount !== undefined ? item.discount_amount : 0;
-          const discountAmount = item.discount_amount !== undefined ? item.discount_amount : 0;
+          
+          // 从规格中获取实付金额
+          let price = 0;
+          let discountAmount = 0;
+          if (skuId) {
+            const [skuResult] = await pool.execute('SELECT actual_price FROM product_skus WHERE id = ?', [skuId]);
+            if (skuResult.length > 0 && skuResult[0].actual_price) {
+              price = skuResult[0].actual_price;
+              discountAmount = skuResult[0].actual_price;
+            } else {
+              // 如果没有规格或规格没有实付金额，使用传递的价格
+              price = item.discount_amount !== undefined ? item.discount_amount : 0;
+              discountAmount = item.discount_amount !== undefined ? item.discount_amount : 0;
+            }
+          } else {
+            // 如果没有规格，使用传递的价格
+            price = item.discount_amount !== undefined ? item.discount_amount : 0;
+            discountAmount = item.discount_amount !== undefined ? item.discount_amount : 0;
+          }
           
           await pool.execute(
             'INSERT INTO order_items (order_id, product_id, sku_id, quantity, price, discount_amount) VALUES (?, ?, ?, ?, ?, ?)',
@@ -561,11 +580,12 @@ router.get('/:id', async (req, res) => {
         
         // 计算商品原价（使用 sku 的价格或 product 的价格）
         const originalPrice = parseFloat(sku?.price || product?.price || 0);
-        const actualPrice = parseFloat(item.discount_amount || 0);
+        // 只从商品规格表中取 actual_price
+        const actualPrice = parseFloat(sku?.actual_price || 0);
         
         // 计算总价
         totalOriginalPrice += originalPrice * item.quantity;
-        totalActualPrice += actualPrice;
+        totalActualPrice += actualPrice * item.quantity;
         
         // 添加商品信息
         items.push({
@@ -573,8 +593,9 @@ router.get('/:id', async (req, res) => {
           sku_id: item.sku_id,
           product_name: product?.name || '',
           quantity: item.quantity,
-          original_price: originalPrice,
-          actual_price: actualPrice,
+          original_price: originalPrice * item.quantity,
+          actual_price: actualPrice * item.quantity,
+          price: actualPrice * item.quantity,
           image: image
         });
       } catch (error) {
@@ -850,9 +871,28 @@ router.put('/:id', async (req, res) => {
         
         // 添加新的订单项
         for (const item of items) {
+          // 从规格中获取实付金额
+          let price = 0;
+          let discountAmount = 0;
+          if (item.sku_id) {
+            const [skuResult] = await connection.execute('SELECT actual_price FROM product_skus WHERE id = ?', [item.sku_id]);
+            if (skuResult.length > 0 && skuResult[0].actual_price) {
+              price = skuResult[0].actual_price;
+              discountAmount = skuResult[0].actual_price;
+            } else {
+              // 如果没有规格或规格没有实付金额，使用传递的价格
+              price = item.discount_amount !== undefined ? item.discount_amount : 0;
+              discountAmount = item.discount_amount !== undefined ? item.discount_amount : 0;
+            }
+          } else {
+            // 如果没有规格，使用传递的价格
+            price = item.discount_amount !== undefined ? item.discount_amount : 0;
+            discountAmount = item.discount_amount !== undefined ? item.discount_amount : 0;
+          }
+          
           await connection.execute(
             'INSERT INTO order_items (order_id, product_id, sku_id, quantity, price, discount_amount) VALUES (?, ?, ?, ?, ?, ?)',
-            [req.params.id, item.product_id, item.sku_id, item.quantity, item.discount_amount || 0, item.discount_amount || 0]
+            [req.params.id, item.product_id, item.sku_id, item.quantity, price, discountAmount]
           );
         }
       }

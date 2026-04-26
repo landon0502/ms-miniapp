@@ -48,7 +48,7 @@
 					<text class="text-gray-600 text-sm font-light flex-1 text-#999999">开航时间</text>
 					<text
 						class="text-sm font-light flex-2 text-right    text-#444444"
-						>{{ orderInfo?.route_info?.sailing_time || '--' }}</text
+						>{{ formatDate(orderInfo?.route_info?.sailing_time) }}</text
 					>
 				</view>
 				<uv-line />
@@ -112,7 +112,7 @@
 				<view class="flex justify-between items-center py-12px border-b border-gray-100">
 					<text class="text-gray-600 text-sm font-light flex-1 text-#999999">总金额</text>
 					<text class="text-sm font-light flex-2 text-right text-#444444"
-						>{{ (parseFloat(orderInfo?.route_info?.total_amount) || 0).toFixed(2) }} 元</text
+						>{{ amount }} 元</text
 					>
 				</view>
 				<uv-line />
@@ -121,7 +121,7 @@
 					<text class="text-gray-600 text-sm font-light flex-1 text-#999999">订票时间</text>
 					<text
 						class="text-sm font-light flex-2 text-righ   text-#444444"
-						>{{ orderInfo?.route_info?.booking_time || '--' }}</text
+						>{{ formatDate(orderInfo?.route_info?.booking_time) }}</text
 					>
 				</view>
 				<uv-line />
@@ -160,11 +160,17 @@ const { orderDetailControl } = useServices()
 
 // 从 orderDetailControl 中解构出属性，确保响应式
 const { data: orderInfo, loading, error } = orderDetailControl
-
+const amount = computed(() => {
+	return (
+		(parseFloat(orderInfo?.route_info?.value_added_service) || 0) +
+		(parseFloat(orderInfo?.route_info?.vehicle_price) || 0) +
+		(parseFloat(orderInfo?.route_info?.passenger_price) || 0)
+	).toFixed(2)
+})
 // 格式化时间函数
 const formatDate = (dateString) => {
 	if (!dateString) return '--'
-	return dayjs(dateString).format('YYYY-MM-DD HH:mm:ss')
+	return dayjs(dateString).format('YYYY-MM-DD HH:mm')
 }
 
 // 格式化订单状态

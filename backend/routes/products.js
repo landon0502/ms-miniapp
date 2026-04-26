@@ -437,22 +437,22 @@ router.post('/', async (req, res) => {
     
     try {
       // 插入商品
-      const [result] = await connection.execute(
-        'INSERT INTO products (name, description, detail_description, stock, category, image, theme, measurement_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [name, description, detail_description, stock, category, image, theme || 'red', measurement_type || 'spec']
-      );
+    const [result] = await connection.execute(
+      'INSERT INTO products (name, description, detail_description, stock, category, image, theme, measurement_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, description, detail_description, stock || 0, category, image, theme || 'red', measurement_type || 'spec']
+    );
       
       const productId = result.insertId;
       
       // 处理规格
       if (skus && Array.isArray(skus)) {
         for (const sku of skus) {
-          const { sku_name, price: skuPrice, stock: skuStock, images } = sku;
+          const { sku_name, price: skuPrice, actual_price: skuActualPrice, stock: skuStock, images } = sku;
           const imagesJson = JSON.stringify(images || []);
           
           await connection.execute(
-            'INSERT INTO product_skus (product_id, sku_name, price, stock, images) VALUES (?, ?, ?, ?, ?)',
-            [productId, sku_name, skuPrice, skuStock, imagesJson]
+            'INSERT INTO product_skus (product_id, sku_name, price, actual_price, stock, images) VALUES (?, ?, ?, ?, ?, ?)',
+            [productId, sku_name, skuPrice, skuActualPrice || 0, skuStock || 0, imagesJson]
           );
         }
       }
@@ -564,19 +564,19 @@ router.post('/', async (req, res) => {
 router.post('/:id/skus', async (req, res) => {
   try {
     const pool = getPool();
-    const { sku_name, price, stock, images } = req.body;
+    const { sku_name, price, actual_price, images } = req.body;
     const imagesJson = JSON.stringify(images || []);
     
     const [result] = await pool.execute(
-      'INSERT INTO product_skus (product_id, sku_name, price, stock, images) VALUES (?, ?, ?, ?, ?)',
-      [req.params.id, sku_name, price, stock, imagesJson]
+      'INSERT INTO product_skus (product_id, sku_name, price, actual_price, images) VALUES (?, ?, ?, ?, ?)',
+      [req.params.id, sku_name, price, actual_price || 0, imagesJson]
     );
     
     res.json({
       success: true,
       code: 200,
       message: '创建商品规格成功',
-      data: { id: result.insertId, product_id: req.params.id, sku_name, price, stock, images: images || [] }
+      data: { id: result.insertId, product_id: req.params.id, sku_name, price, actual_price: actual_price || 0, images: images || [] }
     });
   } catch (error) {
     console.error('创建规格失败:', error);
@@ -652,12 +652,12 @@ router.post('/:id/skus', async (req, res) => {
 router.put('/:productId/skus/:skuId', async (req, res) => {
   try {
     const pool = getPool();
-    const { sku_name, price, stock, images } = req.body;
+    const { sku_name, price, actual_price, images } = req.body;
     const imagesJson = JSON.stringify(images || []);
     
     const [result] = await pool.execute(
-      'UPDATE product_skus SET sku_name = ?, price = ?, stock = ?, images = ? WHERE id = ? AND product_id = ?',
-      [sku_name, price, stock, imagesJson, req.params.skuId, req.params.productId]
+      'UPDATE product_skus SET sku_name = ?, price = ?, actual_price = ?, images = ? WHERE id = ? AND product_id = ?',
+      [sku_name, price, actual_price || 0, imagesJson, req.params.skuId, req.params.productId]
     );
     
     if (result.affectedRows === 0) {
@@ -668,7 +668,7 @@ router.put('/:productId/skus/:skuId', async (req, res) => {
       success: true,
       code: 200,
       message: '更新商品规格成功',
-      data: { id: req.params.skuId, product_id: req.params.productId, sku_name, price, stock, images: images || [] }
+      data: { id: req.params.skuId, product_id: req.params.productId, sku_name, price, actual_price: actual_price || 0, images: images || [] }
     });
   } catch (error) {
     console.error('更新规格失败:', error);
@@ -899,21 +899,21 @@ router.put('/:id', async (req, res) => {
         
         // 处理每个规格
         for (const sku of skus) {
-          const { id, sku_name, price: skuPrice, stock: skuStock, images } = sku;
+          const { id, sku_name, price: skuPrice, actual_price: skuActualPrice, stock: skuStock, images } = sku;
           const imagesJson = JSON.stringify(images || []);
           
           if (id) {
             // 更新现有规格
             await connection.execute(
-              'UPDATE product_skus SET sku_name = ?, price = ?, stock = ?, images = ? WHERE id = ? AND product_id = ?',
-              [sku_name, skuPrice, skuStock, imagesJson, id, req.params.id]
+              'UPDATE product_skus SET sku_name = ?, price = ?, actual_price = ?, stock = ?, images = ? WHERE id = ? AND product_id = ?',
+              [sku_name, skuPrice, skuActualPrice || 0, skuStock || 0, imagesJson, id, req.params.id]
             );
             retainedSkuIds.push(id);
           } else {
             // 添加新规格
             await connection.execute(
-              'INSERT INTO product_skus (product_id, sku_name, price, stock, images) VALUES (?, ?, ?, ?, ?)',
-              [req.params.id, sku_name, skuPrice, skuStock, imagesJson]
+              'INSERT INTO product_skus (product_id, sku_name, price, actual_price, stock, images) VALUES (?, ?, ?, ?, ?, ?)',
+              [req.params.id, sku_name, skuPrice, skuActualPrice || 0, skuStock || 0, imagesJson]
             );
           }
         }

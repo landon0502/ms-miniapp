@@ -25,7 +25,8 @@
 				<view class="flex justify-between items-center">
 					<view class="flex items-center gap-5px">
 						<view class="flex items-center">
-							<uv-icon :name="requireIcon" :size="8" />
+							<!-- <uv-icon :name="requireIcon" :size="8" /> -->
+							 <view class="w-8rpx h-8rpx rounded-full bg-#BD854F mr-4rpx"></view>
 							<text class="font-size-10px text-#7E7E7E whitespace-nowrap">子订单号：</text>
 							<text class="font-size-10px text-#7E7E7E whitespace-nowrap">{{
 								order.sub_order_no
