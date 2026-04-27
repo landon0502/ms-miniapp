@@ -37,7 +37,7 @@
 								<view class="flex flex-row gap-12px items-center flex-wrap">
 									<view class="flex flex-row gap-4px items-center py-4px">
 										<uv-icon :name="locationIcon" :size="18" />
-										<text class="font-size-14px text-#5D5D5D font-bold">{{
+										<text class="font-size-14px text-#444444 font-bold">{{
 											orderInfo?.consignee_name || '--'
 										}}</text>
 									</view>
@@ -93,7 +93,7 @@
 								<view>
 									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">订单编号：</text>
-										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
+										<text class="font-size-12px text-#444444 font-bold ml-4px">
 											{{ orderInfo?.order_no || '--' }}
 										</text>
 										<view
@@ -117,7 +117,7 @@
 								<view>
 									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">下单时间：</text>
-										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
+										<text class="font-size-12px text-#444444 font-bold ml-4px">
 											{{ formatDate(orderInfo?.order_time, 'YYYY-MM-DD HH:mm:ss') }}
 										</text>
 									</view>
@@ -126,8 +126,8 @@
 								<view>
 									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">支付方式：</text>
-										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
-											微信支付
+										<text class="font-size-12px text-#444444 font-bold ml-4px">
+											大会员积分支付，微信支付
 										</text>
 									</view>
 									<uv-line />
@@ -135,7 +135,7 @@
 								<view>
 									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">提货方式：</text>
-										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
+										<text class="font-size-12px text-#444444 font-bold ml-4px">
 											离岛提货点自提-<text class="text-#B7131B">新海港</text>
 										</text>
 									</view>
@@ -145,7 +145,7 @@
 									<view>
 										<uv-icon :name="serveIcon" :size="28" />
 									</view>
-									<text class="font-size-12px text-#333333">联系我们</text>
+									<text class="font-size-12px text-#000000">联系我们</text>
 								</view>
 							</view>
 						</template>

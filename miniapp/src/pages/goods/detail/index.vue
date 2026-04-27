@@ -68,7 +68,9 @@
 				>
 					<view class="px-16rpx">
 						<text class="text-[24rpx]">
-							{{ { capacity: '计量', spec: '规格', series: '系列' }[productInfo?.measurement_type] }}
+							{{
+								{ capacity: '计量', spec: '规格', series: '系列' }[productInfo?.measurement_type]
+							}}
 						</text>
 					</view>
 					<uv-line direction="col" length="100rpx" color="#DADADA"></uv-line>
@@ -159,7 +161,9 @@
 										}
 									"
 								>
-									<view class="discount-price-box pos-relative z-4 pr-8rpx pl-12rpx flex items-center justify-center bg-[var(--bg-color)]">
+									<view
+										class="discount-price-box pos-relative z-4 pr-8rpx pl-12rpx flex items-center justify-center bg-[var(--bg-color)]"
+									>
 										<PriceText
 											:value="discountPrice"
 											:prefixStyle="{ fontSize: '14px' }"
@@ -178,7 +182,11 @@
 											</template>
 										</PriceText>
 										<view class="pt-2px">
-											<uv-icon name="arrow-right" :color="productInfo?.theme === 'black' ? '#333' : '#ffffff'" :size="10" />
+											<uv-icon
+												name="arrow-right"
+												:color="productInfo?.theme === 'black' ? '#333' : '#ffffff'"
+												:size="10"
+											/>
 										</view>
 									</view>
 								</view>
@@ -209,7 +217,6 @@
 									<view
 										class="flex items-center justify-between gap-6rpx pr-4px pl-8px py-1px rounded-full h-32rpx mt-3px"
 										v-if="!isEmpty(productInfo?.coupons)"
-										
 										:style="{
 											background: productInfo?.theme === 'black' ? '#000' : '#fff'
 										}"
@@ -377,9 +384,9 @@
 		<template #page-extra>
 			<!-- <Promotion ref="promotionRef" /> -->
 			<view
-				class="fixed right-10px bottom-300rpx bg-#fff rounded-full w-90rpx h-90rpx rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+				class="fixed right-10px bottom-300rpx bg-#fff rounded-full w-80rpx h-80rpx rounded-full flex items-center justify-center shadow-[0px_1px_6px_rgba(0,0,0,0.2)]"
 			>
-				<uv-icon :name="serverIcon" :size="32" />
+				<uv-icon :name="serverIcon" :size="24" />
 			</view>
 		</template>
 	</PageContainer>
@@ -555,8 +562,8 @@ onLoad(async () => {
 }
 .discount-price {
 	margin-left: 16rpx;
-	&-box{
-		border-radius: 32rpx 40rpx 40rpx 0 ;
+	&-box {
+		border-radius: 32rpx 40rpx 40rpx 0;
 	}
 	&::after {
 		content: '';
@@ -568,7 +575,13 @@ onLoad(async () => {
 		bottom: 0;
 		left: -26rpx;
 		z-index: 3;
-		background: radial-gradient(circle at left top, var(--bar-bg) 0%, var(--bar-bg) 70%,var(--bg-color) 70%,var(--bg-color) 60%, );
+		background: radial-gradient(
+			circle at left top,
+			var(--bar-bg) 0%,
+			var(--bar-bg) 70%,
+			var(--bg-color) 70%,
+			var(--bg-color) 60%
+		);
 	}
 }
 </style>
