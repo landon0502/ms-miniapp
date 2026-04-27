@@ -5,7 +5,7 @@
 		</view>
 		<view class="flex flex-col">
 			<text class="font-size-12px text-#636363"
-				>{{ goods.product.name }} {{ goods.sku.sku_name }}</text
+				>{{ goods.sku.sku_name }}</text
 			>
 			<view class="mt-24px font-size-12px">
 				<text class="text-#B4B4B4">x{{ goods.quantity }}</text>
