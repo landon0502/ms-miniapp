@@ -68,6 +68,7 @@
       v-model="dialogVisible"
       :title="dialogTitle"
       width="600px"
+      :destroy-on-close="true"
     >
       <el-form :model="form" label-width="120px" :rules="rules" ref="formRef" label-position="top">
         <el-form-item label="适用商品" prop="product_ids">

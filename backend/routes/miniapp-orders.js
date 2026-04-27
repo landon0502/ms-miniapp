@@ -63,16 +63,16 @@ const router = express.Router();
  */
 router.get('/', async (req, res) => {
   try {
-    console.log('开始处理 miniapp 获取订单列表请求');
+    
     const pool = getPool();
-    console.log('获取数据库连接池成功');
+    
     // 分页参数
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const status = req.query.status || 'all';
     const userId = req.query.user_id;
     const offset = (page - 1) * pageSize;
-    console.log('分页参数:', { page, pageSize, status, userId, offset });
+    
     
     // 构建查询条件
     let whereClause = '';
@@ -89,35 +89,35 @@ router.get('/', async (req, res) => {
     }
     
     // 获取订单总数
-    console.log('开始获取订单总数');
+    
     let countSql = `SELECT COUNT(*) as total FROM orders ${whereClause}`;
     const [countResult] = await pool.execute(countSql, params);
     const total = countResult[0].total;
-    console.log('订单总数:', total);
+    
     
     // 获取分页订单列表
-    console.log('开始获取订单列表');
+    
     let sql = `SELECT * FROM orders ${whereClause} ORDER BY id DESC LIMIT ${Number(pageSize)} OFFSET ${Number(offset)}`;
-    console.log('执行SQL:', sql);
+    
     const [rows] = await pool.execute(sql, params);
-    console.log('获取到订单数量:', rows.length);
+    
     
     // 获取每个订单的商品信息
-    console.log('开始获取订单商品信息');
+    
     for (const order of rows) {
-      console.log('处理订单ID:', order.id);
+      
       const [items] = await pool.execute('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
-      console.log('订单商品数量:', items.length);
+      
       // 获取每个商品的详细信息
       for (const item of items) {
-        console.log('处理商品ID:', item.product_id);
+        
         const [product] = await pool.execute('SELECT * FROM products WHERE id = ?', [item.product_id]);
         if (product.length > 0) {
           item.product = product[0];
-          console.log('获取商品信息成功');
+          
         }
         if (item.sku_id) {
-          console.log('处理规格ID:', item.sku_id);
+          
           const [sku] = await pool.execute('SELECT * FROM product_skus WHERE id = ?', [item.sku_id]);
           if (sku.length > 0) {
             item.sku = sku[0];
@@ -134,7 +134,7 @@ router.get('/', async (req, res) => {
             }
             // 从商品规格表中获取 actual_price 并赋值给 price
               item.price = parseFloat(item.sku.actual_price || 0);
-              console.log('获取规格信息成功, actual_price:', item.sku.actual_price);
+              
           }
         }
       }
@@ -144,7 +144,7 @@ router.get('/', async (req, res) => {
       order.departure_time = order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null;
     }
     
-    console.log('准备返回订单列表');
+    
     res.json({
       success: true,
       code: 200,
@@ -158,7 +158,7 @@ router.get('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('获取订单列表失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -239,15 +239,15 @@ router.get('/', async (req, res) => {
  *         description: 请求参数不完整
  */
 router.post('/', async (req, res) => {
-  console.log('收到 miniapp 创建订单请求');
-  console.log('请求体:', JSON.stringify(req.body, null, 2));
+  
+  
   
   try {
     const pool = getPool();
     
     // 验证请求参数
     if (!req.body.user_id || !req.body.items || !req.body.total_price || !req.body.actual_price) {
-      console.error('请求参数不完整');
+      
       return res.status(400).json({ error: '请求参数不完整' });
     }
     
@@ -291,7 +291,7 @@ router.post('/', async (req, res) => {
     // 如果没有提供子订单号，自动生成一个
     const generated_sub_order_no = sub_order_no || generateSubOrderNo(order_no);
     
-    console.log('准备创建订单，订单号:', order_no);
+    
     
     // 尝试创建订单
     try {
@@ -345,33 +345,7 @@ router.post('/', async (req, res) => {
     const shippingStore = '海南电商离岛免税';
       
       // 检查所有参数是否都不是 undefined
-      console.log('参数检查:', {
-        order_no: order_no !== undefined,
-        generated_sub_order_no: generated_sub_order_no !== undefined,
-        user_id: user_id !== undefined,
-        total_price: total_price !== undefined,
-        actual_price: actual_price !== undefined,
-        pointsDeduction: pointsDeduction !== undefined,
-        mailTax: mailTax !== undefined,
-        mailTaxDiscount: mailTaxDiscount !== undefined,
-        isPortPickup: isPortPickup !== undefined,
-        offlineFlight: offlineFlight !== undefined,
-        consigneeName: consigneeName !== undefined,
-        consigneePhone: consigneePhone !== undefined,
-        consigneeIdcard: consigneeIdcard !== undefined,
-        portOrderNo: portOrderNo !== undefined,
-        route: route !== undefined,
-        vehicleType: vehicleType !== undefined,
-        departurePort: departurePort !== undefined,
-        destinationPort: destinationPort !== undefined,
-        passengerPrice: passengerPrice !== undefined,
-        vehiclePrice: vehiclePrice !== undefined,
-        valueAddedService: valueAddedService !== undefined,
-        status: 'pending' !== undefined,
-        departureTime: departureTime !== undefined,
-        orderTime: orderTime !== undefined,
-        shippingStore: shippingStore !== undefined
-      });
+      
       
       const [orderResult] = await pool.execute(
         'INSERT INTO orders (order_no, sub_order_no, user_id, total_price, actual_price, points_deduction, mail_tax, mail_tax_discount, is_port_pickup, offline_flight, consignee_name, consignee_phone, consignee_idcard, port_order_no, detail_list_order_no, route, vehicle_type, departure_port, destination_port, passenger_price, vehicle_price, value_added_service, order_templ, status, departure_time, order_time, shipping_store) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -379,12 +353,12 @@ router.post('/', async (req, res) => {
       );
       
       const orderId = orderResult.insertId;
-      console.log('创建订单成功，订单ID:', orderId);
+      
       
       // 尝试添加订单商品
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        console.log('添加订单项', i + 1, ':', item);
+        
         
         try {
           // 确保所有参数都不是 undefined
@@ -415,14 +389,14 @@ router.post('/', async (req, res) => {
             'INSERT INTO order_items (order_id, product_id, sku_id, quantity, price, discount_amount) VALUES (?, ?, ?, ?, ?, ?)',
             [orderId, productId, skuId, quantity, price, discountAmount]
           );
-          console.log('订单项添加成功');
+          
         } catch (itemError) {
-          console.error('添加订单项失败:', itemError);
+          
           // 继续处理其他订单项
         }
       }
       
-      console.log('订单创建完成');
+      
       res.json({
         success: true,
         code: 200,
@@ -430,7 +404,7 @@ router.post('/', async (req, res) => {
         data: { id: orderId, order_no, sub_order_no: generated_sub_order_no, user_id, total_price, actual_price, order_templ: orderTempl, status: 'pending', departure_time, order_time, shipping_store: '海南电商离岛免税' }
       });
     } catch (orderError) {
-      console.error('创建订单失败:', orderError);
+      
       res.status(500).json({
         success: false,
         code: 500,
@@ -439,7 +413,7 @@ router.post('/', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('服务器内部错误:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -527,7 +501,7 @@ router.post('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    console.log('开始获取 miniapp 订单详情，订单ID:', req.params.id);
+    
     const pool = getPool();
     
     // 获取订单基本信息
@@ -572,7 +546,7 @@ router.get('/:id', async (req, res) => {
                   image = images[0];
                 }
               } catch (e) {
-                console.error('解析图片失败:', e);
+                
               }
             }
           }
@@ -599,7 +573,7 @@ router.get('/:id', async (req, res) => {
           image: image
         });
       } catch (error) {
-        console.error('处理订单项失败:', error);
+        
         // 继续处理其他订单项
       }
     }
@@ -660,7 +634,7 @@ router.get('/:id', async (req, res) => {
       }
     };
     
-    console.log('获取订单详情成功');
+    
     res.json({
       success: true,
       code: 200,
@@ -668,7 +642,7 @@ router.get('/:id', async (req, res) => {
       data: responseData
     });
   } catch (error) {
-    console.error('获取订单详情失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -757,9 +731,9 @@ router.get('/:id', async (req, res) => {
  *                   type: object
  */
 router.put('/:id', async (req, res) => {
-  console.log('收到 miniapp 更新订单请求');
-  console.log('订单ID:', req.params.id);
-  console.log('请求体:', JSON.stringify(req.body, null, 2));
+  
+  
+  
   
   try {
     const pool = getPool();
@@ -858,8 +832,8 @@ router.put('/:id', async (req, res) => {
       req.params.id
     ];
       
-      console.log('执行的SQL语句:', sql);
-      console.log('参数:', params);
+      
+      
       
       // 使用参数化查询
       await connection.execute(sql, params);
@@ -901,10 +875,10 @@ router.put('/:id', async (req, res) => {
       await connection.commit();
       
       // 获取更新后的订单信息
-      console.log('获取更新后的订单信息');
+      
       const [rows] = await pool.execute('SELECT * FROM orders WHERE id = ?', [req.params.id]);
       const order = rows[0];
-      console.log('更新后的订单信息:', order);
+      
       
       // 获取订单的商品信息
       const [orderItems] = await pool.execute('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
@@ -923,7 +897,7 @@ router.put('/:id', async (req, res) => {
       }
       order.items = orderItems;
       
-      console.log('更新完成，返回订单信息');
+      
       res.json({
         success: true,
         code: 200,
@@ -939,8 +913,8 @@ router.put('/:id', async (req, res) => {
       connection.release();
     }
   } catch (error) {
-    console.error('更新订单失败:', error);
-    console.error('错误堆栈:', error.stack);
+    
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -983,27 +957,27 @@ router.put('/:id', async (req, res) => {
  */
 router.delete('/:id', async (req, res) => {
   try {
-    console.log('开始删除 miniapp 订单，订单ID:', req.params.id);
+    
     const pool = getPool();
     const connection = await pool.getConnection();
     
     try {
       // 开始事务
-      console.log('开始事务');
+      
       await connection.query('START TRANSACTION');
       
       // 删除订单商品
-      console.log('删除订单商品');
+      
       await connection.execute('DELETE FROM order_items WHERE order_id = ?', [req.params.id]);
       
       // 删除订单
-      console.log('删除订单');
+      
       await connection.execute('DELETE FROM orders WHERE id = ?', [req.params.id]);
       
-      console.log('提交事务');
+      
       await connection.query('COMMIT');
       
-      console.log('订单删除成功');
+      
       res.json({
         success: true,
         code: 200,
@@ -1011,12 +985,12 @@ router.delete('/:id', async (req, res) => {
         data: null
       });
     } catch (error) {
-      console.error('删除订单失败:', error);
-      console.error('错误堆栈:', error.stack);
+      
+      
       try {
         await connection.query('ROLLBACK');
       } catch (rollbackError) {
-        console.error('回滚事务失败:', rollbackError);
+        
       }
       throw error;
     } finally {

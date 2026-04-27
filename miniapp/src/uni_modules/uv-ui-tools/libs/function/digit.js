@@ -42,7 +42,7 @@ function float2Fixed(num) {
 function checkBoundary(num) {
   if (_boundaryCheckingState) {
     if (num > Number.MAX_SAFE_INTEGER || num < Number.MIN_SAFE_INTEGER) {
-      console.warn(`${num} 超出了精度限制，结果可能不正确`);
+      
     }
   }
 }

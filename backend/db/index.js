@@ -18,7 +18,7 @@ export async function initDatabase() {
       port: config.port
     });
     
-    console.log('数据库连接成功');
+    
     
     // 创建数据库（如果不存在）
     await connection.query('CREATE DATABASE IF NOT EXISTS duty_free_shopping');
@@ -67,7 +67,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE products ADD COLUMN theme VARCHAR(20) DEFAULT "red"');
       }
     } catch (error) {
-      console.error('添加theme列失败:', error);
+      
     }
     
     // 检查并添加measurement_type列（如果不存在）
@@ -80,7 +80,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE products ADD COLUMN measurement_type VARCHAR(20) DEFAULT "spec"');
       }
     } catch (error) {
-      console.error('添加measurement_type列失败:', error);
+      
     }
     
     // 添加用户表字段注释
@@ -132,21 +132,21 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE product_skus ADD COLUMN actual_price DECIMAL(10,2) DEFAULT 0 COMMENT "实付金额"');
       }
     } catch (error) {
-      console.error('添加actual_price字段失败:', error);
+      
     }
     
     // 为product_skus表的stock字段添加默认值
     try {
       await connection.execute('ALTER TABLE product_skus MODIFY COLUMN stock INT NOT NULL DEFAULT 0 COMMENT "规格库存"');
     } catch (error) {
-      console.error('修改product_skus表stock字段默认值失败:', error);
+      
     }
     
     // 为products表的stock字段添加默认值
     try {
       await connection.execute('ALTER TABLE products MODIFY COLUMN stock INT NOT NULL DEFAULT 0 COMMENT "商品库存"');
     } catch (error) {
-      console.error('修改products表stock字段默认值失败:', error);
+      
     }
     
     // 检查并处理images字段
@@ -161,7 +161,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE product_skus CHANGE COLUMN image images TEXT');
       }
     } catch (error) {
-      console.error('处理images字段失败:', error);
+      
     }
     
     // 添加规格表字段注释
@@ -334,7 +334,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE orders ADD COLUMN pickup_address VARCHAR(255) COMMENT "自提地址"');
       }
     } catch (error) {
-      console.error('添加订单表新字段失败:', error);
+      
     }
     
     // 添加订单表字段注释
@@ -399,7 +399,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE order_items ADD COLUMN discount_amount DECIMAL(10,2) DEFAULT 0 COMMENT "折扣金额"');
       }
     } catch (error) {
-      console.error('添加discount_amount字段失败:', error);
+      
     }
     
     // 添加订单商品表字段注释
@@ -431,7 +431,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE promotions ADD COLUMN label VARCHAR(100) NOT NULL DEFAULT ""');
       }
     } catch (error) {
-      console.error('添加label字段失败:', error);
+      
     }
     
     // 检查并添加type字段
@@ -444,7 +444,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE promotions ADD COLUMN type VARCHAR(50) NOT NULL DEFAULT "赠品"');
       }
     } catch (error) {
-      console.error('添加type字段失败:', error);
+      
     }
     
     // 检查并添加新增字段
@@ -503,7 +503,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE promotions ADD COLUMN image VARCHAR(255) DEFAULT "" COMMENT "赠品图片"');
       }
     } catch (error) {
-      console.error('添加促销表新字段失败:', error);
+      
     }
     
     // 添加促销表字段注释
@@ -540,7 +540,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE discounts ADD COLUMN start_time DATETIME COMMENT "活动开始时间"');
       }
     } catch (error) {
-      console.error('添加折扣表start_time字段失败:', error);
+      
     }
     
     // 检查并添加min_quantity字段
@@ -553,7 +553,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE discounts ADD COLUMN min_quantity INT DEFAULT 1 COMMENT "享受折扣的最小购买件数"');
       }
     } catch (error) {
-      console.error('添加折扣表min_quantity字段失败:', error);
+      
     }
     
     // 检查并删除name字段
@@ -566,7 +566,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE discounts DROP COLUMN name');
       }
     } catch (error) {
-      console.error('删除折扣表name字段失败:', error);
+      
     }
     
     // 添加折扣表字段注释
@@ -600,7 +600,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE coupons ADD COLUMN product_ids TEXT NOT NULL COMMENT "适用商品ID，JSON格式"');
       }
     } catch (error) {
-      console.error('添加product_ids字段失败:', error);
+      
     }
     
     // 检查并添加discount_amount字段
@@ -613,7 +613,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE coupons ADD COLUMN discount_amount DECIMAL(10,2) NOT NULL COMMENT "优惠金额"');
       }
     } catch (error) {
-      console.error('添加discount_amount字段失败:', error);
+      
     }
     
     // 检查并添加min_spend字段
@@ -626,7 +626,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE coupons ADD COLUMN min_spend DECIMAL(10,2) NOT NULL COMMENT "使用条件（满多少）"');
       }
     } catch (error) {
-      console.error('添加min_spend字段失败:', error);
+      
     }
     
     // 删除product_id字段
@@ -643,11 +643,11 @@ export async function initDatabase() {
           // 再删除字段
           await connection.execute('ALTER TABLE coupons DROP COLUMN product_id');
         } catch (e) {
-          console.error('删除product_id字段失败:', e);
+          
         }
       }
     } catch (error) {
-      console.error('删除product_id字段失败:', error);
+      
     }
     
     // 检查并添加优惠金额字段
@@ -660,7 +660,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE coupons ADD COLUMN discount_amount DECIMAL(10,2) NOT NULL COMMENT "优惠金额"');
       }
     } catch (error) {
-      console.error('添加discount_amount字段失败:', error);
+      
     }
     
     // 检查并添加使用条件字段
@@ -673,7 +673,7 @@ export async function initDatabase() {
         await connection.execute('ALTER TABLE coupons ADD COLUMN min_spend DECIMAL(10,2) NOT NULL COMMENT "使用条件（满多少）"');
       }
     } catch (error) {
-      console.error('添加min_spend字段失败:', error);
+      
     }
     
     // 添加优惠券表字段注释
@@ -717,9 +717,9 @@ export async function initDatabase() {
     // 插入示例数据
     await insertSampleData();
     
-    console.log('数据库表初始化完成');
+    
   } catch (error) {
-    console.error('数据库初始化失败:', error);
+    
   }
 }
 
@@ -764,10 +764,10 @@ async function insertSampleData() {
         [orderId, productId, 1, 1, 159.99]
       );
       
-      console.log('示例数据插入完成');
+      
     }
   } catch (error) {
-    console.error('插入示例数据失败:', error);
+    
   }
 }
 

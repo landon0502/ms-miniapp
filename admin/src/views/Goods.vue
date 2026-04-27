@@ -143,7 +143,7 @@
     </el-card>
 
     <!-- 添加/编辑商品对话框 -->
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" fullscreen>
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" fullscreen :destroy-on-close="true">
       <el-form
         :model="form"
         label-width="120px"
@@ -339,14 +339,14 @@
                           placeholder="请输入活动内容"
                         />
                       </el-form-item>
-                      <!-- <el-form-item label="活动标签" class="form-item-col">
+                      <el-form-item label="活动标签" class="form-item-col">
                       <el-input
                         v-model="promotion.label"
                         placeholder="请输入活动标签"
                       />
                     </el-form-item>
 
-                    <el-form-item label="活动开始时间" class="form-item-col">
+                    <!-- <el-form-item label="活动开始时间" class="form-item-col">
                       <el-date-picker
                         v-model="promotion.start_time"
                         type="datetime"
@@ -504,7 +504,7 @@
     </el-dialog>
 
     <!-- 规格编辑对话框 -->
-    <el-dialog v-model="skuDialogVisible" :title="skuDialogTitle" width="600px">
+    <el-dialog v-model="skuDialogVisible" :title="skuDialogTitle" width="600px" :destroy-on-close="true">
       <el-form
         :model="skuForm"
         label-width="100px"
@@ -550,6 +550,7 @@
       v-model="promotionDialogVisible"
       :title="promotionDialogTitle"
       width="800px"
+      :destroy-on-close="true"
     >
       <el-form
         :model="promotionForm"
@@ -572,7 +573,7 @@
             />
           </el-form-item>
 
-          <el-form-item label="活动开始时间" class="form-item-col">
+          <!-- <el-form-item label="活动开始时间" class="form-item-col">
             <el-date-picker
               v-model="promotionForm.start_time"
               type="datetime"
@@ -588,33 +589,33 @@
               placeholder="选择活动结束时间"
               style="width: 100%"
             />
-          </el-form-item>
+          </el-form-item> -->
         </div>
         <!-- 赠品类型特有字段 -->
         <div class="form-row">
           <el-form-item label="赠品图片" class="form-item-col">
             <UploadImage v-model="promotionForm.image" :limit="1" />
           </el-form-item>
-          <el-form-item label="赠品数量" class="form-item-col">
+          <!-- <el-form-item label="赠品数量" class="form-item-col">
             <el-input
               v-model.number="promotionForm.quantity"
               type="number"
               placeholder="请输入赠品数量"
             />
-          </el-form-item>
+          </el-form-item> -->
           <!-- <el-form-item label="赠品规格名" class="form-item-col">
             <el-input
               v-model="promotionForm.sku_name"
               placeholder="请输入赠品规格名"
             />
           </el-form-item> -->
-          <el-form-item label="满赠条件" class="form-item-col">
+          <!-- <el-form-item label="满赠条件" class="form-item-col">
             <el-input
               v-model.number="promotionForm.condition"
               type="number"
               placeholder="请输入满赠条件（满多少金额）"
             />
-          </el-form-item>
+          </el-form-item> -->
         </div>
       </el-form>
       <template #footer>
@@ -632,6 +633,7 @@
       v-model="discountDialogVisible"
       :title="discountDialogTitle"
       width="600px"
+      :destroy-on-close="true"
     >
       <el-form
         :model="discountForm"
@@ -1184,7 +1186,7 @@ export default {
       form.value.promotions.push({
         id: "",
         name: "",
-        label: "",
+        label: "赠品",
         type: "赠品",
         start_time: null,
         end_time: null,
@@ -1202,7 +1204,7 @@ export default {
     const promotionForm = ref({
       id: "",
       name: "",
-      label: "",
+      label: "赠品",
       type: "赠品",
       start_time: null,
       end_time: null,

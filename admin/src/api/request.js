@@ -42,7 +42,7 @@ request.interceptors.response.use(
   },
   error => {
     // 统一处理错误
-    console.error('请求错误:', error);
+    
     
     // 检查是否是401错误（token无效或过期）
     if (error.response && error.response.status === 401) {

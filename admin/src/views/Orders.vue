@@ -111,6 +111,7 @@
       v-model="dialogVisible"
       :before-close="handleClose"
       fullscreen
+      :destroy-on-close="true"
     >
       <el-form
         :model="form"
@@ -182,7 +183,7 @@
             </div>
           </template>
           <el-row :gutter="20">
-            <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <!-- <el-col :xs="24" :sm="12" :md="8" :lg="6">
               <el-form-item label="提货方式" prop="pickup_method">
                 <el-input
                   v-model="form.pickup_method"
@@ -199,7 +200,7 @@
                   style="width: 100%"
                 />
               </el-form-item>
-            </el-col>
+            </el-col> -->
             <el-col :xs="24" :sm="24" :md="16" :lg="12">
               <el-form-item label="自提地址" prop="pickup_address">
                 <el-input
@@ -558,6 +559,16 @@ const form = ref({
 const formRef = ref(null);
 const rules = {
   items: [{ required: true, message: "请添加商品", trigger: "change" }],
+  // 航线相关参数验证规则
+  offline_flight: [{ required: true, message: "请输入航班号", trigger: "blur" }],
+  sailing_time: [{ required: true, message: "请选择开航时间", trigger: "change" }],
+  vehicle_type: [{ required: true, message: "请输入车型", trigger: "blur" }],
+  departure_port: [{ required: true, message: "请输入始发港", trigger: "blur" }],
+  destination_port: [{ required: true, message: "请输入目的港", trigger: "blur" }],
+  // 收货人信息验证规则
+  consignee_name: [{ required: true, message: "请输入收货人姓名", trigger: "blur" }],
+  consignee_phone: [{ required: true, message: "请输入收货人电话", trigger: "blur" }],
+  consignee_idcard: [{ required: true, message: "请输入收货人身份证号", trigger: "blur" }],
 };
 
 // 分页参数

@@ -68,7 +68,7 @@
 										}}</text>
 									</view>
 								</view>
-								<view class="flex flex-row gap-12px items-center pl-18px">
+								<!-- <view class="flex flex-row gap-12px items-center pl-18px">
 									<view class="flex flex-row gap-4px items-start py-4px">
 										<view class="flex flex-row items-center gap-4px">
 											<uv-icon :name="shAdr" :size="14" :color="'#9E9E9E'" />
@@ -78,7 +78,7 @@
 											{{ orderInfo?.pickup_address || '--' }}
 										</text>
 									</view>
-								</view>
+								</view> -->
 								<view class="p-l-22px mt-12px">
 									<text class="font-size-12px text-#B7131B">已变更</text>
 								</view>
@@ -91,7 +91,7 @@
 						<template #content>
 							<view>
 								<view>
-									<view class="flex flex-row items-center py-10px">
+									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">订单编号：</text>
 										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
 											{{ orderInfo?.order_no || '--' }}
@@ -115,28 +115,28 @@
 									<uv-line />
 								</view>
 								<view>
-									<view class="flex flex-row items-center py-10px">
+									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">下单时间：</text>
 										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
-											{{ formatDate(orderInfo?.order_time) }}
+											{{ formatDate(orderInfo?.order_time, 'YYYY-MM-DD HH:mm:ss') }}
 										</text>
 									</view>
 									<uv-line />
 								</view>
 								<view>
-									<view class="flex flex-row items-center py-10px">
+									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">支付方式：</text>
 										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
-											大会员积分支付,微信支付
+											微信支付
 										</text>
 									</view>
 									<uv-line />
 								</view>
 								<view>
-									<view class="flex flex-row items-center py-10px">
+									<view class="flex flex-row items-center py-8px">
 										<text class="font-size-14px text-#A2A2A2 whitespace-nowrap">提货方式：</text>
 										<text class="font-size-12px text-#5D5D5D font-bold ml-4px">
-											{{ orderInfo?.pickup_method || '口岸自提' }}
+											离岛提货点自提-<text class="text-#B7131B">新海港</text>
 										</text>
 									</view>
 									<uv-line />
@@ -189,7 +189,7 @@
 							</view>
 							<view class="min-w-140rpx flex justify-end">
 								<text class="price-value font-size-12px text-#999999"
-									>¥{{ orderInfo?.total_original_price || 0 }}</text
+									>¥{{ Number(orderInfo?.total_original_price || 0).toFixed(2) }}</text
 								>
 							</view>
 						</view>
@@ -239,7 +239,7 @@
 							</view>
 
 							<view class="min-w-140rpx flex justify-end">
-								<text class="price-value total-price font-size-15px"> ¥{{ paytotal }} </text>
+								<text class="price-value total-price font-size-15px"> ¥{{ Number(paytotal).toFixed(2) }} </text>
 							</view>
 						</view>
 					</view>
@@ -305,9 +305,9 @@ const { orderDetailControl } = useServices()
 const { data: orderInfo, loading, error } = orderDetailControl
 
 // 格式化时间函数
-const formatDate = (dateString) => {
+const formatDate = (dateString, defaultFormat = 'YYYY-MM-DD HH:mm') => {
 	if (!dateString) return '--'
-	return dayjs(dateString).format('YYYY-MM-DD HH:mm')
+	return dayjs(dateString).format(defaultFormat)
 }
 
 const pagingRef = shallowRef(null)

@@ -6,11 +6,7 @@ const redisHost = process.env.REDIS_HOST || 'redis';
 const redisPort = process.env.REDIS_PORT || 6379;
 const redisPassword = process.env.REDIS_PASSWORD || '';
 
-console.log('Redis配置:', {
-  host: redisHost,
-  port: redisPort,
-  hasPassword: !!redisPassword
-});
+
 
 // 创建Redis客户端配置
 const redisConfig = {
@@ -69,13 +65,9 @@ export async function getToken(userId) {
     // 确保userId是字符串类型，与JWT token中的id类型一致
     const stringUserId = String(userId);
     const key = `user:${stringUserId}:token`;
-    console.log('从Redis获取token:', {
-      userId,
-      stringUserId,
-      key
-    });
+    
     const token = await redisClient.get(key);
-    console.log('获取到的token:', token ? token.substring(0, 20) + '...' : null);
+    
     return token;
   } catch (error) {
     console.error('获取token失败:', error);
@@ -102,23 +94,19 @@ export async function validateToken(userId, token) {
   try {
     // 确保userId是字符串类型，与JWT token中的id类型一致
     const stringUserId = String(userId);
-    console.log('验证token:', {
-      userId,
-      stringUserId,
-      token: token.substring(0, 20) + '...' // 只打印前20个字符
-    });
+    
     
     const storedToken = await getToken(stringUserId);
-    console.log('从Redis获取的token:', storedToken ? storedToken.substring(0, 20) + '...' : null);
+    
     
     // 当storedToken为null或undefined时，默认返回true，这样即使Redis连接失败，认证中间件也能够正常工作
     // 在生产环境中，应该确保Redis连接正常
     if (!storedToken) {
-      console.log('Redis连接失败，默认返回token有效');
+      console.log('Redis中不存在token:', stringUserId);
       return true;
     }
     
-    console.log('token是否匹配:', storedToken === token);
+    
     return storedToken === token;
   } catch (error) {
     console.error('验证token失败:', error);

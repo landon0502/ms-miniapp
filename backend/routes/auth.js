@@ -130,29 +130,29 @@ router.post('/login', async (req, res) => {
     }
     
     const pool = getPool();
-    console.log('Pool:', pool);
-    console.log('Username:', username);
-    console.log('Password:', password);
+    
+    
+    
     
     // 查看当前数据库
     const [databases] = await pool.execute('SHOW DATABASES');
-    console.log('Databases:', databases);
+    
     
     // 查看当前使用的数据库
     const [currentDb] = await pool.execute('SELECT DATABASE()');
-    console.log('Current database:', currentDb);
+    
     
     // 查看users表结构
     const [tableStructure] = await pool.execute('DESCRIBE users');
-    console.log('Users table structure:', tableStructure);
+    
     
     // 查看所有用户
     const [allUsers] = await pool.execute('SELECT * FROM users');
-    console.log('All users:', allUsers);
+    
     
     // 查询用户
     const [users] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
-    console.log('Users found:', users);
+    
     
     if (users.length === 0) {
       return res.status(401).json({
@@ -164,9 +164,9 @@ router.post('/login', async (req, res) => {
     }
     
     const user = users[0];
-    console.log('User found:', user);
-    console.log('Stored password:', user.password);
-    console.log('Provided password:', password);
+    
+    
+    
     
     if (user.password !== password) {
       return res.status(401).json({
@@ -207,7 +207,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('登录失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -305,7 +305,7 @@ router.post('/sso', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('单点登录失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -378,7 +378,7 @@ router.post('/verify', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('验证token失败:', error);
+    
     res.status(401).json({
       success: false,
       code: 401,

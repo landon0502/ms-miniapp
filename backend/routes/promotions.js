@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
       data: rows
     });
   } catch (error) {
-    console.error('获取促销列表失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -122,7 +122,7 @@ router.get('/:id', async (req, res) => {
       data: rows[0]
     });
   } catch (error) {
-    console.error('获取促销详情失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -198,7 +198,7 @@ router.post('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('创建促销失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -288,7 +288,7 @@ router.put('/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('更新促销失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -352,7 +352,7 @@ router.delete('/:id', async (req, res) => {
       data: null
     });
   } catch (error) {
-    console.error('删除促销失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,

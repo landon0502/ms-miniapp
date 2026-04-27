@@ -32,12 +32,9 @@ export function authMiddleware(req, res, next) {
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // 检查token是否与Redis中存储的最新token匹配
-    console.log('调用validateToken:', {
-      userId: decoded.id,
-      token: token.substring(0, 20) + '...' // 只打印前20个字符
-    });
+    
     validateToken(decoded.id, token).then(isValid => {
-      console.log('validateToken返回:', isValid);
+      
       if (!isValid) {
         return res.status(401).json({
           success: false,
@@ -51,7 +48,7 @@ export function authMiddleware(req, res, next) {
       req.user = decoded;
       next();
     }).catch(error => {
-      console.error('验证token失败:', error);
+      
       return res.status(401).json({
         success: false,
         code: 401,
@@ -60,7 +57,7 @@ export function authMiddleware(req, res, next) {
       });
     });
   } catch (error) {
-    console.error('认证中间件错误:', error);
+    
     return res.status(401).json({
       success: false,
       code: 401,

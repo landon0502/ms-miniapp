@@ -111,27 +111,27 @@ router.get('/', async (req, res) => {
           }
           return sku;
         });
-        console.log(`商品 ${product.id} 的规格:`, product.skus);
+        
       } catch (error) {
-        console.error(`获取商品 ${product.id} 的规格失败:`, error);
+        
         product.skus = [];
       }
       
       try {
         const [promotions] = await pool.execute('SELECT * FROM promotions WHERE product_id = ?', [product.id]);
         product.promotions = promotions;
-        console.log(`商品 ${product.id} 的促销:`, promotions);
+        
       } catch (error) {
-        console.error(`获取商品 ${product.id} 的促销失败:`, error);
+        
         product.promotions = [];
       }
       
       try {
         const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ?', [product.id]);
         product.discounts = discounts;
-        console.log(`商品 ${product.id} 的折扣:`, discounts);
+        
       } catch (error) {
-        console.error(`获取商品 ${product.id} 的折扣失败:`, error);
+        
         product.discounts = [];
       }
     }
@@ -149,7 +149,7 @@ router.get('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('获取商品列表失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -277,7 +277,7 @@ router.get('/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('获取商品详情失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -338,7 +338,7 @@ router.delete('/:id', async (req, res) => {
       data: null
     });
   } catch (error) {
-    console.error('删除商品失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -427,7 +427,7 @@ router.delete('/:id', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
-    console.log('接收到的请求数据:', req.body);
+    
     const pool = getPool();
     const { name, description, detail_description, price, original_price, stock, category, theme, image, measurement_type, skus, promotions, discounts } = req.body;
     
@@ -499,7 +499,7 @@ router.post('/', async (req, res) => {
       connection.release();
     }
   } catch (error) {
-    console.error('创建商品失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -579,7 +579,7 @@ router.post('/:id/skus', async (req, res) => {
       data: { id: result.insertId, product_id: req.params.id, sku_name, price, actual_price: actual_price || 0, images: images || [] }
     });
   } catch (error) {
-    console.error('创建规格失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -671,7 +671,7 @@ router.put('/:productId/skus/:skuId', async (req, res) => {
       data: { id: req.params.skuId, product_id: req.params.productId, sku_name, price, actual_price: actual_price || 0, images: images || [] }
     });
   } catch (error) {
-    console.error('更新规格失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -731,7 +731,7 @@ router.delete('/skus/:id', async (req, res) => {
       data: null
     });
   } catch (error) {
-    console.error('删除规格失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -1001,7 +1001,7 @@ router.put('/:id', async (req, res) => {
       connection.release();
     }
   } catch (error) {
-    console.error('更新商品失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,

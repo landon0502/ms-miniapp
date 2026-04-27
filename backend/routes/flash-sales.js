@@ -102,7 +102,7 @@ router.get('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('获取秒杀活动列表失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -188,7 +188,7 @@ router.post('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('创建秒杀活动失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -292,7 +292,7 @@ router.put('/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('更新秒杀活动失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -356,7 +356,7 @@ router.delete('/:id', async (req, res) => {
       data: null
     });
   } catch (error) {
-    console.error('删除秒杀活动失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,

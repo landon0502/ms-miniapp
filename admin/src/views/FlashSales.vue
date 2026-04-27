@@ -53,7 +53,7 @@
     </el-card>
 
     <!-- 添加/编辑活动对话框 -->
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px" :destroy-on-close="true">
       <el-form
         :model="form"
         label-width="120px"

@@ -44,14 +44,14 @@
 												<text class="font-size-16px text-#5D5D5D font-bold">{{
 													orderInfo?.consignee_name || '--'
 												}}</text>
-												<text class="font-size-12px text-#353535">{{
+												<text class="font-size-13px text-#353535">{{
 													orderInfo?.consignee_phone || '--'
 												}}</text>
 											</view>
 
 											<view class="flex flex-row gap-4px items-center py-4px">
 												<uv-icon :name="idcardIcon" :size="14" />
-												<text class="font-size-12px text-#353535">{{
+												<text class="font-size-13px text-#353535">{{
 													orderInfo?.consignee_idcard || '--'
 												}}</text>
 											</view>
@@ -60,11 +60,11 @@
 											<view class="flex flex-row gap-4px items-start py-4px">
 												<view class="flex flex-row items-center gap-4px">
 													<uv-icon :name="briefcaseIcon" :size="14" />
-													<text class="font-size-12px text-#353535 whitespace-nowrap"
+													<text class="font-size-13px text-#353535 whitespace-nowrap"
 														>离岛信息：</text
 													>
 												</view>
-												<text class="font-size-12px text-#353535 tracking-[1rpx]">
+												<text class="font-size-13px text-#353535 tracking-[1rpx]">
 													{{ formatDate(orderInfo?.route_info?.sailing_time) }}/
 													{{ orderInfo?.route_info?.offline_flight }}
 												</text>
@@ -74,11 +74,11 @@
 											<view class="flex flex-row gap-4px items-start py-4px">
 												<view class="flex flex-row items-center gap-4px">
 													<uv-icon name="map" :size="14" :color="'#353535'" />
-													<text class="font-size-12px text-#353535 whitespace-nowrap"
+													<text class="font-size-13px text-#353535 whitespace-nowrap"
 														>自提地址：</text
 													>
 												</view>
-												<text class="font-size-12px text-#353535 tracking-[1rpx]">
+												<text class="font-size-13px text-#353535 tracking-[1rpx]">
 													{{ orderInfo?.pickup_address || '--' }}
 												</text>
 											</view>
@@ -130,31 +130,31 @@
 								<template v-if="showOrderInfoMore">
 									<view>
 										<view class="flex flex-row items-center py-6px">
-											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">发货门店</text>
-											<text class="font-size-12px text-#5D5D5D ml-8px"> 海南电商离岛免税 </text>
+											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">发货门店</text>
+											<text class="font-size-13px text-#5D5D5D ml-8px"> 海南电商离岛免税 </text>
 										</view>
 									</view>
 									<view>
 										<view class="flex flex-row items-center py-6px">
-											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">下单时间</text>
-											<text class="font-size-12px text-#5D5D5D ml-8px">
+											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">下单时间</text>
+											<text class="font-size-13px text-#5D5D5D ml-8px">
 												{{ formatDate(orderInfo?.order_time) }}
 											</text>
 										</view>
 									</view>
 									<view>
 										<view class="flex flex-row items-center py-6px">
-											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">支付方式</text>
-											<text class="font-size-12px text-#5D5D5D ml-8px">
-												{{ orderInfo?.payment_method || '大会员积分支付,微信支付' }}
+											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">支付方式</text>
+											<text class="font-size-13px text-#5D5D5D ml-8px">
+												{{ '微信支付' }}
 											</text>
 										</view>
 									</view>
 									<view>
 										<view class="flex flex-row items-center py-6px">
-											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">提货方式</text>
-											<text class="font-size-12px text-#5D5D5D ml-8px">
-												{{ orderInfo?.pickup_method || '口岸自提' }}
+											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">提货方式</text>
+											<text class="font-size-13px text-#5D5D5D ml-8px">
+												离岛自提
 											</text>
 										</view>
 									</view>
@@ -166,7 +166,7 @@
 									<view>
 										<uv-icon :name="serveIcon" :size="28" />
 									</view>
-									<text class="font-size-12px text-#333333">联系我们</text>
+									<text class="font-size-13px text-#333333">联系我们</text>
 								</view>
 							</view>
 						</template>
@@ -212,7 +212,7 @@
 							</view>
 							<view class="min-w-140rpx flex justify-end">
 								<text class="price-value font-size-12px text-#999999"
-									>¥{{ orderInfo?.total_original_price || 0 }}</text
+									>¥{{ Number(orderInfo?.total_original_price || 0).toFixed(2) }}</text
 								>
 							</view>
 						</view>
@@ -262,7 +262,7 @@
 							</view>
 
 							<view class="min-w-140rpx flex justify-end">
-								<text class="price-value total-price font-size-15px"> ¥{{ paytotal }} </text>
+								<text class="price-value total-price font-size-15px"> ¥{{ Number(paytotal).toFixed(2) }} </text>
 							</view>
 						</view>
 					</view>

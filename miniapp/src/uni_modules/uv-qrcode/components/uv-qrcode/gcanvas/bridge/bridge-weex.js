@@ -81,8 +81,8 @@ const GBridge = {
     render2d: isWeexIOS ? function (componentId, commands, callback) {
 
         if (isDebugging) {
-            console.log('>>> >>> render2d ===');
-            console.log('>>> commands: ' + commands);
+            
+            
         }
 		
         GCanvasModule.render([commands, callback?true:false], componentId, callback);
@@ -90,8 +90,8 @@ const GBridge = {
     } : function (componentId, commands,callback) {
 
         if (isDebugging) {
-            console.log('>>> >>> render2d ===');
-            console.log('>>> commands: ' + commands);
+            
+            
         }
 
         callGCanvasLinkNative(componentId, 0x20000001, commands);
@@ -117,8 +117,8 @@ const GBridge = {
         commandsCache[componentId] = [];
 
         if (isDebugging) {
-            console.log('>>> >>> flush native ===');
-            console.log('>>> commands: ' + cmdArgs);
+            
+            
         }
 
         const result = GCanvasModule.extendCallNative({
@@ -130,7 +130,7 @@ const GBridge = {
         const res = result && result.result;
 
         if (isDebugging) {
-            console.log('>>> result: ' + res);
+            
         }
 
         return res;
@@ -141,14 +141,14 @@ const GBridge = {
         commandsCache[componentId] = [];
 
         if (isDebugging) {
-            console.log('>>> >>> flush native ===');
-            console.log('>>> commands: ' + cmdArgs);
+            
+            
         }
 
         const result = callGCanvasLinkNative(componentId, 0x60000000, cmdArgs);
 
         if (isDebugging) {
-            console.log('>>> result: ' + result);
+            
         }
 
         return result;

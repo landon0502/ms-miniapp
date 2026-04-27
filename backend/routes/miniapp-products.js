@@ -56,7 +56,7 @@ const router = express.Router();
  */
 router.get('/', async (req, res) => {
   try {
-    console.log('开始处理 miniapp 获取商品列表请求');
+    
     const pool = getPool();
     // 分页参数
     const page = parseInt(req.query.page) || 1;
@@ -91,27 +91,27 @@ router.get('/', async (req, res) => {
           }
           return sku;
         });
-        console.log(`商品 ${product.id} 的规格:`, product.skus);
+        
       } catch (error) {
-        console.error(`获取商品 ${product.id} 的规格失败:`, error);
+        
         product.skus = [];
       }
       
       try {
         const [promotions] = await pool.execute('SELECT * FROM promotions WHERE product_id = ?', [product.id]);
         product.promotions = promotions;
-        console.log(`商品 ${product.id} 的促销:`, promotions);
+        
       } catch (error) {
-        console.error(`获取商品 ${product.id} 的促销失败:`, error);
+        
         product.promotions = [];
       }
       
       try {
         const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ?', [product.id]);
         product.discounts = discounts;
-        console.log(`商品 ${product.id} 的折扣:`, discounts);
+        
       } catch (error) {
-        console.error(`获取商品 ${product.id} 的折扣失败:`, error);
+        
         product.discounts = [];
       }
     }
@@ -129,7 +129,7 @@ router.get('/', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('获取商品列表失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
@@ -174,7 +174,7 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    console.log('开始获取 miniapp 商品详情，商品ID:', req.params.id);
+    
     const pool = getPool();
     const [rows] = await pool.execute('SELECT * FROM products WHERE id = ?', [req.params.id]);
     if (rows.length === 0) {
@@ -229,12 +229,6 @@ router.get('/:id', async (req, res) => {
         valid = valid && now <= endTime;
       }
       return valid;
-    }).map(promotion => {
-      // 添加 label 字段，当设置时间范围时值为 限时赠品，没有时间范围时返回 赠品
-      return {
-        ...promotion,
-        label: (promotion.start_time || promotion.end_time) ? '限时赠品' : '赠品'
-      };
     });
     
     // 提取促销活动标签并去重
@@ -295,7 +289,7 @@ router.get('/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('获取商品详情失败:', error);
+    
     res.status(500).json({
       success: false,
       code: 500,
