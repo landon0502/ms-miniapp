@@ -251,15 +251,15 @@
 		<template #footer>
 			<uv-line />
 			<view class="footer-buttons flex flex-row items-center justify-between px-24px py-12px">
-				<view @click="handleClickOrderDetail">
-					<text class="text-12px text-#999">更多</text>
+				<view @click="handleClickOrderDetail" class="mt-4px">
+					<text class="text-14px text-#999">更多</text>
 				</view>
 				<uv-button
 					class="footer-btn"
 					:custom-style="{
 						borderRadius: '100px',
 						border: '0',
-						padding: '12px 24px',
+						padding: '12px 32px',
 						background: '#CA9B6E'
 					}"
 					:custom-text-style="{

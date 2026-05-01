@@ -16,7 +16,7 @@
 					>实付 <text class="font-size-12px">￥</text>{{ Number(props.data.actual_price).toFixed(2) }}</text
 				>
 			</view>
-			<view class="flex mt-4px">
+			<view class="flex mt-8px">
 				<view class="flex items-center justify-center px-4px py-0px bg-#F5F5F5 line-height-20px">
 					<text class="font-size-10px text-#A5A5A5">不支持7天无理由退货</text>
 				</view>

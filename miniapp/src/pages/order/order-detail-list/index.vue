@@ -36,9 +36,9 @@
 				<view class="px-12px shadow-sm">
 					<!-- 订单号 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">订单号</text>
+						<text class="text-sm font-400 flex-1 text-#777777">订单号</text>
 						<text
-							class="text-sm flex-2 text-right border border-gray-300 max-w-full break-all text-#666 font-400"
+							class="text-sm flex-2 text-right border  max-w-full break-all text-#555 font-400"
 						>
 							{{ orderInfo?.detail_list_order_no || '--' }}
 						</text>
@@ -46,9 +46,9 @@
 					<uv-line />
 					<!-- 港区单号 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">港区单号</text>
+						<text class="text-sm font-400 flex-1 text-#777777">港区单号</text>
 						<text
-							class="text-sm flex-2 text-right border border-gray-300 max-w-full break-all text-#666 font-400"
+							class="text-sm flex-2 text-right border  max-w-full break-all text-#555 font-400"
 						>
 							{{ orderInfo?.route_info?.port_order_no || '--' }}
 						</text>
@@ -56,74 +56,74 @@
 					<uv-line />
 					<!-- 航线 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">航线</text>
-						<text class="text-sm  flex-2 text-right text-#666 font-400">{{
+						<text class="text-sm font-400 flex-1 text-#777777">航线</text>
+						<text class="text-sm  flex-2 text-right text-#555 font-400">{{
 							orderInfo?.route_info?.route || '--'
 						}}</text>
 					</view>
 					<uv-line />
 					<!-- 开航时间 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">开航时间</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400">{{
+						<text class="text-sm font-400 flex-1 text-#777777">开航时间</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">{{
 							formatDate(orderInfo?.route_info?.sailing_time) || '--'
 						}}</text>
 					</view>
 					<uv-line />
 					<!-- 航班代号(航班号) -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777"
+						<text class="text-sm font-400 flex-1 text-#777777"
 							>航班代号(航班号)</text
 						>
-						<text class="text-sm flex-2 text-right text-#666 font-400">
+						<text class="text-sm flex-2 text-right text-#555 font-400">
 							({{ orderInfo?.route_info?.offline_flight || '--' }})
 						</text>
 					</view>
 					<uv-line />
 					<!-- 车型 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">车型</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400">{{
+						<text class="text-sm font-400 flex-1 text-#777777">车型</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">{{
 							orderInfo?.route_info?.vehicle_type || '--'
 						}}</text>
 					</view>
 					<uv-line />
 					<!-- 始发港 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">始发港</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400">{{
+						<text class="text-sm font-400 flex-1 text-#777777">始发港</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">{{
 							orderInfo?.route_info?.departure_port || '--'
 						}}</text>
 					</view>
 					<uv-line />
 					<!-- 目的港 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">目的港</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400">{{
+						<text class="text-sm font-400 flex-1 text-#777777">目的港</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">{{
 							orderInfo?.route_info?.destination_port || '--'
 						}}</text>
 					</view>
 					<uv-line />
 					<!-- 旅客票价 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">旅客票价</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400">
+						<text class="text-sm font-400 flex-1 text-#777777">旅客票价</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">
 							{{ (parseFloat(orderInfo?.route_info?.passenger_price) || 0).toFixed(2) }} 元
 						</text>
 					</view>
 					<uv-line />
 					<!-- 车辆票价 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">车辆票价</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400">
+						<text class="text-sm font-400 flex-1 text-#777777">车辆票价</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">
 							{{ (parseFloat(orderInfo?.route_info?.vehicle_price) || 0).toFixed(2) }} 元
 						</text>
 					</view>
 					<uv-line />
 					<!-- 增值服务 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">增值服务</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400"
+						<text class="text-sm font-400 flex-1 text-#777777">增值服务</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400"
 							>{{
 								(parseFloat(orderInfo?.route_info?.value_added_service) || 0).toFixed(2)
 							}}
@@ -133,31 +133,31 @@
 					<uv-line />
 					<!-- 总金额 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">总金额</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400"
+						<text class="text-sm font-400 flex-1 text-#777777">总金额</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400"
 							>{{ amount }} 元</text
 						>
 					</view>
 					<uv-line />
 					<!-- 订票时间 -->
 					<view class="flex justify-between items-center py-12px border-b border-gray-100">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">订票时间</text>
-						<text class="text-sm flex-2 text-righ text-#666 font-400">{{
+						<text class="text-sm font-400 flex-1 text-#777777">订票时间</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">{{
 							formatDate(orderInfo?.route_info?.booking_time) || '--'
 						}}</text>
 					</view>
 					<uv-line />
 					<!-- 订单状态 -->
 					<view class="flex justify-between items-center py-12px">
-						<text class="text-gray-600 text-sm font-light flex-1 text-#777777">订单状态</text>
-						<text class="text-sm flex-2 text-right text-#666 font-400">{{
+						<text class="text-sm font-400 flex-1 text-#777777">订单状态</text>
+						<text class="text-sm flex-2 text-right text-#555 font-400">{{
 							orderInfo?.status || '已支付'
 						}}</text>
 					</view>
 					<uv-line />
 					<!-- 订单状态 -->
 					<view class="flex justify-between items-center py-12px">
-						<text class="text-gray-600 text-sm font-light flex-1"></text>
+						<text class="text-sm font-light flex-1"></text>
 						<text class="text-sm flex-2 text-right text-#FF181A">下单成功</text>
 					</view>
 				</view>

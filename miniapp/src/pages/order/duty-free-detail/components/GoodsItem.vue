@@ -22,7 +22,7 @@
 					>
 				</view>
 			</view>
-			<view class="flex mt-4px">
+			<view class="flex mt-8px">
 				<view class="flex items-center justify-center px-4px bg-#F5F5F5 line-height-20px">
 					<text class="font-size-11px text-#A5A5A5">不支持7天无理由退货</text>
 				</view>

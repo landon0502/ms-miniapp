@@ -40,14 +40,20 @@
 						"
 					>
 						<view class="w-full rounded-6px overflow-hidden bg-#fff">
-							<view v-for="(item, index) in productInfo?.promotions" class="w-110rpx h-110rpx">
+							<view
+								v-for="(item, index) in productInfo?.promotions"
+								class="w-110rpx h-110rpx"
+								:style="{
+									borderBottom:
+										index < productInfo?.promotions?.length ? '1rpx solid #DADADA' : 'none'
+								}"
+							>
 								<uv-image
 									:src="fullUploadFilePath(item.image)"
 									:width="'110rpx'"
 									:height="'110rpx'"
 									lazyLoad
 								/>
-								<uv-line v-if="productInfo?.promotions?.length > index + 1" />
 							</view>
 						</view>
 						<view class="w-full flex flex-row items-center justify-center py-6rpx">
@@ -129,7 +135,7 @@
 						</view>
 					</view>
 				</view>
-				<view class="w-full box-border p-12rpx flex flex-col gap-24rpx">
+				<view class="w-full box-border p-12rpx flex flex-col gap-18rpx">
 					<Card
 						:customContentStyle="{ padding: 0 }"
 						:customStyle="{

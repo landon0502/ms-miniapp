@@ -138,7 +138,7 @@
 										<view class="flex flex-row items-center py-6px">
 											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">下单时间</text>
 											<text class="font-size-13px text-#5D5D5D ml-8px">
-												{{ formatDate(orderInfo?.order_time) }}
+												{{ formatDate(orderInfo?.order_time, 'YYYY-MM-DD HH:mm:ss') }}
 											</text>
 										</view>
 									</view>
@@ -154,7 +154,7 @@
 										<view class="flex flex-row items-center py-6px">
 											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">提货方式</text>
 											<text class="font-size-13px text-#5D5D5D ml-8px">
-												离岛自提
+												口岸自提
 											</text>
 										</view>
 									</view>
@@ -166,7 +166,7 @@
 									<view>
 										<uv-icon :name="serveIcon" :size="28" />
 									</view>
-									<text class="font-size-13px text-#333333">联系我们</text>
+									<text class="font-size-14px text-#333333">联系我们</text>
 								</view>
 							</view>
 						</template>
@@ -180,6 +180,7 @@
 									@click="handleClickGoods(item)"
 								>
 									<GoodsItem class="goods-item" :data="item" :image="item.image" />
+									<uv-line v-if="index < orderInfo?.items?.length - 1" :customStyle="{padding: '12rpx 0'}"/>
 								</view>
 							</view>
 						</template>
@@ -274,8 +275,8 @@
 		<template #footer>
 			<uv-line />
 			<view class="footer-buttons flex flex-row items-center justify-between px-24px py-12px">
-				<view @click="handleClickOrderDetail">
-					<text class="text-12px text-#999">更多</text>
+				<view @click="handleClickOrderDetail" class="mt-4px">
+					<text class="text-14px text-#999">更多</text>
 				</view>
 
 				<uv-button
@@ -283,7 +284,7 @@
 					:custom-style="{
 						borderRadius: '100px',
 						border: '0',
-						padding: '12px 24px',
+						padding: '12px 32px',
 						background: '#CA9B6E'
 					}"
 					:custom-text-style="{
@@ -327,9 +328,9 @@ const { data: orderInfo, loading, error } = orderDetailControl
 const showOrderInfoMore = ref(false)
 
 // 格式化时间函数
-const formatDate = (dateString) => {
+const formatDate = (dateString, format = 'YYYY-MM-DD HH:mm') => {
 	if (!dateString) return '--'
-	return dayjs(dateString).format('YYYY-MM-DD HH:mm')
+	return dayjs(dateString).format(format)
 }
 
 // 格式化订单状态
