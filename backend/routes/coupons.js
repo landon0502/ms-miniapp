@@ -39,17 +39,28 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const pool = getPool();
-    const { product_id } = req.query;
+    const { product_id, page, pageSize } = req.query;
     
-    let query = 'SELECT * FROM coupons';
+    // 分页参数
+    const pageNum = parseInt(page) || 1;
+    const size = parseInt(pageSize) || 10;
+    const offset = (pageNum - 1) * size;
+    
+    // 构建 WHERE 条件
+    let whereClause = '';
     const params = [];
     
     if (product_id) {
-      query += ' WHERE product_ids LIKE ?';
+      whereClause = ' WHERE product_ids LIKE ?';
       params.push(`%${product_id}%`);
     }
     
-    const [rows] = await pool.execute(query, params);
+    // 获取总数
+    const [countResult] = await pool.execute(`SELECT COUNT(*) as total FROM coupons${whereClause}`, params);
+    const total = countResult[0].total;
+    
+    // 获取分页数据
+    const [rows] = await pool.execute(`SELECT * FROM coupons${whereClause} ORDER BY id DESC LIMIT ? OFFSET ?`, [...params, size.toString(), offset.toString()]);
     
     // 解析product_ids字段
     const parsedRows = rows.map(row => {
@@ -65,7 +76,13 @@ router.get('/', async (req, res) => {
       success: true,
       code: 200,
       message: '获取优惠券列表成功',
-      data: parsedRows
+      data: {
+        list: parsedRows,
+        total,
+        page: pageNum,
+        pageSize: size,
+        totalPages: Math.ceil(total / size)
+      }
     });
   } catch (error) {
     

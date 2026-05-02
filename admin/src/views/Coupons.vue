@@ -237,8 +237,8 @@ export default {
           pageSize: pageSize.value
         })
         if (response.data.success) {
-          couponsList.value = response.data.data
-          total.value = response.data.data.total || response.data.data.length
+          couponsList.value = response.data.data.list
+          total.value = response.data.data.total
         } else {
           ElMessage.error('获取优惠券列表失败: ' + response.data.message)
           console.error('Error fetching coupons:', response.data.message)

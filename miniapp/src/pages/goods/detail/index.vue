@@ -467,14 +467,16 @@ const { load } = useScrollPaging(pagingRef, {
 	async onLoad() {
 		await goodsDetailControl.run({ id: params.value.product_id })
 		await nextTick()
-		console.log(currentSku.value)
 		if (currentSku.value?.activities) {
-			console.log(dayjs(currentSku.value.activities.end_time).diff(Date.now(), 's'))
 			start(dayjs(currentSku.value.activities.end_time).diff(Date.now(), 's'))
 		}
 	},
 	async onRefresh() {
 		await goodsDetailControl.run({ id: params.value.product_id })
+		await nextTick()
+		if (currentSku.value?.activities) {
+			start(dayjs(currentSku.value.activities.end_time).diff(Date.now(), 's'))
+		}
 	}
 })
 

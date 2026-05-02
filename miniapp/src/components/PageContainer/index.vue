@@ -82,7 +82,9 @@
 				"
 			>
 				<slot name="footer"></slot>
-				<uv-safe-bottom v-if="safeAreaInsetBottom"></uv-safe-bottom>
+				<slot name="safe-area-button" v-if="showSafeAreaInsetBottom">
+					<uv-safe-bottom></uv-safe-bottom>
+				</slot>
 			</view>
 		</view>
 
@@ -161,6 +163,9 @@ const navBarMergeProps = computed(() => {
 	return navBarProps
 })
 
+const showSafeAreaInsetBottom = computed(()=>{
+	return screenInfo.value.safeAreaInsetBottom > 0 && props.safeAreaInsetBottom
+})
 // 显示骨架屏
 const showSkeleton = computed(() => {
 	return (props.skeletonsProps?.loading || getStore().showSkeletons) && props.useSkeletons

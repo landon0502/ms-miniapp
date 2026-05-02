@@ -12,7 +12,7 @@
 			<view class="mt-8px flex flex-row items-center justify-between">
 				<text class="font-size-14px text-#A5A5A5">x{{ props.data.quantity }}</text>
 				<view class="flex flex-row items-center justify-end gap-8px">
-					<text class="font-size-13px text-#5E5D5D">
+					<text class="font-size-12px text-#5E5D5D">
 						实付<text class="font-size-14px text-#C49262 font-bold">
 							<text class="font-size-12px">￥</text>{{ Number(props.data.actual_price).toFixed(2) }}
 						</text>

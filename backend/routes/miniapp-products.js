@@ -4,6 +4,19 @@ import { getPool } from '../db/index.js';
 
 const router = express.Router();
 
+// 格式化日期为 YYYY-MM-DD HH:mm:ss 格式
+function formatDateTime(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const seconds = String(d.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 /**
  * @swagger
  * /api/miniapp/products: 
@@ -202,7 +215,15 @@ router.get('/:id', async (req, res) => {
       }
       // 添加绑定的秒杀活动（只返回一个活动对象）
       const skuActivities = flashSales.filter(sale => sale.sku_id === sku.id);
-      sku.activities = skuActivities.length > 0 ? skuActivities[0] : null;
+      if (skuActivities.length > 0) {
+        const activity = skuActivities[0];
+        // 格式化活动的时间字段
+        activity.start_time = formatDateTime(activity.start_time);
+        activity.end_time = formatDateTime(activity.end_time);
+        sku.activities = activity;
+      } else {
+        sku.activities = null;
+      }
       return sku;
     });
     
@@ -235,17 +256,17 @@ router.get('/:id', async (req, res) => {
     const promotionLabels = [...new Set(validPromotions.map(promotion => promotion.label).filter(label => label))];
     
     // 获取有效期内的商品优惠券
-    const [coupons] = await pool.execute('SELECT * FROM coupons WHERE NOW() BETWEEN start_time AND end_time AND product_ids LIKE ?', [`%${req.params.id}%`]);
+    const [allCoupons] = await pool.execute('SELECT * FROM coupons WHERE NOW() BETWEEN start_time AND end_time');
     
-    // 解析 product_ids 为数组
-    const parsedCoupons = coupons.map(coupon => {
+    // 解析 product_ids 为数组并过滤出包含当前商品的优惠券
+    const parsedCoupons = allCoupons.map(coupon => {
       try {
         coupon.product_ids = JSON.parse(coupon.product_ids);
       } catch (error) {
         coupon.product_ids = [];
       }
       return coupon;
-    });
+    }).filter(coupon => coupon.product_ids.includes(parseInt(req.params.id)));
     
     // 获取有效期内的商品折扣，优先根据 min_quantity 升序返回，如果 min_quantity 相同，则根据 value 升序进行返回
     const [discounts] = await pool.execute('SELECT * FROM discounts WHERE product_id = ? AND ((end_time IS NULL OR end_time >= NOW()) AND (start_time IS NULL OR start_time <= NOW())) ORDER BY min_quantity ASC, value ASC', [req.params.id]);
@@ -266,8 +287,8 @@ router.get('/:id', async (req, res) => {
       });
     }
     // 添加优惠券标签
-    if (coupons.length > 0) {
-      tags.push(...coupons.map(item=>item.label));
+    if (parsedCoupons.length > 0) {
+      tags.push(...parsedCoupons.map(item=>item.label));
     }
     // 添加赠品标签
     if (validPromotions.length > 0) {

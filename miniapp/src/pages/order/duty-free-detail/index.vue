@@ -41,7 +41,7 @@
 									<view class="p-12px">
 										<view class="flex flex-col gap-12px">
 											<view class="flex flex-row gap-8px items-center py-4px">
-												<text class="font-size-16px text-#5D5D5D font-bold">{{
+												<text class="font-size-16px text-#4D4D4D font-bold">{{
 													orderInfo?.consignee_name || '--'
 												}}</text>
 												<text class="font-size-13px text-#353535">{{
@@ -102,8 +102,8 @@
 								<view>
 									<view class="flex justify-between">
 										<view class="flex flex-row items-center py-6px">
-											<text class="font-size-12px text-#A2A2A2 whitespace-nowrap">订单编号</text>
-											<text class="font-size-12px text-#5D5D5D ml-8px">
+											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">订单编号</text>
+											<text class="font-size-13px text-#4D4D4D ml-8px">
 												{{ orderInfo?.order_no || '--' }}
 											</text>
 											<view
@@ -131,13 +131,13 @@
 									<view>
 										<view class="flex flex-row items-center py-6px">
 											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">发货门店</text>
-											<text class="font-size-13px text-#5D5D5D ml-8px"> 海南电商离岛免税 </text>
+											<text class="font-size-13px text-#4D4D4D ml-8px"> 海南电商离岛免税 </text>
 										</view>
 									</view>
 									<view>
 										<view class="flex flex-row items-center py-6px">
 											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">下单时间</text>
-											<text class="font-size-13px text-#5D5D5D ml-8px">
+											<text class="font-size-13px text-#4D4D4D ml-8px">
 												{{ formatDate(orderInfo?.order_time, 'YYYY-MM-DD HH:mm:ss') }}
 											</text>
 										</view>
@@ -145,7 +145,7 @@
 									<view>
 										<view class="flex flex-row items-center py-6px">
 											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">支付方式</text>
-											<text class="font-size-13px text-#5D5D5D ml-8px">
+											<text class="font-size-13px text-#4D4D4D ml-8px">
 												{{ '微信支付' }}
 											</text>
 										</view>
@@ -153,7 +153,7 @@
 									<view>
 										<view class="flex flex-row items-center py-6px">
 											<text class="font-size-13px text-#A2A2A2 whitespace-nowrap">提货方式</text>
-											<text class="font-size-13px text-#5D5D5D ml-8px">
+											<text class="font-size-13px text-#4D4D4D ml-8px">
 												口岸自提
 											</text>
 										</view>
@@ -275,7 +275,7 @@
 		<template #footer>
 			<uv-line />
 			<view class="footer-buttons flex flex-row items-center justify-between px-24px py-12px">
-				<view @click="handleClickOrderDetail" class="mt-4px">
+				<view @click="handleClickOrderDetail">
 					<text class="text-14px text-#999">更多</text>
 				</view>
 
@@ -294,6 +294,9 @@
 					:text="'再次购买'"
 				></uv-button>
 			</view>
+		</template>
+		<template #safe-area-button>
+			<view class="w-full h-20rpx bg-#fff"></view>
 		</template>
 	</PageContainer>
 </template>

@@ -251,7 +251,7 @@
 		<template #footer>
 			<uv-line />
 			<view class="footer-buttons flex flex-row items-center justify-between px-24px py-12px">
-				<view @click="handleClickOrderDetail" class="mt-4px">
+				<view @click="handleClickOrderDetail">
 					<text class="text-14px text-#999">更多</text>
 				</view>
 				<uv-button
@@ -269,6 +269,9 @@
 					:text="'再次购买'"
 				></uv-button>
 			</view>
+		</template>
+		<template #safe-area-button>
+			<view class="w-full h-20rpx bg-#fff"></view>
 		</template>
 	</PageContainer>
 </template>

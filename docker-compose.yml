@@ -42,8 +42,10 @@ services:
       - MYSQL_DATABASE=duty_free_shopping
       - MYSQL_USER=root
       - MYSQL_PASSWORD=00000000
+      - TZ=Asia/Shanghai
     volumes:
       - mysql_data:/var/lib/mysql
+    command: --default-time-zone='+08:00'
 
   redis:
     image: redis:latest
