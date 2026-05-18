@@ -1,7 +1,6 @@
 // 订单相关路由
 import express from 'express';
 import { getPool } from '../db/index.js';
-import dayjs from 'dayjs';
 import Decimal from 'decimal.js';
 
 const router = express.Router();
@@ -80,6 +79,7 @@ router.get('/', async (req, res) => {
     const total = countResult[0].total;
     
     // 使用 JOIN 查询一次性获取所有数据，消除 N+1 查询问题
+    // 在 SQL 中使用 DATE_FORMAT 处理时间格式，避免在代码中使用 dayjs
     const sql = `
       SELECT 
         o.id as order_id, o.order_no, o.sub_order_no, o.user_id, o.total_price, o.actual_price,
@@ -87,8 +87,11 @@ router.get('/', async (req, res) => {
         o.offline_flight, o.consignee_name, o.consignee_phone, o.consignee_idcard,
         o.port_order_no, o.detail_list_order_no, o.route, o.vehicle_type, o.departure_port,
         o.destination_port, o.passenger_price, o.vehicle_price, o.value_added_service,
-        o.order_templ, o.pickup_method, o.pickup_location, o.pickup_address, o.sailing_time,
-        o.departure_time, o.order_time, o.shipping_store,
+        o.order_templ, o.pickup_method, o.pickup_location, o.pickup_address,
+        DATE_FORMAT(o.sailing_time, '%Y-%m-%d %H:%i') as sailing_time,
+        DATE_FORMAT(o.departure_time, '%Y-%m-%d %H:%i:%s') as departure_time,
+        DATE_FORMAT(o.order_time, '%Y-%m-%d %H:%i:%s') as order_time,
+        o.shipping_store,
         oi.id as item_id, oi.product_id, oi.sku_id, oi.quantity, oi.price as item_price, oi.discount_amount,
         p.id as product_id, p.name as product_name, p.price as product_price, p.image as product_image,
         ps.id as ps_id, ps.sku_name as sku_name, ps.price as sku_price, ps.actual_price as sku_actual_price, ps.images as sku_images
@@ -140,8 +143,8 @@ router.get('/', async (req, res) => {
           pickup_location: row.pickup_location,
           pickup_address: row.pickup_address,
           sailing_time: row.sailing_time,
-          departure_time: row.departure_time ? dayjs(row.departure_time).format('YYYY-MM-DD HH:mm:ss') : null,
-          order_time: row.order_time ? dayjs(row.order_time).format('YYYY-MM-DD HH:mm:ss') : null,
+          departure_time: row.departure_time,
+          order_time: row.order_time,
           shipping_store: row.shipping_store,
           items: []
         });
@@ -791,8 +794,15 @@ router.get('/:id', async (req, res) => {
     
     const pool = getPool();
     
-    // 获取订单基本信息
-    const [orderResult] = await pool.execute('SELECT * FROM orders WHERE id = ?', [req.params.id]);
+    // 获取订单基本信息，在 SQL 中使用 DATE_FORMAT 处理时间格式
+    const [orderResult] = await pool.execute(`
+      SELECT 
+        *,
+        DATE_FORMAT(order_time, '%Y-%m-%d %H:%i:%s') as order_time,
+        DATE_FORMAT(departure_time, '%Y-%m-%d %H:%i:%s') as departure_time,
+        DATE_FORMAT(sailing_time, '%Y-%m-%d %H:%i') as sailing_time
+      FROM orders WHERE id = ?
+    `, [req.params.id]);
     if (orderResult.length === 0) {
       return res.status(404).json({
         success: false,
@@ -884,24 +894,24 @@ router.get('/:id', async (req, res) => {
       return '*' + name.substring(1);
     };
     
-    // 构建响应数据
+    // 构建响应数据（时间格式已在 SQL 中处理）
     const responseData = {
-      order_time: order.order_time ? dayjs(order.order_time).format('YYYY-MM-DD HH:mm:ss') : null,
+      order_time: order.order_time,
       order_no: order.order_no,
       items: items,
       points_deduction: order.points_deduction || 0,
       discount: discount,
       total_original_price: totalOriginalPrice,
-      mail_tax: order.mail_tax || 0, // 从数据库中取值
-      mail_tax_discount: order.mail_tax_discount || 0, // 从数据库中取值
-      consignee_name: maskName(order.consignee_name), // 脱敏处理
-      consignee_phone: maskPhone(order.consignee_phone), // 脱敏处理
-      consignee_idcard: maskIdcard(order.consignee_idcard), // 脱敏处理
+      mail_tax: order.mail_tax || 0,
+      mail_tax_discount: order.mail_tax_discount || 0,
+      consignee_name: maskName(order.consignee_name),
+      consignee_phone: maskPhone(order.consignee_phone),
+      consignee_idcard: maskIdcard(order.consignee_idcard),
       route_info: {
         port_order_no: order.port_order_no || '',
         route: order.route || '',
-        offline_flight: order.offline_flight || 'HA2140', // 从数据库中取值，移到route_info中
-        departure_time: order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null,
+        offline_flight: order.offline_flight || 'HA2140',
+        departure_time: order.departure_time,
         vehicle_type: order.vehicle_type || '',
         departure_port: order.departure_port || '',
         destination_port: order.destination_port || '',
@@ -909,7 +919,7 @@ router.get('/:id', async (req, res) => {
         vehicle_price: order.vehicle_price || 0,
         value_added_service: order.value_added_service || 0,
         total_amount: order.total_price || 0,
-        booking_time: order.order_time ? dayjs(order.order_time).format('YYYY-MM-DD HH:mm:ss') : null
+        booking_time: order.order_time
       }
     };
     

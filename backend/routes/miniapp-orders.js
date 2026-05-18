@@ -1,7 +1,6 @@
-// miniapp 订单相关路由
+// 小程序订单相关路由
 import express from 'express';
 import { getPool } from '../db/index.js';
-import dayjs from 'dayjs';
 import Decimal from 'decimal.js';
 
 const router = express.Router();
@@ -95,9 +94,13 @@ router.get('/', async (req, res) => {
     const total = countResult[0].total;
     
     
-    // 获取分页订单列表
+    // 获取分页订单列表（在 SQL 中使用 DATE_FORMAT 处理时间格式）
     
-    let sql = `SELECT * FROM orders ${whereClause} ORDER BY id DESC LIMIT ${Number(pageSize)} OFFSET ${Number(offset)}`;
+    let sql = `SELECT 
+      *,
+      DATE_FORMAT(order_time, '%Y-%m-%d %H:%i:%s') as order_time,
+      DATE_FORMAT(departure_time, '%Y-%m-%d %H:%i:%s') as departure_time
+      FROM orders ${whereClause} ORDER BY id DESC LIMIT ${Number(pageSize)} OFFSET ${Number(offset)}`;
     
     const [rows] = await pool.execute(sql, params);
     
@@ -139,9 +142,6 @@ router.get('/', async (req, res) => {
         }
       }
       order.items = items;
-      // 格式化时间字段
-      order.order_time = order.order_time ? dayjs(order.order_time).format('YYYY-MM-DD HH:mm:ss') : null;
-      order.departure_time = order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null;
     }
     
     
@@ -504,8 +504,15 @@ router.get('/:id', async (req, res) => {
     
     const pool = getPool();
     
-    // 获取订单基本信息
-    const [orderResult] = await pool.execute('SELECT * FROM orders WHERE id = ?', [req.params.id]);
+    // 获取订单基本信息（在 SQL 中使用 DATE_FORMAT 处理时间格式）
+    const [orderResult] = await pool.execute(`
+      SELECT 
+        *,
+        DATE_FORMAT(order_time, '%Y-%m-%d %H:%i:%s') as order_time,
+        DATE_FORMAT(departure_time, '%Y-%m-%d %H:%i:%s') as departure_time,
+        DATE_FORMAT(sailing_time, '%Y-%m-%d %H:%i') as sailing_time
+      FROM orders WHERE id = ?
+    `, [req.params.id]);
     if (orderResult.length === 0) {
       return res.status(404).json({
         success: false,
@@ -599,13 +606,13 @@ router.get('/:id', async (req, res) => {
       return '*' + name.substring(1);
     };
     
-    // 构建响应数据
+    // 构建响应数据（时间格式已在 SQL 中处理）
     const responseData = {
-      order_time: order.order_time ? dayjs(order.order_time).format('YYYY-MM-DD HH:mm:ss') : null,
+      order_time: order.order_time,
       order_no: order.order_no,
       order_templ: order.order_templ || 1,
       detail_list_order_no: order.detail_list_order_no || '',
-      departure_time: order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null,
+      departure_time: order.departure_time,
       pickup_location: order.pickup_location || '新海港',
       pickup_method: order.pickup_method || '口岸自提',
       pickup_address: order.pickup_address || '',
@@ -613,16 +620,16 @@ router.get('/:id', async (req, res) => {
       points_deduction: order.points_deduction || 0,
       discount: discount,
       total_original_price: totalOriginalPrice,
-      mail_tax: order.mail_tax || 0, // 从数据库中取值
-      mail_tax_discount: order.mail_tax_discount || 0, // 从数据库中取值
-      consignee_name: maskName(order.consignee_name), // 脱敏处理
-      consignee_phone: maskPhone(order.consignee_phone), // 脱敏处理
-      consignee_idcard: maskIdcard(order.consignee_idcard), // 脱敏处理
+      mail_tax: order.mail_tax || 0,
+      mail_tax_discount: order.mail_tax_discount || 0,
+      consignee_name: maskName(order.consignee_name),
+      consignee_phone: maskPhone(order.consignee_phone),
+      consignee_idcard: maskIdcard(order.consignee_idcard),
       route_info: {
         port_order_no: order.port_order_no || '',
         route: order.route || '',
-        offline_flight: order.offline_flight || 'HA2140', // 从数据库中取值，移到route_info中
-        sailing_time: order.sailing_time ? dayjs(order.sailing_time).format('YYYY-MM-DD HH:mm:ss') : null,
+        offline_flight: order.offline_flight || 'HA2140',
+        sailing_time: order.sailing_time,
         vehicle_type: order.vehicle_type || '',
         departure_port: order.departure_port || '',
         destination_port: order.destination_port || '',
@@ -630,7 +637,7 @@ router.get('/:id', async (req, res) => {
         vehicle_price: order.vehicle_price || 0,
         value_added_service: order.value_added_service || 0,
         total_amount: order.total_price || 0,
-        booking_time: order.order_time ? dayjs(order.order_time).format('YYYY-MM-DD HH:mm:ss') : null
+        booking_time: order.order_time
       }
     };
     
