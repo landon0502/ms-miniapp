@@ -7,6 +7,7 @@
 			:refresher-fixed-bac-height="props.refresherFixedBacHeight"
 			:refresher-enabled="props.refresherEnabled"
 			:refresher-threshold="props.refresherThreshold"
+			:show-scrollbar="props.showScrollbar"
 			show-refresher-when-reload
 			@refresherStatusChange="onRefresherStatusChange"
 			@scrolltolower="onScrolltolower"

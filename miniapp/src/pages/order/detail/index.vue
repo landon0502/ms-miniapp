@@ -1,4 +1,5 @@
 <template>
+	<page-meta page-style="overflow:hidden" />
 	<PageContainer
 		:navBarProps="{
 			title: '已提货',

@@ -257,7 +257,7 @@
 									<text class="text-17px">{{ productInfo?.name }}</text>
 								</view>
 								<view>
-									<text class="text-12px text-#A4A4A4">{{ productInfo?.description }}</text>
+									<text class="text-13px text-#A4A4A4">{{ productInfo?.description }}</text>
 								</view>
 							</view>
 						</template>

@@ -1,4 +1,5 @@
 <template>
+	<page-meta page-style="overflow:hidden" />
 	<PageContainer
 		:navBarProps="{
 			title: '已提货',
@@ -8,7 +9,7 @@
 		:content-style="{ padding: 0 }"
 		:custom-style="{ background: '#f5f5f5' }"
 	>
-		<ScrollPaging ref="pagingRef" refreshonly>
+		<ScrollPaging ref="pagingRef" refreshonly :showScrollbar="false">
 			<view class="flex flex-col gap-24rpx p-24rpx">
 				<!-- 订单内容 -->
 				<template v-if="orderInfo">

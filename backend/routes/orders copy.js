@@ -58,6 +58,7 @@ const router = express.Router();
  */
 router.get('/', async (req, res) => {
   try {
+    
     const pool = getPool();
     
     // 分页参数
@@ -66,124 +67,69 @@ router.get('/', async (req, res) => {
     const status = req.query.status || 'all';
     const offset = (page - 1) * pageSize;
     
-    // 构建WHERE条件
+    
+    // 构建查询条件
     let whereClause = '';
-    let params = [];
     if (status !== 'all') {
-      whereClause = 'WHERE o.status = ?';
-      params.push(status);
+      whereClause = `WHERE status = ?`;
     }
     
     // 获取订单总数
-    const countSql = `SELECT COUNT(*) as total FROM orders o ${whereClause}`;
-    const [countResult] = await pool.execute(countSql, [...params]);
+    
+    let countSql = `SELECT COUNT(*) as total FROM orders ${whereClause}`;
+    let countParams = status !== 'all' ? [status] : [];
+    const [countResult] = await pool.execute(countSql, countParams);
     const total = countResult[0].total;
     
-    // 使用 JOIN 查询一次性获取所有数据，消除 N+1 查询问题
-    const sql = `
-      SELECT 
-        o.id as order_id, o.order_no, o.sub_order_no, o.user_id, o.total_price, o.actual_price,
-        o.status, o.points_deduction, o.mail_tax, o.mail_tax_discount, o.is_port_pickup,
-        o.offline_flight, o.consignee_name, o.consignee_phone, o.consignee_idcard,
-        o.port_order_no, o.detail_list_order_no, o.route, o.vehicle_type, o.departure_port,
-        o.destination_port, o.passenger_price, o.vehicle_price, o.value_added_service,
-        o.order_templ, o.pickup_method, o.pickup_location, o.pickup_address, o.sailing_time,
-        o.departure_time, o.order_time, o.shipping_store,
-        oi.id as item_id, oi.product_id, oi.sku_id, oi.quantity, oi.price as item_price, oi.discount_amount,
-        p.id as product_id, p.name as product_name, p.price as product_price, p.image as product_image,
-        ps.id as ps_id, ps.sku_name as sku_name, ps.price as sku_price, ps.actual_price as sku_actual_price, ps.images as sku_images
-      FROM orders o
-      LEFT JOIN order_items oi ON o.id = oi.order_id
-      LEFT JOIN products p ON oi.product_id = p.id
-      LEFT JOIN product_skus ps ON oi.sku_id = ps.id
-      ${whereClause}
-      ORDER BY o.id DESC
-      LIMIT ${Number(pageSize)} OFFSET ${Number(offset)}
-    `;
     
-    // 使用参数化查询，避免 SQL 注入风险
-    const [results] = await pool.execute(sql, params);
+    // 获取分页订单列表
     
-    // 将扁平结果组装成嵌套结构
-    const orderMap = new Map();
-    for (const row of results) {
-      const orderId = row.order_id;
+    let sql = `SELECT * FROM orders ${whereClause} ORDER BY id DESC LIMIT ${Number(pageSize)} OFFSET ${Number(offset)}`;
+    let params = status !== 'all' ? [status] : [];
+    
+    const [rows] = await pool.execute(sql, params);
+    
+    
+    // 获取每个订单的商品信息
+    
+    for (const order of rows) {
       
-      if (!orderMap.has(orderId)) {
-        orderMap.set(orderId, {
-          id: row.order_id,
-          order_no: row.order_no,
-          sub_order_no: row.sub_order_no,
-          user_id: row.user_id,
-          total_price: row.total_price,
-          actual_price: row.actual_price,
-          status: row.status,
-          points_deduction: row.points_deduction,
-          mail_tax: row.mail_tax,
-          mail_tax_discount: row.mail_tax_discount,
-          is_port_pickup: row.is_port_pickup,
-          offline_flight: row.offline_flight,
-          consignee_name: row.consignee_name,
-          consignee_phone: row.consignee_phone,
-          consignee_idcard: row.consignee_idcard,
-          port_order_no: row.port_order_no,
-          detail_list_order_no: row.detail_list_order_no,
-          route: row.route,
-          vehicle_type: row.vehicle_type,
-          departure_port: row.departure_port,
-          destination_port: row.destination_port,
-          passenger_price: row.passenger_price,
-          vehicle_price: row.vehicle_price,
-          value_added_service: row.value_added_service,
-          order_templ: row.order_templ,
-          pickup_method: row.pickup_method,
-          pickup_location: row.pickup_location,
-          pickup_address: row.pickup_address,
-          sailing_time: row.sailing_time,
-          departure_time: row.departure_time ? dayjs(row.departure_time).format('YYYY-MM-DD HH:mm:ss') : null,
-          order_time: row.order_time ? dayjs(row.order_time).format('YYYY-MM-DD HH:mm:ss') : null,
-          shipping_store: row.shipping_store,
-          items: []
-        });
-      }
+      const [items] = await pool.execute('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
       
-      // 如果有订单项
-      if (row.item_id) {
-        // 解析规格图片
-        let skuImages = [];
-        if (row.sku_images) {
-          try {
-            skuImages = JSON.parse(row.sku_images);
-          } catch (e) {
-            skuImages = [];
+      // 获取每个商品的详细信息
+      for (const item of items) {
+        
+        const [product] = await pool.execute('SELECT * FROM products WHERE id = ?', [item.product_id]);
+        if (product.length > 0) {
+          item.product = product[0];
+          
+        }
+        if (item.sku_id) {
+          
+          const [sku] = await pool.execute('SELECT * FROM product_skus WHERE id = ?', [item.sku_id]);
+          if (sku.length > 0) {
+            item.sku = sku[0];
+            // 确保 images 字段是数组
+            if (item.sku.images) {
+              try {
+                item.sku.images = JSON.parse(item.sku.images);
+              } catch (e) {
+                // 如果解析失败，设为空数组
+                item.sku.images = [];
+              }
+            } else {
+              item.sku.images = [];
+            }
+            
           }
         }
-        
-        orderMap.get(orderId).items.push({
-          id: row.item_id,
-          product_id: row.product_id,
-          sku_id: row.sku_id,
-          quantity: row.quantity,
-          price: row.item_price,
-          discount_amount: row.discount_amount,
-          product: row.product_id ? {
-            id: row.product_id,
-            name: row.product_name,
-            price: row.product_price,
-            image: row.product_image
-          } : null,
-          sku: row.sku_id ? {
-            id: row.ps_id,
-            name: row.sku_name,
-            price: row.sku_price,
-            actual_price: row.sku_actual_price,
-            images: skuImages
-          } : null
-        });
       }
+      order.items = items;
+      // 格式化时间字段
+      order.order_time = order.order_time ? dayjs(order.order_time).format('YYYY-MM-DD HH:mm:ss') : null;
+      order.departure_time = order.departure_time ? dayjs(order.departure_time).format('YYYY-MM-DD HH:mm:ss') : null;
     }
     
-    const rows = Array.from(orderMap.values());
     
     res.json({
       success: true,
