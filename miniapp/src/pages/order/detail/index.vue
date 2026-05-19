@@ -8,6 +8,7 @@
 		fixedContentHeight
 		:content-style="{ padding: 0 }"
 		:custom-style="{ background: '#f5f5f5' }"
+		:show-scrollbar="false"
 	>
 		<ScrollPaging ref="pagingRef" refreshonly>
 			<view class="flex flex-col gap-24rpx p-24rpx">
